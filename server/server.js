@@ -15,7 +15,6 @@ var app = express();
 
 mongoose.connect('mongodb://atomicview:yF99NOJoYRy6@ds046867.mlab.com:46867/atomicview');
 
-app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../client'));
 app.use(express.static(path.join(__dirname, '../client')));
 app.use(bodyParser.json({ limit: '50mb' }));
