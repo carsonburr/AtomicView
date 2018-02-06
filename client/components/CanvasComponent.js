@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Atom, Coord, RGBA} from './Atom.js';
-import WebGLUtils from './lib/webgl-utils.js';
+import {Atom, Coord, RGBA} from '../../models/Atom.js';
+import WebGLUtils from '../../webgl_lib/webgl-utils.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 
 /**

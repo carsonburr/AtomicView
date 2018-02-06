@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {getTable} from './Atom.js';
+import {getTable} from '../../models/Atom.js';
 
 class PeriodicTablePopup extends React.Component {
   constructor() {
