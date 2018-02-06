@@ -43,6 +43,7 @@ export default class LoginPage extends Component {
             <FormControl
               autoFocus
               type="email"
+              name="email"
               value={this.state.email}
               onChange={this.handleChange}
             />
@@ -54,6 +55,7 @@ export default class LoginPage extends Component {
               value={this.state.password}
               onChange={this.handleChange}
               type="password"
+              name="password"
             />
           </FormGroup>
 

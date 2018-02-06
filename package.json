@@ -19,7 +19,8 @@
   },
   "scripts": {
     "webpack": "webpack",
-    "start": "npm run webpack && nodemon --exec babel-node -- bin/www",
+    "webpack-dev-server": "webpack-dev-server",
+    "start": "npm run webpack-dev-server && nodemon --exec babel-node -- bin/www",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
@@ -29,6 +30,8 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "webpack": "^3.10.0"
+    "react-hot-loader": "^3.1.3",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
   }
 }
