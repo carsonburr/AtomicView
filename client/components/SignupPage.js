@@ -84,7 +84,7 @@ export default class LoginPage extends Component {
               </Button>
           </Link>
 
-          <p class="centered-text">Return to the <Link to="/login">login page?</Link></p>
+          <p className="centered-text">Return to the <Link to="/login">login page?</Link></p>
 
         </form>
       </div>

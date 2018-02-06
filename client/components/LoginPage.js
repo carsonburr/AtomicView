@@ -11,20 +11,24 @@ export default class LoginPage extends Component {
       email: "",
       password: ""
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
   }
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
       [event.target.id]: event.target.value
     });
   }
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
+    const data = new FormData(event.target);
+    debugger;
   }
 
   render() {
@@ -53,33 +57,29 @@ export default class LoginPage extends Component {
             />
           </FormGroup>
 
-          <Link to="/login">
-            <Button
-              block
-              bsSize="large"
-              disabled={!this.validateForm()}
-              type="submit"
-              >
-              Login
-            </Button>
-          </ Link>
+          <Button
+            block
+            bsSize="large"
+            disabled={!this.validateForm()}
+            type="submit"
+            >
+            Login
+          </Button>
 
-          <p class="centered-text">
+          <p className="centered-text">
             or
           </p>
 
-          <Link to="/login">
-            <Button
-              block
-              bsSize="large"
-              type="submit"
-              >
-              Continue without logging in
-              </Button>
-          </ Link>
+          <Button
+            block
+            bsSize="large"
+            type="submit"
+            >
+            Continue without logging in
+            </Button>
         </form>
 
-        <p class="centered-text">Dont have an accout? <Link to="/signup">Create one!</Link></p>
+        <p className="centered-text">Dont have an accout? <Link to="/signup">Create one!</Link></p>
       </div>
     );
   }
