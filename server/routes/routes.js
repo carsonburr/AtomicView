@@ -25,7 +25,25 @@ router.route('/insertUser').post(
           return next(err)
         } else {
           req.session.userId = user._id;
-          return res.redirect('/profile');
+          return res.redirect('/');
+        }
+      });
+    }
+  }
+)
+
+router.route('/user').post(
+  function(req, res) {
+    if (req.body.email &&
+        req.body.password) {
+      Users.authenticate(req.body.email, req.body.password, function(error, user) {
+        if (error || !user) {
+          var err = new Error('Wrong email or password.');
+          err.status = 401;
+          return next(error);
+        } else {
+          req.session.userId = user._id;
+          return res.redirect('/')
         }
       });
     }
