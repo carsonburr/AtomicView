@@ -26,6 +26,25 @@ var lanthanoids = ['La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy',
 var actinoids = ['Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 
                  'Es', 'Fm', 'Md', 'No', 'Lr'];
 
+//array for atomic radii in pico meters, some do not have data, 0
+//null delineates gap in table 0 is radius size unknown
+var atomicRadii = [[53,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,31],
+                     [167, 112,null,null,null,null,null,null,null,null,null,null, 87, 67, 56, 48, 42, 38],
+                     [190, 145,null,null,null,null,null,null,null,null,null,null,118, 111,98, 88, 79, 71],
+                     [243, 194, 184, 176, 171, 166, 161, 156, 152, 149, 145, 142, 136, 125, 114, 103, 94, 88],
+                     [265, 219, 212, 206, 198, 190, 183, 178, 173, 169, 165, 161, 156, 145, 133, 123, 115, 108],
+                     [298, 253, 0, 208, 200, 193, 188, 185, 180, 177, 174, 171, 156, 154, 143, 135, 127, 120],
+                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                     [null,null,null,0, 247, 206, 205, 238, 231, 233, 225, 228, 226, 226, 222, 222, 217,null],
+                     [null,null,null,0,0,0,0,0,0,0,0,0,0,0,0,0,0,null]];
+
+ 
+
+
+
+
+
+
 export function Coord(x,y,z) {
   this.x = x;
   this.y = y;
@@ -45,6 +64,7 @@ function buildTable() {
       //create new atom
       var atom = {}//new Object();
       atom.symbol = atomicSymbols[row][col];
+      atom.radius = atomicRadii[row][col];
       if(atom.symbol !== '') {
         atom.number = atomicNumber;
         atomicNumber++;
@@ -75,6 +95,14 @@ function buildTable() {
       } else {
         atom.color = "#FFFFFF";
       }
+
+      //define the radius
+      //if(atom.symbol = '') {
+      //    atom.radius = ''
+      //} else {
+       //   atom.radius = radii[0]
+      //}
+
       cell.push(atom);
     }
     rows.push(cell);

@@ -18,7 +18,7 @@ class PeriodicTablePopup extends React.Component {
 
   handleClick = (atom) => {
     this.toggleModal();
-    this.props.setCurAtom(atom.symbol, atom.name, atom.atomicRadius);
+    this.props.setCurAtom(atom.symbol, atom.name, atom.radius);
   };
 
   render() {
@@ -62,12 +62,13 @@ class PeriodicTablePopup extends React.Component {
       for(var j=0; j<18; j++){
         let cellID = `cell${i}-${j}`;
         let atom = table[i][j];
-        //TODO Add atomic radius and element name.
+        //TODO Add element name.
         //TODO continued: escape modal on esc
         cell.push(<td key={cellID} id={cellID} align="center" bgcolor={atom.color} 
-                  //onClick={() => console.log(atom.symbol)} width="100">
+                  //TODO fix atom.number
                   onClick={this.handleClick.bind(this, atom)} width="100">
                   <sup>{atom.number}</sup><br />{atom.symbol}</td>);
+                  
       }
       rows.push(<tr key={i} id={rowID}>{cell}</tr>);
     } 
