@@ -46,9 +46,15 @@ class CanvasComponent extends Component {
     var curAtom = this.curAtom;
     // TODO: Check if there is an atom at location x,y already; might want to use a hash
     // map for this.
-    // for (var i = 0; i < atoms.length; i++) {
-    //     var atom = atoms[i];
-    // }
+    for (var i = 0; i < atoms.length; i++) {
+        var atom = atoms[i];
+        if( (Math.abs(atom.location.x - x) < 30) && (Math.abs(atom.location.y - y) < 30) ) {
+          atoms[i] = new Atom(atom.location, curAtom.atom.atomicSymbol,
+            curAtom.atom.elementName, curAtom.atom.atomicRadius, null);
+          this.drawCanvas2D();
+          return;
+        }
+    }
     
     atoms.push(new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
       curAtom.atom.elementName, curAtom.atom.atomicRadius, null));
