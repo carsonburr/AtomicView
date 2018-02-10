@@ -13,6 +13,7 @@ module.exports = {
   },
   devServer: {
     contentBase: './client',
+    historyApiFallback: true,
     hot: true
   },
   plugins: [
