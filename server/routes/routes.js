@@ -3,20 +3,20 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/User');
 
-router.get('/', function(req, res) {
-  res.render('index')
+router.get('*', function(req, res) {
+  res.render('index');
 });
 
-router.route('/insertUser').post(
+router.route('/api/insertUser').post(
   function(req, res) {
+    console.log("called /api/insertUser");
     if (req.body.email &&
-        req.body.password &&
-        req.body.passwordConf) {
-    
+        req.body.password) {
+      
+      console.log("has email and password");
       var userData = {
         email: req.body.email,
         password: req.body.password,
-        passwordConf: req.body.passwordConf
       }
       
       // use schema.create to insert data into the db

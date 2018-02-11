@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl } from "react-bootstrap";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import "../css/LoginPage.css";
+import qs from 'querystring';
 
 export default class LoginPage extends Component {
   constructor(props) {
@@ -12,6 +14,8 @@ export default class LoginPage extends Component {
       password: "",
       verifyPassword: "",
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   getValidationState() {
@@ -35,8 +39,20 @@ export default class LoginPage extends Component {
   }
 
   handleSubmit = event => {
-     //alert(this.state.email+" | "+this.state.password+" | "+this.state.verifyPassword);
     event.preventDefault();
+    const data = new FormData(event.target);
+    axios.post('/api/insertUser',
+      qs.stringify({
+        email: data.get('email'),
+        password: data.get('password')
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).catch(function(error) {
+        debugger;
+      });
   }
 
   render() {
@@ -48,6 +64,7 @@ export default class LoginPage extends Component {
             <FormControl
               autoFocus
               type="email"
+              name="email"
               value={this.state.email}
               onChange={this.handleChange}
             />
@@ -61,6 +78,7 @@ export default class LoginPage extends Component {
               value={this.state.password}
               onChange={this.handleChange}
               type="password"
+              name="password"
             />
           </FormGroup>
 
@@ -73,16 +91,14 @@ export default class LoginPage extends Component {
             />
           </FormGroup>
 
-          <Link to="/login">
-            <Button
-                block
-                bsSize="large"
-                disabled={!this.validateForm()}
-                type="submit"
-                >
-                Signup
-              </Button>
-          </Link>
+          <Button
+              block
+              bsSize="large"
+              disabled={!this.validateForm()}
+              type="submit"
+              >
+              Signup
+            </Button>
 
           <p className="centered-text">Return to the <Link to="/login">login page?</Link></p>
 

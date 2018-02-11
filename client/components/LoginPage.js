@@ -28,7 +28,6 @@ export default class LoginPage extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    debugger;
   }
 
   render() {
