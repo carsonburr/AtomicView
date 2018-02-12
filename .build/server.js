@@ -20,7 +20,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a4dad3dc697c12040350"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "13829e49f2851c4abb35"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -922,15 +922,13 @@ var express = __webpack_require__("express");
 var router = express.Router();
 var User = __webpack_require__("./models/User.js");
 
-router.get('*', function (req, res) {
+router.get('/*', function (req, res, next) {
   res.render('index');
 });
 
-router.route('/api/insertUser').post(function (req, res) {
-  console.log("called /api/insertUser");
+router.route('/api/insertUser').post(function (req, res, next) {
   if (req.body.email && req.body.password) {
 
-    console.log("has email and password");
     var userData = {
       email: req.body.email,
       password: req.body.password
@@ -947,7 +945,7 @@ router.route('/api/insertUser').post(function (req, res) {
   }
 });
 
-router.route('/user').post(function (req, res) {
+router.route('/user').post(function (req, res, next) {
   if (req.body.email && req.body.password) {
     Users.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {

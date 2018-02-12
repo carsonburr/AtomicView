@@ -3,17 +3,15 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/User');
 
-router.get('*', function(req, res) {
+router.get('/*', function(req, res, next) {
   res.render('index');
 });
 
 router.route('/api/insertUser').post(
-  function(req, res) {
-    console.log("called /api/insertUser");
+  function(req, res, next) {
     if (req.body.email &&
         req.body.password) {
       
-      console.log("has email and password");
       var userData = {
         email: req.body.email,
         password: req.body.password,
@@ -33,7 +31,7 @@ router.route('/api/insertUser').post(
 )
 
 router.route('/user').post(
-  function(req, res) {
+  function(req, res, next) {
     if (req.body.email &&
         req.body.password) {
       Users.authenticate(req.body.email, req.body.password, function(error, user) {

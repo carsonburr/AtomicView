@@ -48,10 +48,11 @@ export default class LoginPage extends Component {
       }),
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json"
         }
       }).catch(function(error) {
-        debugger;
+        console.log(error);
       });
   }
 
