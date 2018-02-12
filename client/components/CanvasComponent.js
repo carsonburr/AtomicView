@@ -4,6 +4,7 @@ import {Bond} from '../../models/Bond.js';
 import WebGLUtils from '../../webgl_lib/webgl-utils.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
+import SelectButton from './SelectButton';
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -19,6 +20,8 @@ class CanvasComponent extends Component {
     this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, null)};
     this.curBond = null;
     this.curBondType = 1;
+    this.curSelected = null;
+    this.curMoving = null;
   };
 
   setCurAtom = (symbol, name, atomicRadius) => {
@@ -72,21 +75,20 @@ class CanvasComponent extends Component {
     }
   }
 
-  handleLeftClick2D(x, y) {
+  handleLeftOnMouseDown2D(x, y) {
     switch (this.curAction.action) {
       case "atom":
-        this.handleLeftClick2DAtom(x,y);
+        this.handleLeftOnMouseDown2DAtom(x,y);
         break;
       case "bond":
-        this.handleLeftClick2dBond(x,y);
+        this.handleLeftOnMouseDown2dBond(x,y);
         break;
       case "select":
-        this.handleLeftClick2DSelect(x,y);
+        this.handleLeftOnMouseDown2DSelect(x,y);
         break;
       default:
         console.log("Unsupported Action: " + this.curAction.action);
     }
-    console.log("Action: " + this.curAction.action);
   }
 
   getIndexOfAtomAtLocation(x, y) {
@@ -102,7 +104,7 @@ class CanvasComponent extends Component {
   }
 
   // Handles left click for bonds
-  handleLeftClick2dBond(x, y) {
+  handleLeftOnMouseDown2dBond(x, y) {
     var index = this.getIndexOfAtomAtLocation(x, y);
     var atoms = this.atoms;
     if(index != -1 ) {
@@ -121,12 +123,18 @@ class CanvasComponent extends Component {
   }
 
   // Handles left click for selections
-  handleLeftClick2DSelect(x, y) {
-
+  handleLeftOnMouseDown2DSelect(x, y) {
+    var index = this.getIndexOfAtomAtLocation(x, y);
+    if (index != -1) {
+      this.curSelected = index;
+      this.curMoving = index;
+    } else {
+      this.curSelected = null;
+    }
   }
 
   // Handles left click for atoms
-  handleLeftClick2DAtom(x, y) {
+  handleLeftOnMouseDown2DAtom(x, y) {
     var atoms = this.atoms;
     var curAtom = this.curAtom;
     var index = this.getIndexOfAtomAtLocation(x, y);
@@ -151,6 +159,14 @@ class CanvasComponent extends Component {
     }
   }
 
+  handleOnMouseMoveSelect(x, y) {
+    if(this.curMoving != null) {
+      this.atoms[this.curMoving].location.x = x;
+      this.atoms[this.curMoving].location.y = y;
+      this.drawCanvas2D();
+    }
+  }
+
   handleOnMouseMove(ev){
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
@@ -161,6 +177,27 @@ class CanvasComponent extends Component {
         this.handleOnMouseMoveBond(x,y);
         break;
       case "select":
+        this.handleOnMouseMoveSelect(x,y);
+        break;
+      default:
+        console.log("Unsupported Action: " + this.curAction.action);
+    }
+  }
+
+  handleOnMouseUpSelect(x,y) {
+    this.curMoving = null;
+  }
+
+  handleOnMouseUp(ev){
+    var x = ev.clientX; // x coordinate of a mouse pointer
+    var y = ev.clientY; // y coordinate of a mouse pointer
+    switch (this.curAction.action) {
+      case "atom":
+        break;
+      case "bond":
+        break;
+      case "select":
+        this.handleOnMouseUpSelect(x,y);
         break;
       default:
         console.log("Unsupported Action: " + this.curAction.action);
@@ -192,7 +229,7 @@ class CanvasComponent extends Component {
   }
 
   // On click handler
-  handleClick2D(ev) {
+  handleOnMouseDown2D(ev) {
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
     var rect = ev.target.getBoundingClientRect() ;
@@ -203,7 +240,7 @@ class CanvasComponent extends Component {
       // Right Click
     } else if(ev.button === 0) {
       // Left Click
-      this.handleLeftClick2D(x,y);
+      this.handleLeftOnMouseDown2D(x,y);
     } else if (ev.button === 1){
       ev.preventDefault();
       // Middle Click
@@ -217,16 +254,18 @@ class CanvasComponent extends Component {
         <div>
           <canvas ref="canvas2d"
                   width={640} height={425} style={{border: '1px solid black'}}
-                  onClick={this.handleClick2D.bind(this)} 
-                  onMouseMove={this.handleOnMouseMove.bind(this)}/>
+                  onMouseDown={this.handleOnMouseDown2D.bind(this)} 
+                  onMouseMove={this.handleOnMouseMove.bind(this)}
+                  onMouseUp={this.handleOnMouseUp.bind(this)}/>
           <canvas ref="canvas3d"
                   width={640} height={425} style={{border: '1px solid black'}}
                    />
         </div>
         <div>
-          <BondButton switchCurAction={this.switchCurAction}/>
           <PeriodicTablePopup setCurAtom={this.setCurAtom}
                               switchCurAction={this.switchCurAction}/>
+          <BondButton switchCurAction={this.switchCurAction}/>
+          <SelectButton switchCurAction={this.switchCurAction}/>
         </div>
       </div>
     );
