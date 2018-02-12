@@ -22,6 +22,7 @@ class CanvasComponent extends Component {
     this.curBondType = 1;
     this.curSelected = null;
     this.curMoving = null;
+    this.curMouseOver = null;
   };
 
   setCurAtom = (symbol, name, atomicRadius) => {
@@ -35,7 +36,17 @@ class CanvasComponent extends Component {
       default: ;
     }
     this.curAction.action = action;
+    this.curSelected = null;
+    this.curMoving = null;
   };
+
+  // Calls drawScene2D() with the context as a parameter
+  drawCanvas2D(){ 
+    const canvas2d = this.refs.canvas2d;
+    const context2d = canvas2d.getContext('2d');
+    this.drawScene2D(context2d);
+
+  }
 
   // Clears the 2d Canvas and calls drawAtoms2D
   drawScene2D(context2d) {
@@ -67,11 +78,22 @@ class CanvasComponent extends Component {
     var atoms = this.atoms;
     for (var i = 0; i < atoms.length; i++) {
         var atom = atoms[i];
+        if (this.curSelected == i || (this.curMouseOver == i && this.curMoving == null && this.curAction.action == "select")) {
+          context2d.fillStyle = "lightgreen";
+        } else if (this.curMouseOver == i) {
+          context2d.fillStyle = "#c82124"; //red
+        } else {
+          context2d.fillStyle = "lightgrey";
+        }
+        context2d.beginPath();
+        context2d.arc(atom.location.x,atom.location.y,30/2,0,Math.PI*2,true);
+        context2d.closePath();
+        context2d.fill();
+        context2d.fillStyle = "black";
         context2d.font = 'normal bold 20px sans-serif'; 
         context2d.textAlign = 'center';
         context2d.textBaseline = 'middle';
         context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);
-
     }
   }
 
@@ -91,7 +113,6 @@ class CanvasComponent extends Component {
     }
     if(this.curAction.action != "select") {
       this.curMoving = null;
-      this.curSelected = null;
     }
   }
 
@@ -117,7 +138,9 @@ class CanvasComponent extends Component {
     if(index != -1 ) {
       if(this.curBond == null ){
         this.curBond = new Bond(atoms[index], this.curBondType);
+        this.curSelected = index;
       } else {
+        this.curSelected = null;
         this.tmpBond = null;
         this.curBond.atom2 = atoms[index];
         this.curBond.atom1.bonds.push(this.curBond);
@@ -162,17 +185,14 @@ class CanvasComponent extends Component {
     if(this.curBond != null) {
       this.tmpBond = new Bond(this.curBond.atom1, this.curBondType);
       this.tmpBond.atom2 = new Atom(new Coord(x,y,0),null,null,null,null);
-      this.drawCanvas2D();
     }
   }
 
-  handleOnMouseMoveSelect(x, y) {
+  handleOnMouseMoveSelect(x, y, index) {
     if(this.curMoving != null) {
-      var index = this.getIndexOfAtomAtLocation(x,y);
       if (index == -1 || index == this.curMoving) {
         this.atoms[this.curMoving].location.x = x;
         this.atoms[this.curMoving].location.y = y;
-        this.drawCanvas2D();
       }
     }
   }
@@ -180,46 +200,58 @@ class CanvasComponent extends Component {
   handleOnMouseMove(ev){
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
+    var index = this.getIndexOfAtomAtLocation(x, y);
+    this.curMouseOver = index;
     switch (this.curAction.action) {
       case "atom":
         break;
       case "bond":
-        this.handleOnMouseMoveBond(x,y);
+        this.handleOnMouseMoveBond(x, y);
         break;
       case "select":
-        this.handleOnMouseMoveSelect(x,y);
+        this.handleOnMouseMoveSelect(x, y, index);
         break;
       default:
         console.log("Unsupported Action: " + this.curAction.action);
     }
+    this.drawCanvas2D();
   }
 
-  handleOnMouseUpSelect(x,y) {
+  handleOnMouseUpSelect(x, y) {
     this.curMoving = null;
+  }
+
+  handleOnMouseUpBond(x, y) {
+    var index = this.getIndexOfAtomAtLocation(x, y);
+    var atoms = this.atoms;
+    if(index != -1 && this.curBond != null) {
+      this.tmpBond = null;
+      this.curBond.atom2 = atoms[index];
+      this.curBond.atom1.bonds.push(this.curBond);
+      this.curBond.atom2.bonds.push(this.curBond);
+      this.bonds.push(this.curBond);
+      this.curBond = null;
+      this.curSelected = null;
+      this.drawCanvas2D();
+    }
   }
 
   handleOnMouseUp(ev){
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
+    this.curMouseOver = null;
     switch (this.curAction.action) {
       case "atom":
         break;
       case "bond":
+        this.handleOnMouseUpBond(x, y);
         break;
       case "select":
-        this.handleOnMouseUpSelect(x,y);
+        this.handleOnMouseUpSelect(x, y);
         break;
       default:
         console.log("Unsupported Action: " + this.curAction.action);
     }
-  }
-
-  // Calls drawScene2D() with the context as a parameter
-  drawCanvas2D(){ 
-    const canvas2d = this.refs.canvas2d;
-    const context2d = canvas2d.getContext('2d');
-    this.drawScene2D(context2d);
-
   }
 
   // Only sets up webgl right now.
