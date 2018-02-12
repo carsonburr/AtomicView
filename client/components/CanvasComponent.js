@@ -50,6 +50,13 @@ class CanvasComponent extends Component {
       context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
       context2d.stroke();
     }
+    if (this.tmpBond != null) {
+      var bond = this.tmpBond;
+      context2d.beginPath();
+      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
+      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
+      context2d.stroke();
+    }
   }
 
   // Draws all the atoms.
@@ -102,6 +109,7 @@ class CanvasComponent extends Component {
       if(this.curBond == null ){
         this.curBond = new Bond(atoms[index], this.curBondType);
       } else {
+        this.tmpBond = null;
         this.curBond.atom2 = atoms[index];
         this.curBond.atom1.bonds.push(this.curBond);
         this.curBond.atom2.bonds.push(this.curBond);
@@ -133,6 +141,30 @@ class CanvasComponent extends Component {
     // only drawing 2d stuff.
     // requestAnimationFrame(this.drawCanvas);
     this.drawCanvas2D();
+  }
+
+  handleOnMouseMoveBond(x, y) {
+    if(this.curBond != null) {
+      this.tmpBond = new Bond(this.curBond.atom1, this.curBondType);
+      this.tmpBond.atom2 = new Atom(new Coord(x,y,0),null,null,null,null);
+      this.drawCanvas2D();
+    }
+  }
+
+  handleOnMouseMove(ev){
+    var x = ev.clientX; // x coordinate of a mouse pointer
+    var y = ev.clientY; // y coordinate of a mouse pointer
+    switch (this.curAction.action) {
+      case "atom":
+        break;
+      case "bond":
+        this.handleOnMouseMoveBond(x,y);
+        break;
+      case "select":
+        break;
+      default:
+        console.log("Unsupported Action: " + this.curAction.action);
+    }
   }
 
   // Calls drawScene2D() with the context as a parameter
@@ -185,7 +217,8 @@ class CanvasComponent extends Component {
         <div>
           <canvas ref="canvas2d"
                   width={640} height={425} style={{border: '1px solid black'}}
-                  onClick={this.handleClick2D.bind(this)} />
+                  onClick={this.handleClick2D.bind(this)} 
+                  onMouseMove={this.handleOnMouseMove.bind(this)}/>
           <canvas ref="canvas3d"
                   width={640} height={425} style={{border: '1px solid black'}}
                    />
