@@ -78,7 +78,9 @@ class CanvasComponent extends Component {
     var atoms = this.atoms;
     for (var i = 0; i < atoms.length; i++) {
         var atom = atoms[i];
-        if (this.curSelected == i || (this.curMouseOver == i && this.curMoving == null && this.curAction.action == "select")) {
+        if (this.curSelected == i || 
+           (this.curMouseOver == i && this.curMoving == null && this.curAction.action == "select") || 
+           (this.curMouseOver == i && this.curAction.action == "bond")) {
           context2d.fillStyle = "lightgreen";
         } else if (this.curMouseOver == i) {
           context2d.fillStyle = "#c82124"; //red
@@ -224,7 +226,7 @@ class CanvasComponent extends Component {
   handleOnMouseUpBond(x, y) {
     var index = this.getIndexOfAtomAtLocation(x, y);
     var atoms = this.atoms;
-    if(index != -1 && this.curBond != null) {
+    if(index != -1 && this.curBond != null && index != this.curSelected) {
       this.tmpBond = null;
       this.curBond.atom2 = atoms[index];
       this.curBond.atom1.bonds.push(this.curBond);
