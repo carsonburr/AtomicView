@@ -19,6 +19,7 @@ class PeriodicTablePopup extends React.Component {
   handleClick = (atom) => {
     this.toggleModal();
     this.props.setCurAtom(atom.symbol, atom.name, atom.radius);
+    this.props.switchCurAction("atom");
   };
 
   render() {
@@ -97,7 +98,8 @@ class PeriodicTablePopup extends React.Component {
 }
 
 PeriodicTablePopup.propTypes = {
-  setCurAtom: PropTypes.func.isRequired
+  setCurAtom: PropTypes.func.isRequired,
+  switchCurAction: PropTypes.func.isRequired
 };
 
 
