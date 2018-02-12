@@ -89,12 +89,19 @@ class CanvasComponent extends Component {
       default:
         console.log("Unsupported Action: " + this.curAction.action);
     }
+    if(this.curAction.action != "select") {
+      this.curMoving = null;
+      this.curSelected = null;
+    }
   }
 
   getIndexOfAtomAtLocation(x, y) {
     var atoms = this.atoms;
     // TODO: Might want to use a hash map for this.
     for (var i = 0; i < atoms.length; i++) {
+        if(i == this.curMoving) {
+          continue;
+        }
         var atom = atoms[i];
         if( (Math.abs(atom.location.x - x) < 30) && (Math.abs(atom.location.y - y) < 30) ) {
           return i;
@@ -161,9 +168,12 @@ class CanvasComponent extends Component {
 
   handleOnMouseMoveSelect(x, y) {
     if(this.curMoving != null) {
-      this.atoms[this.curMoving].location.x = x;
-      this.atoms[this.curMoving].location.y = y;
-      this.drawCanvas2D();
+      var index = this.getIndexOfAtomAtLocation(x,y);
+      if (index == -1 || index == this.curMoving) {
+        this.atoms[this.curMoving].location.x = x;
+        this.atoms[this.curMoving].location.y = y;
+        this.drawCanvas2D();
+      }
     }
   }
 
