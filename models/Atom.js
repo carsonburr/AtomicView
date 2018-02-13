@@ -125,10 +125,11 @@ export function RGBA(r,g,b,a) {
 
 export function Atom(location, atomicSymbol, elementName, atomicRadius, molecule){
   this.location = location;
+  this.location3D = null;
   this.atomicSymbol = atomicSymbol;
   this.elementName = elementName;
   this.atomicRadius = atomicRadius;
   this.isSelected = false;
   this.molecule = molecule;
-
+  this.bonds = [];
 }
