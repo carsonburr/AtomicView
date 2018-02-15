@@ -127,6 +127,8 @@ class CanvasComponent extends Component {
            (this.curMouseOver == i && this.curMoving == null && this.curAction.action == "select") || 
            (this.curMouseOver == i && this.curAction.action == "bond")) {
           context2d.fillStyle = "lightgreen";
+        } else if (this.curAction.action == "atom" && this.curMouseOver == i) {
+          context2d.fillStyle = "#ff9933";
         } else if (this.curMouseOver == i) {
           context2d.fillStyle = "#c82124"; //red
         } else {
