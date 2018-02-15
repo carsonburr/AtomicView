@@ -23,11 +23,15 @@ class CanvasComponent extends Component {
     this.curSelected = null;
     this.curMoving = null;
     this.curMouseOver = null;
-  };
+  }
 
   setCurAtom = (symbol, name, atomicRadius) => {
     this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,null);
-  };
+  }
+
+  setCurBondType = (bondType) => {
+    this.curBondType = bondType;
+  }
 
   switchCurAction = (action) => {
     switch (action) {
@@ -38,7 +42,7 @@ class CanvasComponent extends Component {
     this.curAction.action = action;
     this.curSelected = null;
     this.curMoving = null;
-  };
+  }
 
   // Calls drawScene2D() with the context as a parameter
   drawCanvas2D(){ 
@@ -55,21 +59,62 @@ class CanvasComponent extends Component {
     this.drawBonds2D(context2d);
   }
 
+  drawBond2D(context2d, bond) {
+    if(bond.bondType == 1) {
+      context2d.beginPath();
+      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
+      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
+      context2d.stroke();
+    } else {
+      var x1 = bond.atom1.location.x;
+      var y1 = bond.atom1.location.y;
+      var x2 = bond.atom2.location.x;
+      var y2 = bond.atom2.location.y;
+      var slope = - 1.0/(1.0 * (y1 - y2)/(x1 - x2));
+      var displacementX, displacementY;
+      if (x1-x2 == 0) {
+        displacementX = 4;
+        displacementY = 0;
+      } else {
+        var angle = Math.atan2(y1-y2, x1-x2) + Math.PI / 2;
+        displacementX = Math.cos(angle) * 4;
+        displacementY = Math.sin(angle) * 4;
+      }
+      if (bond.bondType == 2) {
+        context2d.beginPath();
+        context2d.moveTo(x1+displacementX, y1+displacementY);
+        context2d.lineTo(x2+displacementX, y2+displacementY);
+        context2d.stroke();
+        context2d.beginPath();
+        context2d.moveTo(x1-displacementX, y1-displacementY);
+        context2d.lineTo(x2-displacementX, y2-displacementY);
+        context2d.stroke();
+      } else if (bond.bondType == 3) {
+        displacementX *= 5/4;
+        displacementY *= 5/4;
+        context2d.beginPath();
+        context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
+        context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
+        context2d.stroke();
+        context2d.beginPath();
+        context2d.moveTo(x1+displacementX, y1+displacementY);
+        context2d.lineTo(x2+displacementX, y2+displacementY);
+        context2d.stroke();
+        context2d.beginPath();
+        context2d.moveTo(x1-displacementX, y1-displacementY);
+        context2d.lineTo(x2-displacementX, y2-displacementY);
+        context2d.stroke();
+      }
+    } 
+  }
+
   drawBonds2D(context2d) {
     var bonds = this.bonds;
     for( var i = 0; i < bonds.length; i++){
-      var bond = bonds[i];
-      context2d.beginPath();
-      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-      context2d.stroke();
+      this.drawBond2D(context2d, bonds[i]);
     }
     if (this.tmpBond != null) {
-      var bond = this.tmpBond;
-      context2d.beginPath();
-      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-      context2d.stroke();
+      this.drawBond2D(context2d, this.tmpBond);
     }
   }
 
@@ -133,6 +178,36 @@ class CanvasComponent extends Component {
     return -1;
   }
 
+  addNewBond(index) {
+    var bonds = this.bonds;
+    var notAdded = true;
+    this.curSelected = null;
+    this.tmpBond = null;
+    this.curBond.atom2 = this.atoms[index];
+    this.curBond.atom1.bonds.push(this.curBond);
+    this.curBond.atom2.bonds.push(this.curBond);
+    for (var i = 0; i<bonds.length; i++) {
+      var atom1 = bonds[i].atom1;
+      var atom2 = bonds[i].atom2;
+      var curAtom1 = this.curBond.atom1;
+      var curAtom2 = this.curBond.atom2;
+      if ( (atom1 == curAtom1 && 
+            atom2 == curAtom2) ||
+           (atom2 == curAtom1 &&
+            atom1 == curAtom2) ) {
+        bonds[i].bondType = this.curBond.bondType;
+        notAdded = false;
+        break;
+      }
+    }
+    if(notAdded){
+      this.bonds.push(this.curBond);
+    }
+    this.curBond = null;
+    this.drawCanvas2D();
+
+  }
+
   // Handles left click for bonds
   handleLeftOnMouseDown2dBond(x, y) {
     var index = this.getIndexOfAtomAtLocation(x, y);
@@ -142,14 +217,7 @@ class CanvasComponent extends Component {
         this.curBond = new Bond(atoms[index], this.curBondType);
         this.curSelected = index;
       } else {
-        this.curSelected = null;
-        this.tmpBond = null;
-        this.curBond.atom2 = atoms[index];
-        this.curBond.atom1.bonds.push(this.curBond);
-        this.curBond.atom2.bonds.push(this.curBond);
-        this.bonds.push(this.curBond);
-        this.curBond = null;
-        this.drawCanvas2D();
+        this.addNewBond(index);
       }
     }
   }
@@ -225,16 +293,8 @@ class CanvasComponent extends Component {
 
   handleOnMouseUpBond(x, y) {
     var index = this.getIndexOfAtomAtLocation(x, y);
-    var atoms = this.atoms;
     if(index != -1 && this.curBond != null && index != this.curSelected) {
-      this.tmpBond = null;
-      this.curBond.atom2 = atoms[index];
-      this.curBond.atom1.bonds.push(this.curBond);
-      this.curBond.atom2.bonds.push(this.curBond);
-      this.bonds.push(this.curBond);
-      this.curBond = null;
-      this.curSelected = null;
-      this.drawCanvas2D();
+      this.addNewBond(index);
     }
   }
 
@@ -308,7 +368,8 @@ class CanvasComponent extends Component {
         <div>
           <PeriodicTablePopup setCurAtom={this.setCurAtom}
                               switchCurAction={this.switchCurAction}/>
-          <BondButton switchCurAction={this.switchCurAction}/>
+          <BondButton switchCurAction={this.switchCurAction}
+                      setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
         </div>
       </div>
