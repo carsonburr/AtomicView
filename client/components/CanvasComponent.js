@@ -23,7 +23,14 @@ class CanvasComponent extends Component {
     this.curSelected = null;
     this.curMoving = null;
     this.curMouseOver = null;
+
+    //initial/default state of canvas size
+    this.state = {
+      width:640,
+      height: 425
+    }
   };
+
 
   setCurAtom = (symbol, name, atomicRadius) => {
     this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,null);
@@ -291,18 +298,41 @@ class CanvasComponent extends Component {
     }
   }
 
+  //update canvas sizes when needed
+  updateDimensions() {
+    if(window.innerWidth < 690) {
+      this.setState({ width: 320, height: 300 });
+    } else {
+      let update_width  = (window.innerWidth/2)-30;
+      let update_height = Math.round(update_width/1.5);
+      this.setState({ width: update_width, height: update_height });
+    }
+  }
+
+  //event listener for canvas resizing
+  componentDidMount() {
+    this.updateDimensions();
+    window.addEventListener("resize", this.updateDimensions.bind(this));
+  }
+
+  //unmounting component canvas
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
+  }
+
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
     return (
       <div className="CanvasComponent">
         <div>
           <canvas ref="canvas2d"
-                  width={640} height={425} style={{border: '1px solid black'}}
+                  width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
+                  //width={640} height=425 style={{border: '1px solid black'}}
                   onMouseDown={this.handleOnMouseDown2D.bind(this)} 
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>
           <canvas ref="canvas3d"
-                  width={640} height={425} style={{border: '1px solid black'}}
+                  width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
                    />
         </div>
         <div>
