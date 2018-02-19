@@ -13,27 +13,31 @@ class CanvasComponent extends Component {
 
   constructor() {
     super();
-    this.atoms = []; 
-    this.bonds = [];
+    this.atoms = new Set();
+    this.bonds = new Set();
     this.curAction = {action : "atom"}; // Can currently only be atom or bond
     // Current atom to be drawn.
-    this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, null)};
+    this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, null, new Set())};
     this.curBond = null;
     this.curBondType = 1;
     this.curSelected = null;
     this.curMoving = null;
     this.curMouseOver = null;
+    // Keeps track of changes for use in reversions
+    this.changes = [];
 
     //initial/default state of canvas size
     this.state = {
       width:640,
       height: 425
     }
+
+    this.revertChangein2D = this.revertChangein2D.bind(this);
   };
 
 
   setCurAtom = (symbol, name, atomicRadius) => {
-    this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,null);
+    this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,null, new Set());
   }
 
   setCurBondType = (bondType) => {
@@ -52,7 +56,7 @@ class CanvasComponent extends Component {
   }
 
   // Calls drawScene2D() with the context as a parameter
-  drawCanvas2D(){ 
+  drawCanvas2D(){
     const canvas2d = this.refs.canvas2d;
     const context2d = canvas2d.getContext('2d');
     this.drawScene2D(context2d);
@@ -112,13 +116,13 @@ class CanvasComponent extends Component {
         context2d.lineTo(x2-displacementX, y2-displacementY);
         context2d.stroke();
       }
-    } 
+    }
   }
 
   drawBonds2D(context2d) {
     var bonds = this.bonds;
-    for( var i = 0; i < bonds.length; i++){
-      this.drawBond2D(context2d, bonds[i]);
+    for( let bond of bonds ){
+      this.drawBond2D(context2d, bond);
     }
     if (this.tmpBond != null) {
       this.drawBond2D(context2d, this.tmpBond);
@@ -128,15 +132,15 @@ class CanvasComponent extends Component {
   // Draws all the atoms.
   drawAtoms2D(context2d) {
     var atoms = this.atoms;
-    for (var i = 0; i < atoms.length; i++) {
-        var atom = atoms[i];
-        if (this.curSelected == i || 
-           (this.curMouseOver == i && this.curMoving == null && this.curAction.action == "select") || 
-           (this.curMouseOver == i && this.curAction.action == "bond")) {
+    for (let atom of atoms) {
+
+        if (atom.equals(this.curSelected) ||
+           (atom.equals(this.curMouseOver) && this.curMoving == null && this.curAction.action == "select") ||
+           (atom.equals(this.curMouseOver) && this.curAction.action == "bond")) {
           context2d.fillStyle = "lightgreen";
-        } else if (this.curAction.action == "atom" && this.curMouseOver == i) {
+        } else if (this.curAction.action == "atom" && atom.equals(this.curMouseOver)) {
           context2d.fillStyle = "#ff9933";
-        } else if (this.curMouseOver == i) {
+        } else if (atom.equals(this.curMouseOver)) {
           context2d.fillStyle = "#c82124"; //red
         } else {
           context2d.fillStyle = "lightgrey";
@@ -146,7 +150,7 @@ class CanvasComponent extends Component {
         context2d.closePath();
         context2d.fill();
         context2d.fillStyle = "black";
-        context2d.font = 'normal bold 20px sans-serif'; 
+        context2d.font = 'normal bold 20px sans-serif';
         context2d.textAlign = 'center';
         context2d.textBaseline = 'middle';
         context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);
@@ -172,71 +176,74 @@ class CanvasComponent extends Component {
     }
   }
 
-  getIndexOfAtomAtLocation(x, y) {
+  getAtomAtLocation(x, y) {
     var atoms = this.atoms;
     // TODO: Might want to use a hash map for this.
-    for (var i = 0; i < atoms.length; i++) {
-        if(i == this.curMoving) {
+    for (let atom of atoms) {
+        if(atom.equals(this.curMoving)) {
           continue;
         }
-        var atom = atoms[i];
         if( (Math.abs(atom.location.x - x) < 30) && (Math.abs(atom.location.y - y) < 30) ) {
-          return i;
+          return atom;
         }
     }
-    return -1;
+    return null;
   }
 
-  addNewBond(index) {
+  addNewBond(atom) {
     var bonds = this.bonds;
     var notAdded = true;
     this.curSelected = null;
     this.tmpBond = null;
-    this.curBond.atom2 = this.atoms[index];
-    this.curBond.atom1.bonds.push(this.curBond);
-    this.curBond.atom2.bonds.push(this.curBond);
-    for (var i = 0; i<bonds.length; i++) {
-      var atom1 = bonds[i].atom1;
-      var atom2 = bonds[i].atom2;
+    this.curBond.atom2 = atom;
+    this.curBond.atom1.bonds.add(this.curBond);
+    this.curBond.atom2.bonds.add(this.curBond);
+    for ( let bond of bonds ) {
+      var atom1 = bond.atom1;
+      var atom2 = bond.atom2;
       var curAtom1 = this.curBond.atom1;
       var curAtom2 = this.curBond.atom2;
-      if ( (atom1 == curAtom1 && 
-            atom2 == curAtom2) ||
-           (atom2 == curAtom1 &&
-            atom1 == curAtom2) ) {
-        bonds[i].bondType = this.curBond.bondType;
+      if ( (atom1.equals(curAtom1) &&
+            atom2.equals(curAtom2)) ||
+           (atom2.equals(curAtom1) &&
+            atom1.equals(curAtom2)) ) {
+        bond.bondType = this.curBond.bondType;
         notAdded = false;
         break;
       }
     }
     if(notAdded){
-      this.bonds.push(this.curBond);
+      this.bonds.add(this.curBond);
+      this.changes.push({type:"bond", payLoad:this.curBond, atomOverwritten:null});
     }
+
     this.curBond = null;
     this.drawCanvas2D();
-
   }
 
   // Handles left click for bonds
   handleLeftOnMouseDown2dBond(x, y) {
-    var index = this.getIndexOfAtomAtLocation(x, y);
-    var atoms = this.atoms;
-    if(index != -1 ) {
+    var atom = this.getAtomAtLocation(x, y);
+    // If atom exists at this location
+    if(atom != null ) {
+      // If this is the first of the two atoms to be bonded
       if(this.curBond == null ){
-        this.curBond = new Bond(atoms[index], this.curBondType);
-        this.curSelected = index;
-      } else {
-        this.addNewBond(index);
+        this.curBond = new Bond(atom, this.curBondType);
+        this.curSelected = atom;
+      }
+       else {
+        this.addNewBond(atom);
       }
     }
   }
 
   // Handles left click for selections
   handleLeftOnMouseDown2DSelect(x, y) {
-    var index = this.getIndexOfAtomAtLocation(x, y);
-    if (index != -1) {
-      this.curSelected = index;
-      this.curMoving = index;
+    var atom = this.getAtomAtLocation(x, y);
+    // If atom exists at this location
+    if (atom != null) {
+      this.curSelected = atom;
+      this.curMoving = atom;
     } else {
       this.curSelected = null;
     }
@@ -246,14 +253,33 @@ class CanvasComponent extends Component {
   handleLeftOnMouseDown2DAtom(x, y) {
     var atoms = this.atoms;
     var curAtom = this.curAtom;
-    var index = this.getIndexOfAtomAtLocation(x, y);
-    if (index !== -1) {
-          atoms[index] = new Atom(atoms[index].location, curAtom.atom.atomicSymbol,
-            curAtom.atom.elementName, curAtom.atom.atomicRadius, null);
-    } else {
-      atoms.push(new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
-        curAtom.atom.elementName, curAtom.atom.atomicRadius, null));
+    var atom = this.getAtomAtLocation(x, y);
+    // if atom already exists in this spot then overwrite it (and maintain bonds)
+        if (atom != null) {
+          var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
+             curAtom.atom.elementName, curAtom.atom.atomicRadius, null, atom.bonds);
+          this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:atom});
+
+          // Change the overwritten atoms bonds to be to the new atom instead
+          for( let bond of atom.bonds ){
+            if(bond.atom1.equals(atom)){
+              bond.atom1 = newAtom;
+            }
+            else if(bond.atom2.equals(atom)){
+              bond.atom2 = newAtom;
+            }
+          }
+          atoms.delete(atom);
+          atoms.add(newAtom);
     }
+    // If atom does not exist in this spot then create a new one
+    else {
+      var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
+        curAtom.atom.elementName, curAtom.atom.atomicRadius, null, new Set())
+      atoms.add(newAtom);
+      this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:null});
+    }
+
     // TODO: Possibly use requestAnimitionFrame. Might not be needed though as we're
     // only drawing 2d stuff.
     // requestAnimationFrame(this.drawCanvas);
@@ -267,11 +293,11 @@ class CanvasComponent extends Component {
     }
   }
 
-  handleOnMouseMoveSelect(x, y, index) {
+  handleOnMouseMoveSelect(x, y, atom) {
     if(this.curMoving != null) {
-      if (index == -1 || index == this.curMoving) {
-        this.atoms[this.curMoving].location.x = x;
-        this.atoms[this.curMoving].location.y = y;
+      if (atom == null || atom.equals(this.curMoving)) {
+        this.curMoving.location.x = x;
+        this.curMoving.location.y = y;
       }
     }
   }
@@ -279,8 +305,8 @@ class CanvasComponent extends Component {
   handleOnMouseMove(ev){
     var x = ev.clientX; // x coordinate of a mouse pointer
     var y = ev.clientY; // y coordinate of a mouse pointer
-    var index = this.getIndexOfAtomAtLocation(x, y);
-    this.curMouseOver = index;
+    var atom = this.getAtomAtLocation(x, y);
+    this.curMouseOver = atom;
     switch (this.curAction.action) {
       case "atom":
         break;
@@ -288,7 +314,7 @@ class CanvasComponent extends Component {
         this.handleOnMouseMoveBond(x, y);
         break;
       case "select":
-        this.handleOnMouseMoveSelect(x, y, index);
+        this.handleOnMouseMoveSelect(x, y, atom);
         break;
       default:
         console.log("Unsupported Action: " + this.curAction.action);
@@ -301,9 +327,9 @@ class CanvasComponent extends Component {
   }
 
   handleOnMouseUpBond(x, y) {
-    var index = this.getIndexOfAtomAtLocation(x, y);
-    if(index != -1 && this.curBond != null && index != this.curSelected) {
-      this.addNewBond(index);
+    var atom = this.getAtomAtLocation(x, y);
+    if(atom != null && this.curBond != null && atom != this.curSelected) {
+      this.addNewBond(atom);
     }
   }
 
@@ -324,6 +350,43 @@ class CanvasComponent extends Component {
         console.log("Unsupported Action: " + this.curAction.action);
     }
   }
+
+  revertChangein2D(){
+    if(this.changes.length != 0){
+      var reversion = this.changes.pop();
+      switch(reversion.type){
+        case "atom":
+          var atom = reversion.payLoad;
+
+          // Reinsert the old atom if one was overwritten
+          if(reversion.atomOverwritten != null){
+            var oldAtom = reversion.atomOverwritten;
+            // Reconnect the old atom's bonds
+            for( let bond of oldAtom.bonds ){
+              if(bond.atom1.equals(atom)){
+                bond.atom1 = oldAtom;
+              }
+              else if(bond.atom2.equals(atom)){
+                bond.atom2 = oldAtom;
+              }
+            }
+            this.atoms.add(oldAtom);
+          }
+
+          this.atoms.delete(atom);
+          break;
+
+        case "bond":
+          var bond = reversion.payLoad;
+          bond.atom1.bonds.delete(bond);
+          bond.atom2.bonds.delete(bond);
+          this.bonds.delete(bond);
+          break;
+      }
+      this.drawCanvas2D();
+    }
+  }
+
 
   // Only sets up webgl right now.
   updateCanvas() {
@@ -390,7 +453,7 @@ class CanvasComponent extends Component {
           <canvas ref="canvas2d"
                   width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
                   //width={640} height=425 style={{border: '1px solid black'}}
-                  onMouseDown={this.handleOnMouseDown2D.bind(this)} 
+                  onMouseDown={this.handleOnMouseDown2D.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>
           <canvas ref="canvas3d"
@@ -403,6 +466,7 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
+          <button onClick={this.revertChangein2D}>revert</button>
         </div>
       </div>
     );

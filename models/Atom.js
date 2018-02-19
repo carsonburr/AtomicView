@@ -23,7 +23,7 @@ var transitionMetals = ['Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu',
                         'Au', 'Hg', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Cn'];
 var lanthanoids = ['La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy',
                    'Ho', 'Er', 'Tm', 'Yb', 'Lu'];
-var actinoids = ['Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 
+var actinoids = ['Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf',
                  'Es', 'Fm', 'Md', 'No', 'Lr'];
 
 //array for atomic radii in pico meters, some do not have data, 0
@@ -38,7 +38,7 @@ var atomicRadii = [[53,null,null,null,null,null,null,null,null,null,null,null,nu
                      [null,null,null,0, 247, 206, 205, 238, 231, 233, 225, 228, 226, 226, 222, 222, 217,null],
                      [null,null,null,0,0,0,0,0,0,0,0,0,0,0,0,0,0,null]];
 
- 
+
 
 
 
@@ -49,6 +49,12 @@ export function Coord(x,y,z) {
   this.x = x;
   this.y = y;
   this.z = z;
+  this.equals = function(other) {
+     return other != null
+            && other.x == this.x
+            && other.y == this.y
+            && other.z == this.z;
+  };
 }
 
 function buildTable() {
@@ -84,7 +90,7 @@ function buildTable() {
         atom.color = "#99DDCC"
       } else if (transitionMetals.includes(atom.symbol)) {
         atom.color = "#DDBBBB"
-      } else if (lanthanoids.includes(atom.symbol)) { 
+      } else if (lanthanoids.includes(atom.symbol)) {
         atom.color = "#FFBB99"
       } else if (actinoids.includes(atom.symbol)) {
         atom.color = "#EEBBDD"
@@ -123,7 +129,7 @@ export function RGBA(r,g,b,a) {
 	this.a = a;
 }
 
-export function Atom(location, atomicSymbol, elementName, atomicRadius, molecule){
+export function Atom(location, atomicSymbol, elementName, atomicRadius, molecule, bonds){
   this.location = location;
   this.location3D = null;
   this.atomicSymbol = atomicSymbol;
@@ -131,5 +137,14 @@ export function Atom(location, atomicSymbol, elementName, atomicRadius, molecule
   this.atomicRadius = atomicRadius;
   this.isSelected = false;
   this.molecule = molecule;
-  this.bonds = [];
+  this.bonds = bonds;
+  this.equals = function(other) {
+     return    other != null
+            && this.location.equals(other.location)
+            && this.atomicSymbol == other.atomicSymbol
+            && this.elementName  == other.elementName
+            && this.atomicRadius == other.atomicRadius
+            && this.isSelected   == other.isSelected
+            && this.molecule     == other.molecule;
+  };
 }

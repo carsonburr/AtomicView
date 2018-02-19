@@ -22,7 +22,7 @@ class BondButton extends React.Component {
     return (
       <div className="BondButton">
           <button onClick={this.handleClickSingle.bind(this)}>
-            Signle Bond
+            Single Bond
           </button>
           <button onClick={this.handleClickDouble.bind(this)}>
             Double Bond
