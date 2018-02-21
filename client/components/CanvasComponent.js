@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Atom, Coord, RGBA} from '../../models/Atom.js';
 import {Bond} from '../../models/Bond.js';
 import WebGLUtils from '../../webgl_lib/webgl-utils.js';
+import CuonUtils from '../../webgl_lib/cuon-utils.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import SelectButton from './SelectButton';
@@ -23,6 +24,8 @@ class CanvasComponent extends Component {
     this.curSelected = null;
     this.curMoving = null;
     this.curMouseOver = null;
+    this.canvas3d = null;
+    this.gl = null;
     // Keeps track of changes for use in reversions
     this.changes = [];
 
@@ -33,6 +36,7 @@ class CanvasComponent extends Component {
     }
 
     this.revertChangein2D = this.revertChangein2D.bind(this);
+    this.draw3D = this.draw3D.bind(this);
   };
 
 
@@ -390,13 +394,13 @@ class CanvasComponent extends Component {
 
   // Only sets up webgl right now.
   updateCanvas() {
-    const canvas3d = this.refs.canvas3d;
-    const gl = WebGLUtils.setupWebGL(canvas3d,{preserveDrawingBuffer: true});
+    this.canvas3d = this.refs.canvas3d;
+    this.gl = WebGLUtils.setupWebGL(this.canvas3d,{preserveDrawingBuffer: true});
     // Specify the color for clearing <canvas>
-    gl.clearColor(255.0, 255.0, 255.0, 1.0);
-    gl.enable(gl.DEPTH_TEST | gl.DEPTH_BUFFER_BIT);
+    this.gl.clearColor(255.0, 255.0, 255.0, 1.0);
+    this.gl.enable(this.gl.DEPTH_TEST | this.gl.DEPTH_BUFFER_BIT);
     // Clear <canvas>
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.STENCIL_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
 
   }
 
@@ -423,7 +427,52 @@ class CanvasComponent extends Component {
     }
   }
 
-  //update canvas sizes when needed
+
+  
+  draw3D() {
+    var canvas = this.canvas3d;
+    var gl = this.gl;
+    if (!gl) {
+      console.log('Failed to get the rendering context for WebGL');
+      return;
+    }
+
+    // Initialize shaders
+    if (!CuonUtils.initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+        console.log('Failed to intialize shaders.');
+        return;
+    }
+
+    // Get the storage location of a_Position
+    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+    if (a_Position < 0) {
+      console.log('Failed to get the storage location of a_Position');
+      return;
+    }
+
+    // Disable dialog box on right click
+    canvas.addEventListener('contextmenu', function(e) {
+        if (e.button === 2) {
+          e.preventDefault();
+          return false;
+        }
+    }, false);
+
+    // Register function (event handler) to be called on a mouse press
+    canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
+
+    // Register function (event handler) to be called on a mouse move
+    canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
+
+    // Specify the color for clearing <canvas>
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+
+    // Clear <canvas>
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+
+/*  //update canvas sizes when needed
   updateDimensions() {
     if(window.innerWidth < 690) {
       this.setState({ width: 320, height: 300 });
@@ -439,7 +488,7 @@ class CanvasComponent extends Component {
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
-
+*/
   //unmounting component canvas
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
@@ -467,12 +516,26 @@ class CanvasComponent extends Component {
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
           <button onClick={this.revertChangein2D}>revert</button>
+          <button onClick={this.draw3D}>Draw</button>
         </div>
       </div>
     );
   }
 }
 
+  // Vertex shader program
+  var VSHADER_SOURCE =
+    'attribute vec4 a_Position;\n' +
+    'void main() {\n' +
+    '  gl_Position = a_Position;\n' +
+    '  gl_PointSize = 10.0;\n' +
+    '}\n';
+  
+  // Fragment shader program
+  var FSHADER_SOURCE =
+    'void main() {\n' +
+    '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+    '}\n';
 
 
 export default CanvasComponent;
