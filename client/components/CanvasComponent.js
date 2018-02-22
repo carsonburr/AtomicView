@@ -3,6 +3,7 @@ import {Atom, Coord, RGBA} from '../../models/Atom.js';
 import {Bond} from '../../models/Bond.js';
 import WebGLUtils from '../../webgl_lib/webgl-utils.js';
 import CuonUtils from '../../webgl_lib/cuon-utils.js';
+import CuonMatrix from '../../webgl_lib/cuon-matrix.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import SelectButton from './SelectButton';
@@ -396,6 +397,11 @@ class CanvasComponent extends Component {
   updateCanvas() {
     this.canvas3d = this.refs.canvas3d;
     this.gl = WebGLUtils.setupWebGL(this.canvas3d,{preserveDrawingBuffer: true});
+    // Initialize shaders
+    if (!CuonUtils.initShaders(this.gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+      console.log('Failed to intialize shaders.');
+      return;
+    }
     // Specify the color for clearing <canvas>
     this.gl.clearColor(255.0, 255.0, 255.0, 1.0);
     this.gl.enable(this.gl.DEPTH_TEST | this.gl.DEPTH_BUFFER_BIT);
@@ -428,48 +434,157 @@ class CanvasComponent extends Component {
   }
 
 
+  initArrayBuffer(gl, attribute, data, type, num) {
+     // Create a buffer object
+     var buffer = gl.createBuffer();
+     if (!buffer) {
+       console.log('Failed to create the buffer object');
+       return false;
+     }
+     // Write date into the buffer object
+     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+     // Assign the buffer object to the attribute variable
+     var a_attribute = gl.getAttribLocation(gl.program, attribute);
+     if (a_attribute < 0) {
+       console.log('Failed to get the storage location of ' + attribute);
+       return false;
+     }
+     gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+     // Enable the assignment of the buffer object to the attribute variable
+     gl.enableVertexAttribArray(a_attribute);
+     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+     return true;
+  }   
+
   
   draw3D() {
     var canvas = this.canvas3d;
+    var atoms = this.atoms;
     var gl = this.gl;
     if (!gl) {
       console.log('Failed to get the rendering context for WebGL');
       return;
     }
-
-    // Initialize shaders
-    if (!CuonUtils.initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
-        console.log('Failed to intialize shaders.');
-        return;
-    }
-
-    // Get the storage location of a_Position
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-      console.log('Failed to get the storage location of a_Position');
-      return;
-    }
-
+    var SPHERE_DIV = 13;
+    var positions = [];
+    var indices = [];
+    var colors = [];
+    var viewMatrix; //The view matrix for projection view
+    var projMatrix; //The projection matrix
+    var Ntransform = new CuonMatrix.Matrix4();
+    var transformMatrix = new CuonMatrix.Matrix4();
+    // Get the storage locations of uniform variables
+	  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+	  var u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+	  var u_TransformMatrix = gl.getUniformLocation(gl.program, 'u_TransformMatrix');
+    var u_ViewVector = gl.getUniformLocation(gl.program, 'u_ViewVector');
+  	var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
+    var	u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
+	  var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
+	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
+	  if (!u_MvpMatrix || !u_NormalMatrix || !u_TransformMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) { 
+		console.log('Failed to get the storage location');
+		return;
+	  }
+	  // Set the light colors
+	  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
+  	// Set the light direction (in the world coordinate)
+    var lightPosition = new CuonMatrix.Vector3([400.0, 400.0, 100]);
+    gl.uniform3fv(u_LightPosition, lightPosition.elements);
+  	// Set the ambient light
+  	gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
+  	// Set the view vector
+  	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
+  	//Initialize glossiness
+  	gl.uniform1f(u_N, 10.0);
+  	//Initialize specluar light
+  	gl.uniform3f(u_SpecularLight, 1.0, 1.0, 1.0);
+  	//Set initial orthographic view
+  	projMatrix = new CuonMatrix.Matrix4();
+  	projMatrix.setOrtho(0, 640, 0, 425, -500, 500);
+  	viewMatrix = new CuonMatrix.Matrix4();
+  	viewMatrix.setIdentity();
+  	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+  	Ntransform.setIdentity();
+  	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
+  	transformMatrix.setIdentity();
+  	gl.uniformMatrix4fv(u_TransformMatrix, false, transformMatrix.elements);
     // Disable dialog box on right click
     canvas.addEventListener('contextmenu', function(e) {
-        if (e.button === 2) {
-          e.preventDefault();
-          return false;
+      if (e.button === 2) {
+        e.preventDefault();
+        return false;
         }
     }, false);
-
     // Register function (event handler) to be called on a mouse press
-    canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
-
+    //canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
     // Register function (event handler) to be called on a mouse move
-    canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
-
-    // Specify the color for clearing <canvas>
+    //canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
+    // Clearing canvas
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
-
-    // Clear <canvas>
-    gl.clear(gl.COLOR_BUFFER_BIT);
-}
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+    // Generate spheres for each atom
+    var n = 0;
+    for (let atom of atoms) {
+      var i, ai, si, ci;
+      var j, aj, sj, cj;
+      var p1, p2;
+      // Generate coordinates
+      for (j = 0; j <= SPHERE_DIV; j++) {
+        aj = j * Math.PI / SPHERE_DIV;
+        sj = Math.sin(aj);
+        cj = Math.cos(aj);
+        for (i = 0; i <= SPHERE_DIV; i++) {
+          ai = i * 2 * Math.PI / SPHERE_DIV;
+          si = Math.sin(ai);
+          ci = Math.cos(ai);
+          positions.push((si * sj*30)+atom.location.x);  // X
+          positions.push(cj*30+atom.location.y);       // Y
+          positions.push(ci * sj*30);  // Z
+        }
+      }
+      // Generate indices
+      for (j = 0; j < SPHERE_DIV; j++) {
+        for (i = 0; i < SPHERE_DIV; i++) {
+          p1 = j * (SPHERE_DIV+1) + i;
+          p2 = p1 + (SPHERE_DIV+1);
+          indices.push(p1+n);
+          indices.push(p2+n);
+          indices.push(p1 + 1 + n);
+          indices.push(p1 + 1 + n);
+          indices.push(p2 + n);
+          indices.push(p2 + 1 + n);
+        }
+      }
+      n = positions.length/3
+      // Generate colors
+      for (j = 0; j <= SPHERE_DIV; j++) {
+        for (i = 0; i <= SPHERE_DIV; i++) {
+          colors.push(1.0);
+          colors.push(0.0);
+          colors.push(0.0);
+          colors.push(1.0);
+        }
+      }
+    }
+    if (!this.initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
+    if (!this.initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3))  return -1;
+    if (!this.initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;  
+    // Unbind the buffer object
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    // Write the indices to the buffer object
+    var indexBuffer = gl.createBuffer();
+    if (!indexBuffer) {
+      console.log('Failed to create the buffer object');
+      return -1;
+    }
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    //Draw 
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+  }
 
 
 /*  //update canvas sizes when needed
@@ -523,19 +638,53 @@ class CanvasComponent extends Component {
   }
 }
 
-  // Vertex shader program
-  var VSHADER_SOURCE =
-    'attribute vec4 a_Position;\n' +
-    'void main() {\n' +
-    '  gl_Position = a_Position;\n' +
-    '  gl_PointSize = 10.0;\n' +
-    '}\n';
-  
-  // Fragment shader program
-  var FSHADER_SOURCE =
-    'void main() {\n' +
-    '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-    '}\n';
+ // Vertex shader program
+var VSHADER_SOURCE =
+  'attribute vec3 a_Position;\n' +
+  'attribute vec4 a_Color;\n' +
+  'attribute vec3 a_Normal;\n' +
+  'uniform mat4 u_MvpMatrix;\n' +
+  'uniform mat4 u_NormalMatrix;\n' +
+  'varying vec4 v_Color;\n' +
+  'varying vec4 v_Normal;\n' +
+  'varying vec4 v_Position;\n' +
+  'void main() {\n' +
+  '  gl_Position = u_MvpMatrix * vec4(a_Position, 1.0);\n' +
+  '  v_Normal = u_NormalMatrix * vec4(a_Normal, 1.0);\n' +
+  '  v_Color = a_Color;\n' +
+  '  v_Position = vec4(a_Position, 1.0);\n' +
+  '}\n';
+
+// Fragment shader program
+var FSHADER_SOURCE =
+  '#ifdef GL_ES\n' +
+  'precision mediump float;\n' +
+  '#endif\n' +
+  'uniform vec3 u_ViewVector;\n' +
+  'uniform vec3 u_SpecularLight;\n' +
+  'uniform vec3 u_LightColor;\n' +
+  'uniform vec3 u_LightPosition;\n' +
+  'uniform vec3 u_AmbientLight;\n' +
+  'uniform mat4 u_TransformMatrix;\n' +
+  'uniform float u_N;\n' +
+  'varying vec4 v_Color;\n' +
+  'varying vec4 v_Normal;\n' +
+  'varying vec4 v_Position;\n' +
+  'void main() {\n' +
+  '  vec3 normal = normalize(v_Normal.xyz);\n' +
+  '  vec4 position = u_TransformMatrix * v_Position;\n' +
+  '  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n' +
+  '  vec3 specular = vec3(0.0, 0.0, 0.0);\n' +
+  '  vec3 lightDirection = normalize(u_LightPosition - position.xyz);\n' +
+  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+  '  diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
+  '  vec3 halfway = normalize(lightDirection + u_ViewVector);\n' +
+  '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' + 
+  '  vec3 ambient = u_AmbientLight * u_LightColor;\n' +
+  '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 0.8);\n' +
+  '  gl_FragColor.a = clamp(v_Color.a, 0.0, 1.0);\n' +
+  '}\n';
+
 
 
 export default CanvasComponent;
