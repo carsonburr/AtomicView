@@ -23,11 +23,30 @@ class PeriodicTablePopup extends React.Component {
   };
 
   render() {
+    //used dabuttonfactory.com for styling
+    const selectButtonStyle = {
+      background:    '#ea9999',
+      background:    '-webkit-linear-gradient(#ea9999, #660000)',
+      background:    'linear-gradient(#ea9999, #660000)',
+      borderRadius: '6px',
+      boxShadow:    '3px 3px #ea9999',
+      padding:       '8px 20px',
+      color:         '#ffffff',
+      display:       'inline-block',
+      font:          'normal 700 20px/1 "Calibri", sans-serif',
+      textAlign:    'center',
+      textShadow:   '1px 1px #000000',
+      border: 'none'
+    };
+    const divStyle = {
+      padding:'6px'
+    }
+
     // Render nothing if the "show" prop is false
     if(!this.state.isOpen) {
       return (
-        <div className="PeriodicTableButton">
-          <button onClick = {this.toggleModal}>
+        <div style={divStyle} className="PeriodicTableButton">
+          <button style={selectButtonStyle} onClick = {this.toggleModal}>
             Select Element
           </button>
         </div>

@@ -7,6 +7,7 @@ import CuonMatrix from '../../webgl_lib/cuon-matrix.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import SelectButton from './SelectButton';
+import Header from './Header';
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -613,6 +614,7 @@ class CanvasComponent extends Component {
   render() {
     return (
       <div className="CanvasComponent">
+        <Header />
         <div>
           <canvas ref="canvas2d"
                   width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
@@ -630,7 +632,7 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button onClick={this.revertChangein2D}>revert</button>
+          <button onClick={this.revertChangein2D}>Revert</button>
           <button onClick={this.draw3D}>Draw</button>
         </div>
       </div>
