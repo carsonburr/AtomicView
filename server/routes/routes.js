@@ -32,16 +32,18 @@ router.route('/api/insertUser').post(
 
 router.route('/user').post(
   function(req, res, next) {
+    console.log("in /user")
     if (req.body.email &&
         req.body.password) {
-      Users.authenticate(req.body.email, req.body.password, function(error, user) {
+      User.authenticate(req.body.email, req.body.password, function(error, user) {
         if (error || !user) {
           var err = new Error('Wrong email or password.');
           err.status = 401;
           return next(error);
         } else {
           req.session.userId = user._id;
-          return res.redirect('/')
+          res.redirect('..');
+          return true;
         }
       });
     }

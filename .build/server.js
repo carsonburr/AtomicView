@@ -20,7 +20,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "13829e49f2851c4abb35"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e2d6a5940dfab0784d17"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -946,15 +946,17 @@ router.route('/api/insertUser').post(function (req, res, next) {
 });
 
 router.route('/user').post(function (req, res, next) {
+  console.log("in /user");
   if (req.body.email && req.body.password) {
-    Users.authenticate(req.body.email, req.body.password, function (error, user) {
+    User.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {
         var err = new Error('Wrong email or password.');
         err.status = 401;
         return next(error);
       } else {
         req.session.userId = user._id;
-        return res.redirect('/');
+        res.redirect('..');
+        return true;
       }
     });
   }
