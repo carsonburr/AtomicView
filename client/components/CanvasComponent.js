@@ -588,15 +588,19 @@ class CanvasComponent extends Component {
   }
 
 
-/*  //update canvas sizes when needed
+  //update canvas sizes when needed
   updateDimensions() {
     if(window.innerWidth < 690) {
+      //TODO fix so doesnt get taller at last fixed size step
       this.setState({ width: 320, height: 300 });
     } else {
       let update_width  = (window.innerWidth/2)-30;
       let update_height = Math.round(update_width/1.5);
       this.setState({ width: update_width, height: update_height });
     }
+    this.updateCanvas();
+    this.drawCanvas2D();
+    this.draw3D();
   }
 
   //event listener for canvas resizing
@@ -604,7 +608,7 @@ class CanvasComponent extends Component {
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
-*/
+
   //unmounting component canvas
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
