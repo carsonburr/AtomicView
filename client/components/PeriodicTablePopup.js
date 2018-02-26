@@ -18,7 +18,7 @@ class PeriodicTablePopup extends React.Component {
 
   handleClick = (atom) => {
     this.toggleModal();
-    this.props.setCurAtom(atom.symbol, atom.name, atom.radius);
+    this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
     this.props.switchCurAction("atom");
   };
 

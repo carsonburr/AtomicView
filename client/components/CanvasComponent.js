@@ -20,7 +20,7 @@ class CanvasComponent extends Component {
     this.bonds = new Set();
     this.curAction = {action : "atom"}; // Can currently only be atom or bond
     // Current atom to be drawn.
-    this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, null, new Set())};
+    this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, 0x909090, null, new Set())};
     this.curBond = null;
     this.curBondType = 1;
     this.curSelected = null;
@@ -42,8 +42,8 @@ class CanvasComponent extends Component {
   };
 
 
-  setCurAtom = (symbol, name, atomicRadius) => {
-    this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,null, new Set());
+  setCurAtom = (symbol, name, atomicRadius, color) => {
+    this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,color,null, new Set());
   }
 
   setCurBondType = (bondType) => {
@@ -263,7 +263,7 @@ class CanvasComponent extends Component {
     // if atom already exists in this spot then overwrite it (and maintain bonds)
         if (atom != null) {
           var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
-             curAtom.atom.elementName, curAtom.atom.atomicRadius, null, atom.bonds);
+             curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, atom.bonds);
           this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:atom});
 
           // Change the overwritten atoms bonds to be to the new atom instead
@@ -281,7 +281,7 @@ class CanvasComponent extends Component {
     // If atom does not exist in this spot then create a new one
     else {
       var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
-        curAtom.atom.elementName, curAtom.atom.atomicRadius, null, new Set())
+        curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, new Set())
       atoms.add(newAtom);
       this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:null});
     }
@@ -295,7 +295,7 @@ class CanvasComponent extends Component {
   handleOnMouseMoveBond(x, y) {
     if(this.curBond != null) {
       this.tmpBond = new Bond(this.curBond.atom1, this.curBondType);
-      this.tmpBond.atom2 = new Atom(new Coord(x,y,0),null,null,null,null);
+      this.tmpBond.atom2 = new Atom(new Coord(x,y,0), null, null, null, null, null);
     }
   }
 
@@ -473,7 +473,7 @@ class CanvasComponent extends Component {
     var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
     gl.uniform3fv(u_LightDirection, lightDirection.elements);
   	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.3, 0.3, 0.3);
+  	gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
   	// Set the view vector
   	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
   	//Initialize glossiness
@@ -554,9 +554,10 @@ class CanvasComponent extends Component {
       // Generate colors
       for (j = 0; j <= SPHERE_DIV; j++) {
         for (i = 0; i <= SPHERE_DIV; i++) {
-          colors.push(1.0);
-          colors.push(0.0);
-          colors.push(0.0);
+          var color = hexToRgb(atom.atomColor.toString(16));
+          colors.push(color.r/255);
+          colors.push(color.g/255);
+          colors.push(color.b/255);
           colors.push(1.0);
         }
       }
@@ -600,6 +601,14 @@ class CanvasComponent extends Component {
 	    vec.y = vec.y/l;
 	    vec.z = vec.z/l;
 	    return vec;
+    }
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
     }
     function drawCylinder(x1, y1, x2, y2){
       vertices.length = 0;
