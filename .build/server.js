@@ -20,7 +20,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e2d6a5940dfab0784d17"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "95e0c0bc90a7b0adbf30"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -946,7 +946,6 @@ router.route('/api/insertUser').post(function (req, res, next) {
 });
 
 router.route('/user').post(function (req, res, next) {
-  console.log("in /user");
   if (req.body.email && req.body.password) {
     User.authenticate(req.body.email, req.body.password, function (error, user) {
       if (error || !user) {

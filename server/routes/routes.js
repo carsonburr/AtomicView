@@ -32,7 +32,6 @@ router.route('/api/insertUser').post(
 
 router.route('/user').post(
   function(req, res, next) {
-    console.log("in /user")
     if (req.body.email &&
         req.body.password) {
       User.authenticate(req.body.email, req.body.password, function(error, user) {

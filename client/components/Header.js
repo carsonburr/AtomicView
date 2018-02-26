@@ -43,7 +43,7 @@ class Header extends React.Component {
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
           <h3 style={{float: 'left', paddingLeft: '5px'}}>Save</h3>
-          <Link to="/signup">
+          <Link to="/login">
             <h3 style={{float: 'right', paddingRight: '10px'}}>Sign In</h3>
           </Link>
           <div style={{clear: "both"}}></div>
