@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl } from "react-bootstrap";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import "../css/LoginPage.css";
+import qs from 'querystring';
+import { Redirect } from 'react-router';
+
+var finishedLoggingIn=false;
 
 export default class LoginPage extends Component {
   constructor(props) {
@@ -9,7 +14,8 @@ export default class LoginPage extends Component {
 
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      redirect: false
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,9 +34,30 @@ export default class LoginPage extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
+    axios.post('/user',
+      qs.stringify({
+        email: data.get('email'),
+        password: data.get('password')
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json"
+        }
+      }).then((response)=>{
+        this.setState({redirect: true});
+        this.render();
+      }).catch(function(error) {
+        console.log(error);
+      });
   }
 
   render() {
+    const { a,b,redirect } = this.state;
+
+    if (redirect) {
+      return <Redirect to='/'/>;
+    }
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
