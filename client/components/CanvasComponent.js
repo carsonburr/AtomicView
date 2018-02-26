@@ -471,54 +471,64 @@ class CanvasComponent extends Component {
     var positions = [];
     var indices = [];
     var colors = [];
+    var unitcircles = [];
+    var unitpolygons = [];
     var viewMatrix; //The view matrix for projection view
     var projMatrix; //The projection matrix
     var Ntransform = new CuonMatrix.Matrix4();
-    var transformMatrix = new CuonMatrix.Matrix4();
     // Get the storage locations of uniform variables
 	  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
 	  var u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-	  var u_TransformMatrix = gl.getUniformLocation(gl.program, 'u_TransformMatrix');
     var u_ViewVector = gl.getUniformLocation(gl.program, 'u_ViewVector');
   	var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
     var	u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
 	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
-	  var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
+	  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
 	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
-	  if (!u_MvpMatrix || !u_NormalMatrix || !u_TransformMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) { 
+	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) { 
 		console.log('Failed to get the storage location');
 		return;
 	  }
 	  // Set the light colors
 	  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   	// Set the light direction (in the world coordinate)
-    var lightPosition = new CuonMatrix.Vector3([400.0, 400.0, 100]);
-    gl.uniform3fv(u_LightPosition, lightPosition.elements);
+    var lightDirection = new CuonMatrix.Vector3([1.0, 0.8, -0.5]);
+    gl.uniform3fv(u_LightDirection, lightDirection.elements);
   	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
+  	gl.uniform3f(u_AmbientLight, 0.1, 0.1, 0.1);
   	// Set the view vector
   	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
   	//Initialize glossiness
-  	gl.uniform1f(u_N, 10.0);
+  	gl.uniform1f(u_N, 70.0);
   	//Initialize specluar light
   	gl.uniform3f(u_SpecularLight, 1.0, 1.0, 1.0);
   	//Set initial orthographic view
   	projMatrix = new CuonMatrix.Matrix4();
-  	projMatrix.setOrtho(0, 640, 0, 425, -500, 500);
+  	projMatrix.setOrtho(0, 640, 425, 0, -100, 100);
   	viewMatrix = new CuonMatrix.Matrix4();
   	viewMatrix.setIdentity();
   	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
   	Ntransform.setIdentity();
   	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
-  	transformMatrix.setIdentity();
-  	gl.uniformMatrix4fv(u_TransformMatrix, false, transformMatrix.elements);
-    // Disable dialog box on right click
-    canvas.addEventListener('contextmenu', function(e) {
-      if (e.button === 2) {
-        e.preventDefault();
-        return false;
-        }
-    }, false);
+    //Generate unit circles and polygons for bonds
+    var radius = 20;
+    var deg = 0;
+    for(var i = 0; i <= 11; i++){ //First circle
+      unitcircles.push(new Coord(0,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
+      deg += 30;
+    }
+    deg = 0;
+    for(var i = 12; i <= 23; i++){ //Second circle
+      unitcircles.push(new Coord(1,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
+      deg += 30;
+    }
+    //Generate polygon array
+    for(var i = 0; i <= 10; i++){
+      unitpolygons.push([i, i+1, i+13]);
+		  unitpolygons.push([i, i+13, i+12]);
+    }
+    unitpolygons.push([11, 0, 12]);
+	  unitpolygons.push([11, 12, 23]);
     // Register function (event handler) to be called on a mouse press
     //canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
     // Register function (event handler) to be called on a mouse move
@@ -583,8 +593,9 @@ class CanvasComponent extends Component {
     }
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-    //Draw 
+    //Draw Spheres
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    
   }
 
 
@@ -653,12 +664,10 @@ var VSHADER_SOURCE =
   'uniform mat4 u_NormalMatrix;\n' +
   'varying vec4 v_Color;\n' +
   'varying vec4 v_Normal;\n' +
-  'varying vec4 v_Position;\n' +
   'void main() {\n' +
   '  gl_Position = u_MvpMatrix * vec4(a_Position, 1.0);\n' +
   '  v_Normal = u_NormalMatrix * vec4(a_Normal, 1.0);\n' +
   '  v_Color = a_Color;\n' +
-  '  v_Position = vec4(a_Position, 1.0);\n' +
   '}\n';
 
 // Fragment shader program
@@ -669,22 +678,18 @@ var FSHADER_SOURCE =
   'uniform vec3 u_ViewVector;\n' +
   'uniform vec3 u_SpecularLight;\n' +
   'uniform vec3 u_LightColor;\n' +
-  'uniform vec3 u_LightPosition;\n' +
+  'uniform vec3 u_LightDirection;\n' +
   'uniform vec3 u_AmbientLight;\n' +
-  'uniform mat4 u_TransformMatrix;\n' +
   'uniform float u_N;\n' +
   'varying vec4 v_Color;\n' +
   'varying vec4 v_Normal;\n' +
-  'varying vec4 v_Position;\n' +
   'void main() {\n' +
   '  vec3 normal = normalize(v_Normal.xyz);\n' +
-  '  vec4 position = u_TransformMatrix * v_Position;\n' +
   '  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n' +
   '  vec3 specular = vec3(0.0, 0.0, 0.0);\n' +
-  '  vec3 lightDirection = normalize(u_LightPosition - position.xyz);\n' +
-  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+  '  float nDotL = max(dot(normalize(u_LightDirection), normal), 0.0);\n' +
   '  diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
-  '  vec3 halfway = normalize(lightDirection + u_ViewVector);\n' +
+  '  vec3 halfway = normalize(u_LightDirection + u_ViewVector);\n' +
   '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' + 
   '  vec3 ambient = u_AmbientLight * u_LightColor;\n' +
   '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 0.8);\n' +
