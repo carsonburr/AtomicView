@@ -53,7 +53,7 @@ var atomicNumber = [[1,null,null,null,null,null,null,null,null,null,null,null,nu
 //array for the atom color in the 3d display 
 var atomColor = [[0xFFFFFF, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 0xD9FFFF],
                      [0xCC80FF, 0xC2FF00, null, null, null, null, null, null, null, null, null, null, 0xFFB5B5, 0x909090, 0x3050F8, 0xFF0D0D, 0x90E050, 0xB3E3F5],
-                     [0xAB5CF2, 0x8AFF00, null, null, null, null, null, null, null, null, null, null, 0xBFA6A6, 0xF0C8A0, 0xFF8000, 0xFFFF30, 0x1FF011F, 0x80D1E3],
+                     [0xAB5CF2, 0x8AFF00, null, null, null, null, null, null, null, null, null, null, 0xBFA6A6, 0xF0C8A0, 0xFF8000, 0xFFFF30, 0x1FF01F, 0x80D1E3],
                      [0x8F40D4, 0x3DFF00, 0xE6E6E6, 0xBFC2C7, 0xA6A6AB, 0x8A99C7, 0x9C7AC7, 0xE06633, 0xF090A0, 0x50D050, 0xC88033, 0x7D80B0, 0xC28F8F, 0x668F8F, 0xBD80E3, 0xFFA100, 0xA62929, 0x5CB8D1],
                      [0x702EB0, 0x00FF00, 0x94FFFF, 0x94E0E0, 0x73C2C9, 0x54B5B5, 0x3B9E9E, 0x248F8F, 0x0A7D8C, 0x006985, 0xC0C0C0, 0xFFD98F, 0xA67573, 0x668080, 0x9E63B5, 0xD47A00, 0x940094, 0x429EB0],
                      [0x57178F, 0x00C900, 0x70D4FF, 0x4DC2FF, 0x4DA6FF, 0x2194D6, 0x267DAB, 0x266696, 0x175487, 0xD0D0E0, 0xFFD123, 0xB8B8D0, 0xA6544D, 0x575961, 0x9E4FB5, 0xAB5C00, 0x754F45, 0x428296],
@@ -94,6 +94,7 @@ function buildTable() {
       atom.symbol = atomicSymbols[row][col];
       atom.radius = atomicRadii[row][col];
       atom.number = atomicNumber[row][col];
+      atom.color3d = atomColor[row][col];
 
       //TODO add atomic weight, atomic category
       if(atom.number === '') {
@@ -147,12 +148,13 @@ export function RGBA(r,g,b,a) {
 	this.a = a;
 }
 
-export function Atom(location, atomicSymbol, elementName, atomicRadius, molecule, bonds){
+export function Atom(location, atomicSymbol, elementName, atomicRadius, atomColor, molecule, bonds){
   this.location = location;
   this.location3D = null;
   this.atomicSymbol = atomicSymbol;
   this.elementName = elementName;
   this.atomicRadius = atomicRadius;
+  this.atomColor = atomColor;
   this.isSelected = false;
   this.molecule = molecule;
   this.bonds = bonds;
