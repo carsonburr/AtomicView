@@ -39,11 +39,9 @@ router.route('/user').post(
         if (error || !user) {
           var err = new Error('Wrong email or password.');
           err.status = 401;
-          console.log("401 error")
           return next(error);
         } else {
           req.session.userId = user._id;
-          console.log(req.session.userId)
           res.redirect('..');
           return true;
         }

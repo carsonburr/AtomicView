@@ -20,7 +20,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e023c4cea11fd80b77fa"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e2d6a5940dfab0784d17"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -952,11 +952,9 @@ router.route('/user').post(function (req, res, next) {
       if (error || !user) {
         var err = new Error('Wrong email or password.');
         err.status = 401;
-        console.log("401 error");
         return next(error);
       } else {
         req.session.userId = user._id;
-        console.log(req.session.userId);
         res.redirect('..');
         return true;
       }
