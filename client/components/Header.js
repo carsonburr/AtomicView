@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom'
 
 
 class Header extends React.Component {
@@ -42,7 +43,9 @@ class Header extends React.Component {
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
           <h3 style={{float: 'left', paddingLeft: '5px'}}>Save</h3>
-          <h3 style={{float: 'right', paddingRight: '10px'}}>Sign In</h3>
+          <Link to="/signup">
+            <h3 style={{float: 'right', paddingRight: '10px'}}>Sign In</h3>
+          </Link>
           <div style={{clear: "both"}}></div>
         </header>
       </div>
