@@ -444,6 +444,7 @@ class CanvasComponent extends Component {
     }
     var SPHERE_DIV = 13;
     var positions = [];
+    var sphereNormals = [];
     var indices = [];
     var colors = [];
     var unitcircles = [];
@@ -469,16 +470,16 @@ class CanvasComponent extends Component {
 	  // Set the light colors
 	  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   	// Set the light direction (in the world coordinate)
-    var lightDirection = new CuonMatrix.Vector3([1.0, 1.0, 1.0]);
+    var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
     gl.uniform3fv(u_LightDirection, lightDirection.elements);
   	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.1, 0.1, 0.1);
+  	gl.uniform3f(u_AmbientLight, 0.3, 0.3, 0.3);
   	// Set the view vector
   	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
   	//Initialize glossiness
-  	gl.uniform1f(u_N, 70.0);
+  	gl.uniform1f(u_N, 10.0);
   	//Initialize specluar light
-  	gl.uniform3f(u_SpecularLight, 1.0, 1.0, 1.0);
+  	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
   	//Set initial orthographic view
   	projMatrix = new CuonMatrix.Matrix4();
   	projMatrix.setOrtho(0, 640, 425, 0, -100, 100);
@@ -531,6 +532,9 @@ class CanvasComponent extends Component {
           positions.push((si * sj*30)+atom.location.x);  // X
           positions.push(cj*30+atom.location.y);       // Y
           positions.push(ci * sj*30);  // Z
+          sphereNormals.push(si * sj);  // X
+          sphereNormals.push(cj);       // Y
+          sphereNormals.push(ci * sj);  // Z
         }
       }
       // Generate indices
@@ -558,7 +562,7 @@ class CanvasComponent extends Component {
       }
     }
     if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
-    if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3))  return -1;
+    if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
     if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;  
     // Unbind the buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -781,7 +785,7 @@ var FSHADER_SOURCE =
   '  vec3 halfway = normalize(u_LightDirection + u_ViewVector);\n' +
   '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' + 
   '  vec3 ambient = u_AmbientLight * u_LightColor;\n' +
-  '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 0.8);\n' +
+  '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 1.0);\n' +
   '  gl_FragColor.a = clamp(v_Color.a, 0.0, 1.0);\n' +
   '}\n';
 
