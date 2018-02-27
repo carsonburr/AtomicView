@@ -5,6 +5,7 @@ import axios from 'axios';
 import "../css/LoginPage.css";
 import qs from 'querystring';
 import { Redirect } from 'react-router';
+import PropTypes from 'prop-types';
 
 var finishedLoggingIn=false;
 
@@ -15,11 +16,20 @@ export default class LoginPage extends Component {
     this.state = {
       email: "",
       password: "",
-      redirect: false
+      redirect: false,
+      isOpen: false
     };
 
+    this.setWrapperRef = this.setWrapperRef.bind(this); 
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  toggleModal = () => {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  };
 
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
@@ -34,7 +44,7 @@ export default class LoginPage extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
-    axios.post('/user',
+    var test = axios.post('/user',
       qs.stringify({
         email: data.get('email'),
         password: data.get('password')
@@ -45,21 +55,48 @@ export default class LoginPage extends Component {
           "Accept": "application/json"
         }
       }).then((response)=>{
-        this.setState({redirect: true});
-        this.render();
+        this.toggleModal();
+        console.log(response.data)
+        this.props.setUserId(response.data);
       }).catch(function(error) {
         console.log(error);
       });
+    console.log(test)
   }
 
-  render() {
-    const { a,b,redirect } = this.state;
-
-    if (redirect) {
-      return <Redirect to='/'/>;
+  setWrapperRef(node) {
+        this.wrapperRef = node;
     }
+  handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.toggleModal();
+        }
+    }
+
+
+  render() {
+    if(!this.state.isOpen) {
+      return (
+        <div className="LoginPageButton">
+          <button onClick = {this.toggleModal}>
+            Login
+          </button>
+        </div>
+      )
+    }
+
+    const modalStyle = {
+      backgroundColor: '#fff',
+      borderRadius: 5,
+      maxWidth: 700,
+      minHeight: 400,
+      margin: '0 auto',
+      padding: 30
+    };
     return (
-      <div className="Login">
+      <div className="Login"
+           ref={this.setWrapperRef}
+           style={modalStyle}>
         <form onSubmit={this.handleSubmit}>
           <FormGroup
             controlId="email"
@@ -112,3 +149,7 @@ export default class LoginPage extends Component {
     );
   }
 }
+
+LoginPage.propTypes = {
+  setUserId: PropTypes.func.isRequired,
+};

@@ -30,6 +30,7 @@ class CanvasComponent extends Component {
     this.gl = null;
     // Keeps track of changes for use in reversions
     this.changes = [];
+    this.userId = null;
 
     //initial/default state of canvas size
     this.state = {
@@ -727,11 +728,22 @@ class CanvasComponent extends Component {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
+  setUserId = (userId) => {
+    this.userId = userId;
+  }
+
+
+  getUserId = () => {
+    return this.userId;
+  }
+
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
     return (
       <div className="CanvasComponent">
-        <Header />
+        <Header setUserId={this.setUserId}
+                getUserId={this.getUserId} 
+                />
         <div>
           <canvas ref="canvas2d"
                   width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}

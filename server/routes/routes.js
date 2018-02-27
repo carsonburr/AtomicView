@@ -34,17 +34,24 @@ router.route('/user').post(
   function(req, res, next) {
     if (req.body.email &&
         req.body.password) {
-      User.authenticate(req.body.email, req.body.password, function(error, user) {
+      console.log("in user")
+      var test = User.authenticate(req.body.email, req.body.password, function(error, user) {
         if (error || !user) {
           var err = new Error('Wrong email or password.');
+          console.log("Error signing in")
           err.status = 401;
           return next(error);
         } else {
           req.session.userId = user._id;
-          res.redirect('..');
-          return true;
+          console.log(user._id)
+          res.send(user._id)
+          return req.session.userId;
         }
       });
+      // console.log('testing')
+      // console.log("test = "+ test)
+
+      // res.json(test)
     }
   }
 )

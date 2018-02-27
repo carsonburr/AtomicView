@@ -11,7 +11,7 @@ export default () => (
   <BrowserRouter history={hashHistory}>
     <div>
       <Route path="/" exact component={CanvasComponent} />
-      <Route path="/login" exact component={LoginPage} />
+       // <Route path="/login" exact component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
     </div>
   </BrowserRouter>
