@@ -158,6 +158,7 @@ export function Atom(location, atomicSymbol, elementName, atomicRadius, atomColo
   this.isSelected = false;
   this.molecule = molecule;
   this.bonds = bonds;
+  this.index = null;
   this.equals = function(other) {
      return    other != null
             && this.location.equals(other.location)

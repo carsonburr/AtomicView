@@ -8,6 +8,8 @@ import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import SelectButton from './SelectButton';
 import Header from './Header';
+import saveAtomsAndBonds from './SaveAtomsAndBonds'
+import loadAtomsAndBonds from './LoadAtomsAndBonds'
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -40,8 +42,16 @@ class CanvasComponent extends Component {
 
     this.revertChangein2D = this.revertChangein2D.bind(this);
     this.draw3D = this.draw3D.bind(this);
-  };
+  }
 
+  saveAtomsAndBondsForUser = (key) => {
+    saveAtomsAndBonds(key, this.atoms, this.bonds);
+  }
+
+  loadAtomsAndBondsForUser = (key) => {
+    loadAtomsAndBonds(key, this.atoms, this.bonds);
+    this.drawCanvas2D();
+  }
 
   setCurAtom = (symbol, name, atomicRadius, color) => {
     this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,color,null, new Set());
@@ -742,7 +752,9 @@ class CanvasComponent extends Component {
     return (
       <div className="CanvasComponent">
         <Header setUserId={this.setUserId}
-                getUserId={this.getUserId} 
+                getUserId={this.getUserId}
+                saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
+                loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
         <div>
           <canvas ref="canvas2d"

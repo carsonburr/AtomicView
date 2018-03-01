@@ -11,6 +11,7 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  jsonAtomsAndBondsArray: [{ key: String, jsonAtomsAndBonds: String }],
 });
 
 // authenticate against database

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom'
 import LoginPage from './LoginPage'
 
-
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -18,6 +17,14 @@ class Header extends React.Component {
       userId: userId
     });
     this.props.setUserId(userId);
+  };
+
+  saveAtomsAndBondsForUser = () => {
+    this.props.saveAtomsAndBondsForUser("test3");
+  };
+
+  loadAtomsAndBondsForUser = () => {
+    this.props.loadAtomsAndBondsForUser("test3");
   };
 
   render() {
@@ -48,7 +55,12 @@ class Header extends React.Component {
         <div>
         <div className="flex-container" style={flexStyle}>
           <header style = {headerStyle}>
-            <h3 style={{float: 'left', paddingLeft: '5px'}}>Save</h3>
+            <h3 style={{float: 'left', paddingLeft: '5px'}}>
+              <button onClick={this.saveAtomsAndBondsForUser}>Save</button>
+            </h3>
+            <h3 style={{float: 'left', paddingLeft: '5px'}}>
+              <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
+            </h3>
             <button>
               <h3 style={{float: 'right', paddingRight: '10px'}}>Logout</h3>
             </button>
@@ -76,6 +88,8 @@ class Header extends React.Component {
 }
 
 LoginPage.propTypes = {
+  saveAtomsAndBondsForUser: PropTypes.func.isRequired,
+  loadAtomsAndBondsForUser: PropTypes.func.isRequired,
   setUserId: PropTypes.func.isRequired,
   getUserId: PropTypes.func.isRequired,
 };
