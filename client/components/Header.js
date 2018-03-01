@@ -27,6 +27,13 @@ class Header extends React.Component {
     this.props.loadAtomsAndBondsForUser("test3");
   };
 
+  logout = () => {
+    this.setState({
+      userId: null
+    });
+    this.props.setUserId(null);
+  }
+
   render() {
     const headerStyle = {
       backgroundColor:'#433',
@@ -61,7 +68,7 @@ class Header extends React.Component {
             <h3 style={{float: 'left', paddingLeft: '5px'}}>
               <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
             </h3>
-            <button>
+            <button onClick={this.logout}>
               <h3 style={{float: 'right', paddingRight: '10px'}}>Logout</h3>
             </button>
             <div style={{clear: "both"}}></div>
