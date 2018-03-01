@@ -11,6 +11,12 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // // an array of just the ids of the saved mols in the molecule collection
+  // // this way, multiple users can share the same saved molecule by reference
+  // savedMols: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   required: true,
+  // }
   jsonAtomsAndBondsArray: [{ key: String, jsonAtomsAndBonds: String }],
 });
 
