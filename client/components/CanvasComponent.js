@@ -44,7 +44,6 @@ class CanvasComponent extends Component {
       settingLabel: 0
     }
 
-    this.revertChangein2D = this.revertChangein2D.bind(this);
     this.draw3D = this.draw3D.bind(this);
 
   }
@@ -218,8 +217,6 @@ class CanvasComponent extends Component {
     this.curSelected = null;
     this.tmpBond = null;
     this.curBond.atom2 = atom;
-    this.curBond.atom1.bonds.add(this.curBond);
-    this.curBond.atom2.bonds.add(this.curBond);
     for ( let bond of bonds ) {
       var atom1 = bond.atom1;
       var atom2 = bond.atom2;
@@ -229,6 +226,7 @@ class CanvasComponent extends Component {
             atom2.equals(curAtom2)) ||
            (atom2.equals(curAtom1) &&
             atom1.equals(curAtom2)) ) {
+        this.changes.push({type:"bond", payLoad:bond, bondTypeOverwritten:bond.bondType});
         bond.bondType = this.curBond.bondType;
         notAdded = false;
         break;
@@ -236,6 +234,8 @@ class CanvasComponent extends Component {
     }
     if(notAdded){
       this.bonds.add(this.curBond);
+      this.curBond.atom1.bonds.add(this.curBond);
+      this.curBond.atom2.bonds.add(this.curBond);
       this.changes.push({type:"bond", payLoad:this.curBond, atomOverwritten:null});
     }
 
@@ -373,42 +373,52 @@ class CanvasComponent extends Component {
     }
   }
 
-  revertChangein2D(){
+  reversionHandler(){
     if(this.changes.length != 0){
       var reversion = this.changes.pop();
       switch(reversion.type){
         case "atom":
-          var atom = reversion.payLoad;
-
-          // Reinsert the old atom if one was overwritten
-          if(reversion.atomOverwritten != null){
-            var oldAtom = reversion.atomOverwritten;
-            // Reconnect the old atom's bonds
-            for( let bond of oldAtom.bonds ){
-              if(bond.atom1.equals(atom)){
-                bond.atom1 = oldAtom;
-              }
-              else if(bond.atom2.equals(atom)){
-                bond.atom2 = oldAtom;
-              }
-            }
-            this.atoms.add(oldAtom);
-          }
-
-          this.atoms.delete(atom);
+          this.revertAtomChange(reversion);
           break;
-
         case "bond":
-          var bond = reversion.payLoad;
-          bond.atom1.bonds.delete(bond);
-          bond.atom2.bonds.delete(bond);
-          this.bonds.delete(bond);
+          this.revertBondChange(reversion);
           break;
       }
       this.drawCanvas2D();
     }
   }
 
+  revertAtomChange(reversion){
+    var atom = reversion.payLoad;
+    // Reinsert the old atom if one was overwritten
+    if(reversion.atomOverwritten != null){
+      var oldAtom = reversion.atomOverwritten;
+      // Reconnect the old atom's bonds
+      for( let bond of oldAtom.bonds ){
+        if(bond.atom1.equals(atom)){
+          bond.atom1 = oldAtom;
+        }
+        else if(bond.atom2.equals(atom)){
+          bond.atom2 = oldAtom;
+        }
+      }
+      this.atoms.add(oldAtom);
+    }
+    this.atoms.delete(atom);
+  }
+
+  revertBondChange(reversion){
+    var bond = reversion.payLoad;
+    // If bond was overwritten, return to original type
+    if(reversion.bondTypeOverwritten != null){
+      bond.bondType = reversion.bondTypeOverwritten;
+    }
+    else{
+      bond.atom1.bonds.delete(bond);
+      bond.atom2.bonds.delete(bond);
+      this.bonds.delete(bond);
+    }
+  }
 
   // Only sets up webgl right now.
   updateCanvas() {
@@ -449,7 +459,7 @@ class CanvasComponent extends Component {
       // Middle Click
     }
   }
-  
+
   draw3D() {
     var canvas = this.canvas3d;
     var atoms = this.atoms;
@@ -479,7 +489,7 @@ class CanvasComponent extends Component {
 	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
 	  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
 	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
-	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) { 
+	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
 		console.log('Failed to get the storage location');
 		return;
 	  }
@@ -580,7 +590,7 @@ class CanvasComponent extends Component {
     }
     if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
     if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
-    if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;  
+    if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;
     // Unbind the buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     // Write the indices to the buffer object
@@ -603,7 +613,7 @@ class CanvasComponent extends Component {
     var l = Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
     for(var i = 0; i < unitcircles.length; i++){
       vertices.push(new Coord(unitcircles[i].x *l* Math.cos(theta) - unitcircles[i].y * Math.sin(theta) + x1, unitcircles[i].x *l* Math.sin(theta) + unitcircles[i].y * Math.cos(theta) + y1, unitcircles[i].z));
-      } 
+      }
     }
     function crossp (vec1, vec2){//returns the cross product of two vectors
 	    return new Coord(vec1.y*vec2.z - vec1.z*vec2.y, vec1.z*vec2.x - vec1.x*vec2.z, vec1.x*vec2.y - vec1.y*vec2.x);
@@ -713,7 +723,7 @@ class CanvasComponent extends Component {
       gl.enableVertexAttribArray(a_attribute);
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
       return true;
-    }   
+    }
   }
 
 
@@ -784,7 +794,7 @@ class CanvasComponent extends Component {
 
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
-    
+
     return (
       <div className="CanvasComponent" style={{marginBottom: '50px'}}>
         <Header setUserId={this.setUserId}
@@ -794,7 +804,7 @@ class CanvasComponent extends Component {
                 />
         <span>{this.showLabel()}</span>
         <div>
-          <canvas ref="canvas2d" 
+          <canvas ref="canvas2d"
                   width={this.state.width} height={this.state.height} style={{border: '1px solid black', marginLeft: '10px'}}
                   onMouseDown={this.handleOnMouseDown2D.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
@@ -809,7 +819,7 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button className="RevertButton" onClick={this.revertChangein2D}>Revert</button>
+          <button className="RevertButton" onClick={this.reversionHandler.bind(this)}>Revert</button>
           <button className="DrawButton" onClick={this.draw3D}>Draw</button>
           <span>{this.getLabel()}</span>
         </div>
@@ -854,7 +864,7 @@ var FSHADER_SOURCE =
   '  float nDotL = max(dot(normalize(u_LightDirection), normal), 0.0);\n' +
   '  diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
   '  vec3 halfway = normalize(u_LightDirection + u_ViewVector);\n' +
-  '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' + 
+  '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' +
   '  vec3 ambient = u_AmbientLight * u_LightColor;\n' +
   '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 1.0);\n' +
   '  gl_FragColor.a = clamp(v_Color.a, 0.0, 1.0);\n' +
