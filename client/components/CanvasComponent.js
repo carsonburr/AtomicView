@@ -545,7 +545,7 @@ class CanvasComponent extends Component {
     var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
     gl.uniform3fv(u_LightDirection, lightDirection.elements);
   	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
+  	gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.0);
   	// Set the view vector
   	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
   	//Initialize glossiness
@@ -561,7 +561,7 @@ class CanvasComponent extends Component {
   	Ntransform.setIdentity();
   	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
     //Generate unit circles and polygons for bonds
-    var radius = 7;
+    var radius = 5;
     var deg = 0;
     for(var i = 0; i <= 11; i++){ //First circle
       unitcircles.push(new Coord(0,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
@@ -592,6 +592,10 @@ class CanvasComponent extends Component {
       var i, ai, si, ci;
       var j, aj, sj, cj;
       var p1, p2;
+      var r = atom.atomicRadius
+      if (r == 0) r = 300;
+      var rscale = (10+r/5)
+      console.log(r);
       // Generate coordinates
       for (j = 0; j <= SPHERE_DIV; j++) {
         aj = j * Math.PI / SPHERE_DIV;
@@ -601,9 +605,9 @@ class CanvasComponent extends Component {
           ai = i * 2 * Math.PI / SPHERE_DIV;
           si = Math.sin(ai);
           ci = Math.cos(ai);
-          positions.push((si * sj*30)+atom.location.x);  // X
-          positions.push(cj*30+atom.location.y);       // Y
-          positions.push(ci * sj*30);  // Z
+          positions.push((si * sj*rscale)+atom.location.x);  // X
+          positions.push(cj*rscale+atom.location.y);       // Y
+          positions.push(ci * sj*rscale);  // Z
           sphereNormals.push(si * sj);  // X
           sphereNormals.push(cj);       // Y
           sphereNormals.push(ci * sj);  // Z
@@ -649,10 +653,10 @@ class CanvasComponent extends Component {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     //Draw Spheres
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-    //Generate cylinders for bonds
+    //Draw Bonds
     var bonds = this.bonds;
     for( let bond of bonds ){
-      drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, bond.atom2.location.y);
+      drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, bond.atom2.location.y, bond.bondType);
     }
     function translateCoords(x1, y1, x2, y2){//translates unit cylinder coordinates
     var theta = Math.atan2(y2 - y1, x2 - x1);
@@ -682,7 +686,7 @@ class CanvasComponent extends Component {
         b: parseInt(result[3], 16)
       } : null;
     }
-    function drawCylinder(x1, y1, x2, y2){
+    function drawCylinder(x1, y1, x2, y2, type){
       vertices.length = 0;
       indices.length = 0;
       s_normals.length = 0;
@@ -744,9 +748,81 @@ class CanvasComponent extends Component {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices_e, gl.STATIC_DRAW);
       //Draw cylinders
-      for(var i = 0; i < indices_e.length; i+=3){
-        gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+     switch (type) {
+        case 1://Single bond
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
+        case 3://Triple bond
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          var dx = Math.abs(x2-x1);
+          var dy = Math.abs(y2-y1);
+          var sg = Math.sign(y2-y1);
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + ((-dy)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*dx*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + (dy*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);;
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
+        case 2: //Double bond
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          var dx = Math.abs(x2-x1);
+          var dy = Math.abs(y2-y1);
+          var sg = Math.sign(y2-y1);
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + ((-dy)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*dx*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + (dy*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);;
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
       }
+    /*  for(var i = 0; i < indices_e.length; i+=3){
+        gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+      }*/
     }
     function initArrayBuffer(gl, attribute, data, type, num) {
       // Create a buffer object
