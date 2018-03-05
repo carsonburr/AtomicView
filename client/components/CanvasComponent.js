@@ -505,7 +505,7 @@ class CanvasComponent extends Component {
   	Ntransform.setIdentity();
   	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
     //Generate unit circles and polygons for bonds
-    var radius = 7;
+    var radius = 5;
     var deg = 0;
     for(var i = 0; i <= 11; i++){ //First circle
       unitcircles.push(new Coord(0,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
@@ -536,6 +536,10 @@ class CanvasComponent extends Component {
       var i, ai, si, ci;
       var j, aj, sj, cj;
       var p1, p2;
+      var r = atom.atomicRadius
+      if (r == 0) r = 300;
+      var rscale = (10+r/5)
+      console.log(r);
       // Generate coordinates
       for (j = 0; j <= SPHERE_DIV; j++) {
         aj = j * Math.PI / SPHERE_DIV;
@@ -545,9 +549,9 @@ class CanvasComponent extends Component {
           ai = i * 2 * Math.PI / SPHERE_DIV;
           si = Math.sin(ai);
           ci = Math.cos(ai);
-          positions.push((si * sj*30)+atom.location.x);  // X
-          positions.push(cj*30+atom.location.y);       // Y
-          positions.push(ci * sj*30);  // Z
+          positions.push((si * sj*rscale)+atom.location.x);  // X
+          positions.push(cj*rscale+atom.location.y);       // Y
+          positions.push(ci * sj*rscale);  // Z
           sphereNormals.push(si * sj);  // X
           sphereNormals.push(cj);       // Y
           sphereNormals.push(ci * sj);  // Z
