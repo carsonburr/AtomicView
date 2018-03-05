@@ -82,13 +82,13 @@ class BondButton extends React.Component {
     return (
       <div className="BondButtonContainer" style ={{paddingLeft:'6px'}}>
           <button className="BondButton" onClick={this.handleClickSingle.bind(this)}>
-            Single Bond
+            Bond: |
           </button>
           <button className="BondButton" onClick={this.handleClickDouble.bind(this)}>
-            Double Bond
+            Bond: ||
           </button>
           <button className="BondButton" onClick={this.handleClickTriple.bind(this)}>
-            Triple Bond
+            Bond: |||
           </button>
       </div>
     );
