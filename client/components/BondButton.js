@@ -80,14 +80,14 @@ class BondButton extends React.Component {
       marginRight: '6px'    
     };
     return (
-      <div className="BondButton" style ={{padding:'6px'}}>
-          <button style={singleButtonStyle} onClick={this.handleClickSingle.bind(this)}>
+      <div className="BondButtonContainer" style ={{paddingLeft:'6px'}}>
+          <button className="BondButton" onClick={this.handleClickSingle.bind(this)}>
             Single Bond
           </button>
-          <button style={doubleButtonStyle} onClick={this.handleClickDouble.bind(this)}>
+          <button className="BondButton" onClick={this.handleClickDouble.bind(this)}>
             Double Bond
           </button>
-          <button style={tripleButtonStyle}onClick={this.handleClickTriple.bind(this)}>
+          <button className="BondButton" onClick={this.handleClickTriple.bind(this)}>
             Triple Bond
           </button>
       </div>

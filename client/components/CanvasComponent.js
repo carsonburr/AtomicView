@@ -8,8 +8,10 @@ import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import SelectButton from './SelectButton';
 import Header from './Header';
+import Footer from './Footer';
 import saveAtomsAndBonds from './SaveAtomsAndBonds'
 import loadAtomsAndBonds from './LoadAtomsAndBonds'
+import '../css/buttons.css'
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -34,14 +36,17 @@ class CanvasComponent extends Component {
     this.changes = [];
     this.userId = null;
 
-    //initial/default state of canvas size
+    //initial/default state of canvas size and label info
     this.state = {
       width:640,
-      height: 425
+      height: 425,
+      label: '',
+      settingLabel: 0
     }
 
     this.revertChangein2D = this.revertChangein2D.bind(this);
     this.draw3D = this.draw3D.bind(this);
+
   }
 
   saveAtomsAndBondsForUser = (key) => {
@@ -747,24 +752,55 @@ class CanvasComponent extends Component {
     return this.userId;
   }
 
+  //-----Functions dedicated to showing and updating the Scene Label----//
+
+  //setLabel just turns a booelan to true that is used to display an input form
+  setLabel = () => {
+    this.setState({settingLabel: 1});
+  }
+
+  //update label takes data from input form and changes the state
+  updateLabel = () => {
+    const l = this._label.value;
+    this.setState({label: l, settingLabel: 0});
+  }
+
+  //get Label either shows label scene button or form
+  getLabel = () => {
+    if(!this.state.settingLabel){
+      return(<button className="LabelButton" onClick={this.setLabel}>Label Scene</button>);
+    } else {
+      return(<span><input type="text" ref={input => this._label = input} placeholder="setLabel" /><input type="submit" onClick={this.updateLabel} value="Save"/></span>);
+    }
+  }
+
+  //show Label returns nothing if the label is black or the scene label as a header
+  showLabel = () => {
+    if(!this.state.label) {
+      return null;
+    }
+    return(<h1>&nbsp;Molecule: {this.state.label}</h1>)
+  }
+
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
+    
     return (
-      <div className="CanvasComponent">
+      <div className="CanvasComponent" style={{marginBottom: '50px'}}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
+        <span>{this.showLabel()}</span>
         <div>
-          <canvas ref="canvas2d"
-                  width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
-                  //width={640} height=425 style={{border: '1px solid black'}}
+          <canvas ref="canvas2d" 
+                  width={this.state.width} height={this.state.height} style={{border: '1px solid black', marginLeft: '10px'}}
                   onMouseDown={this.handleOnMouseDown2D.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>
           <canvas ref="canvas3d"
-                  width={this.state.width} height={this.state.height} style={{border: '1px solid black'}}
+                  width={this.state.width} height={this.state.height} style={{border: '1px solid black', marginLeft: '10px'}}
                    />
         </div>
         <div>
@@ -773,9 +809,11 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button onClick={this.revertChangein2D}>Revert</button>
-          <button onClick={this.draw3D}>Draw</button>
+          <button className="RevertButton" onClick={this.revertChangein2D}>Revert</button>
+          <button className="DrawButton" onClick={this.draw3D}>Draw</button>
+          <span>{this.getLabel()}</span>
         </div>
+        <Footer/>
       </div>
     );
   }

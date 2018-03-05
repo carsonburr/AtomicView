@@ -30,25 +30,12 @@ class Header extends React.Component {
   render() {
     const headerStyle = {
       backgroundColor:'#433',
-      //color:'white',
       width: '100%',
       paddingBottom: '10px'
-      //display: 'inline-block',
     };
     const flexStyle = {
-      /*display: 'flex',
-      flex: '1 100%',
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-      alignItems: 'stretch',
-      alignContent: 'stretch',
-      flexWrap: 'nowrap',*/
-      //paddingBottom: '10px',
-      //background: '#888',
       bottom: '10px',
       color: 'white'
-      //width: '100%'
-
     }
     if(this.state.userId!=null) {
       return (

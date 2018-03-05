@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {getTable} from '../../models/Atom.js';
+import '../css/buttons.css'
 
 class PeriodicTablePopup extends React.Component {
   constructor() {
@@ -23,7 +24,6 @@ class PeriodicTablePopup extends React.Component {
   };
 
   render() {
-    //used dabuttonfactory.com for styling
     const selectButtonStyle = {
       background:    '#ea9999',
       background:    '-webkit-linear-gradient(#ea9999, #660000)',
@@ -42,18 +42,16 @@ class PeriodicTablePopup extends React.Component {
       padding:'6px'
     }
 
-    // Render nothing if the "show" prop is false
     if(!this.state.isOpen) {
       return (
-        <div style={divStyle} className="PeriodicTableButton">
-          <button style={selectButtonStyle} onClick = {this.toggleModal}>
+        <div style={divStyle} >
+          <button className="PeriodicTableButton" onClick = {this.toggleModal}>
             Select Element
           </button>
         </div>
       )
     }
 
-    // The gray background
     const backdropStyle = {
       position: 'fixed',
       top: 0,
@@ -64,7 +62,6 @@ class PeriodicTablePopup extends React.Component {
       padding: 50
     };
 
-    // The modal "window"
     const modalStyle = {
       backgroundColor: '#fff',
       borderRadius: 5,
@@ -82,10 +79,7 @@ class PeriodicTablePopup extends React.Component {
       for(var j=0; j<18; j++){
         let cellID = `cell${i}-${j}`;
         let atom = table[i][j];
-        //TODO Add element name.
-        //TODO continued: escape modal on esc
         cell.push(<td key={cellID} id={cellID} align="center" bgcolor={atom.color} 
-                  //TODO fix atom.number
                   onClick={this.handleClick.bind(this, atom)} width="100">
                   <sup>{atom.number}</sup><br />{atom.symbol}</td>);
                   

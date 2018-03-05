@@ -25,8 +25,8 @@ class SelectButton extends React.Component {
     };
 
     return (
-      <div className="SelectButton" background="#3d85c6" style={{padding: '6px'}}>
-          <button style={buttonStyle}
+      <div className="SelectButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
+          <button className="SelectButton"
             onClick={this.handleClick.bind(this)} full="true">
             Select On Screen Atom
           </button>

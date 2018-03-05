@@ -1,0 +1,111 @@
+@media all and (min-width: 280px) {
+  .PeriodicTableButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 6px;
+  }
+  .PeriodicTableButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+  .BondButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 6px;
+  }
+  .BondButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+  .SelectButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 6px;
+  }
+  .SelectButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+  .RevertButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 12px;
+  }
+  .RevertButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+  .DrawButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 6px;
+  }
+  .DrawButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+
+  .LabelButton {
+  	background:    #ffffff;
+	border:        5px solid #556699;
+	border-radius: 8px;
+	padding:       8px 20px;
+	color:         #556699;
+	display:       inline-block;
+	font:          normal 700 20px/1 "Calibri", sans-serif;
+	text-align:    center;
+	text-shadow:   0px 0px #000000;
+	transition: 0.4s;
+	-webkit-transition: 0.4s;
+	margin-left: 6px;
+  }
+  .LabelButton:hover {
+  	background: #556699;
+  	color: white;
+  }
+}
