@@ -17,8 +17,8 @@ import '../css/buttons.css'
 * Class with a 2d and a 3d canvas.
 */
 class CanvasComponent extends Component {
-
   constructor() {
+
     super();
     this.atoms = new Set();
     this.bonds = new Set();
@@ -44,6 +44,8 @@ class CanvasComponent extends Component {
       settingLabel: 0
     }
 
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.deleteHandler = this.deleteHandler.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
     this.draw3D = this.draw3D.bind(this);
 
@@ -464,13 +466,6 @@ class CanvasComponent extends Component {
     }
   }
 
-
-  printInfo(){
-    console.log(this.changes)
-    console.log(this.atoms)
-    console.log(this.bonds)
-  }
-
   // Only sets up webgl right now.
   updateCanvas() {
     this.canvas3d = this.refs.canvas3d;
@@ -843,11 +838,44 @@ class CanvasComponent extends Component {
     return(<h1>&nbsp;Molecule: {this.state.label}</h1>)
   }
 
+  handleKeyDown(event) {
+    switch(event.key){
+      // Testing key
+      case 'Enter':
+        console.log(event.key);
+        break;
+      // Pull up element table
+      case 'e':
+        console.log(event.key);
+        break;
+      // Enter bond mode / iterate bond type
+      case 'b':
+        console.log(event.key);
+        break;
+      // Enter atom Selection mode
+      case 's':
+        console.log(event.key);
+        break;
+      // Enter delete mode
+      case 'd':
+        this.deleteHandler();
+        break;
+      // Render 3d model
+      case 'r':
+        this.draw3D();
+        break;
+      // Revert change
+      case 'z':
+        this.reversionHandler();
+        break;
+    }
+   }
+
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
 
     return (
-      <div className="CanvasComponent" style={{marginBottom: '50px'}}>
+      <div className="CanvasComponent" style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
@@ -870,10 +898,9 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button className="RevertButton" onClick={this.reversionHandler.bind(this)}>Revert</button>
+          <button className="RevertButton" onClick={this.reversionHandler}>Revert</button>
           <button className="DrawButton" onClick={this.draw3D}>Draw</button>
-          <button onClick={this.deleteHandler.bind(this)}>delete selected</button>
-          <button className="PrintInfoButton" onClick={this.printInfo.bind(this)}>Draw</button>
+          <button className="DeleteSelectedButton" onClick={this.deleteHandler}>delete selected</button>
           <span>{this.getLabel()}</span>
         </div>
         <Footer/>
