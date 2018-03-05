@@ -770,7 +770,7 @@ class CanvasComponent extends Component {
     if(!this.state.settingLabel){
       return(<button className="LabelButton" onClick={this.setLabel}>Label Scene</button>);
     } else {
-      return(<span><input type="text" ref={input => this._label = input} placeholder="setLabel" /><input type="submit" onClick={this.updateLabel} value="Save"/></span>);
+      return(<span><input type="text" ref={input => this._label = input} placeholder="Set Label" /><input type="submit" onClick={this.updateLabel} value="Save"/></span>);
     }
   }
 
