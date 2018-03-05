@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom'
 import LoginPage from './LoginPage'
+import axios from 'axios';
+import qs from 'querystring';
 
 class Header extends React.Component {
   constructor(props) {
@@ -27,6 +29,25 @@ class Header extends React.Component {
     this.props.loadAtomsAndBondsForUser("test3");
   };
 
+  logout = () => {
+    axios.post('/logout',
+      {},
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json"
+        }
+      }).then((response)=>{
+        console.log("Finished logging out. Changing userId")
+        this.setState({
+          userId: null
+        });
+        this.props.setUserId(null);
+      }).catch(function(error) {
+        console.log(error);
+      });
+  }
+
   render() {
     const headerStyle = {
       backgroundColor:'#433',
@@ -48,7 +69,7 @@ class Header extends React.Component {
             <h3 style={{float: 'left', paddingLeft: '5px'}}>
               <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
             </h3>
-            <button>
+            <button onClick={this.logout}>
               <h3 style={{float: 'right', paddingRight: '10px'}}>Logout</h3>
             </button>
             <div style={{clear: "both"}}></div>
