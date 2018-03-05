@@ -44,6 +44,7 @@ class CanvasComponent extends Component {
       settingLabel: 0
     }
 
+    this.reversionHandler = this.reversionHandler.bind(this);
     this.draw3D = this.draw3D.bind(this);
 
   }
@@ -226,7 +227,7 @@ class CanvasComponent extends Component {
             atom2.equals(curAtom2)) ||
            (atom2.equals(curAtom1) &&
             atom1.equals(curAtom2)) ) {
-        this.changes.push({type:"bond", payLoad:bond, bondTypeOverwritten:bond.bondType});
+        this.changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
         bond.bondType = this.curBond.bondType;
         notAdded = false;
         break;
@@ -236,7 +237,7 @@ class CanvasComponent extends Component {
       this.bonds.add(this.curBond);
       this.curBond.atom1.bonds.add(this.curBond);
       this.curBond.atom2.bonds.add(this.curBond);
-      this.changes.push({type:"bond", payLoad:this.curBond, atomOverwritten:null});
+      this.changes.push({type:"bond", payLoad:this.curBond, action:"added", overwritten:null});
     }
 
     this.curBond = null;
@@ -280,7 +281,7 @@ class CanvasComponent extends Component {
         if (atom != null) {
           var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
              curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, atom.bonds);
-          this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:atom});
+          this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
 
           // Change the overwritten atoms bonds to be to the new atom instead
           for( let bond of atom.bonds ){
@@ -299,7 +300,7 @@ class CanvasComponent extends Component {
       var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
         curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, new Set())
       atoms.add(newAtom);
-      this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:null});
+      this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
     }
 
     // TODO: Possibly use requestAnimitionFrame. Might not be needed though as we're
@@ -378,21 +379,45 @@ class CanvasComponent extends Component {
       var reversion = this.changes.pop();
       switch(reversion.type){
         case "atom":
-          this.revertAtomChange(reversion);
+          if(reversion.action == "added"){
+            this.revertAddedAtom(reversion);
+          }
+          else if (reversion.action == "deleted"){
+            this.revertDeletedAtom(reversion);
+          }
           break;
         case "bond":
-          this.revertBondChange(reversion);
+          if(reversion.action == "added"){
+            this.revertAddedBond(reversion);
+          }
+          else if(reversion.action == "deleted"){
+            alert("Reverting a bond deletion not implemented");
+          }
           break;
       }
       this.drawCanvas2D();
     }
   }
 
-  revertAtomChange(reversion){
+  revertDeletedAtom(reversion){
+    var atom = reversion.payLoad;
+    this.atoms.add(atom)
+    for(let bond of atom.bonds){
+      if(!bond.atom1.equals(atom)){
+        bond.atom1.bonds.add(bond);
+      }
+      else{
+        bond.atom2.bonds.add(bond);
+      }
+      this.bonds.add(bond)
+    }
+  }
+
+  revertAddedAtom(reversion){
     var atom = reversion.payLoad;
     // Reinsert the old atom if one was overwritten
-    if(reversion.atomOverwritten != null){
-      var oldAtom = reversion.atomOverwritten;
+    if(reversion.overwritten != null){
+      var oldAtom = reversion.overwritten;
       // Reconnect the old atom's bonds
       for( let bond of oldAtom.bonds ){
         if(bond.atom1.equals(atom)){
@@ -407,17 +432,43 @@ class CanvasComponent extends Component {
     this.atoms.delete(atom);
   }
 
-  revertBondChange(reversion){
+  revertAddedBond(reversion){
     var bond = reversion.payLoad;
     // If bond was overwritten, return to original type
-    if(reversion.bondTypeOverwritten != null){
-      bond.bondType = reversion.bondTypeOverwritten;
+    if(reversion.overwritten != null){
+      bond.bondType = reversion.overwritten;
     }
     else{
       bond.atom1.bonds.delete(bond);
       bond.atom2.bonds.delete(bond);
       this.bonds.delete(bond);
     }
+  }
+
+  deleteHandler(){
+    if(this.curSelected != null){
+      var atom = this.curSelected
+      this.changes.push({type:"atom", payLoad:this.curSelected, action:"deleted", overwritten:null})
+      // Remove all references to bonds
+      for(let bond of atom.bonds){
+        if(bond.atom1 != atom){
+          bond.atom1.bonds.delete(bond);
+        }
+        else{
+          bond.atom2.bonds.delete(bond);
+        }
+        this.bonds.delete(bond)
+      }
+      this.atoms.delete(this.curSelected);
+      this.drawCanvas2D();
+    }
+  }
+
+
+  printInfo(){
+    console.log(this.changes)
+    console.log(this.atoms)
+    console.log(this.bonds)
   }
 
   // Only sets up webgl right now.
@@ -821,6 +872,8 @@ class CanvasComponent extends Component {
           <SelectButton switchCurAction={this.switchCurAction}/>
           <button className="RevertButton" onClick={this.reversionHandler.bind(this)}>Revert</button>
           <button className="DrawButton" onClick={this.draw3D}>Draw</button>
+          <button onClick={this.deleteHandler.bind(this)}>delete selected</button>
+          <button className="PrintInfoButton" onClick={this.printInfo.bind(this)}>Draw</button>
           <span>{this.getLabel()}</span>
         </div>
         <Footer/>
