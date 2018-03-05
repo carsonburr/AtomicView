@@ -3,24 +3,23 @@ import qs from 'querystring';
 
 export default function saveAtomsAndBonds(key, atoms, bonds) {
   console.log("In saveAtomsAndBonds")
-  var jsonAtoms = [];
+  var savedAtoms = [];
   var i = 0;
   atoms.forEach(atom => {
     atom.index = i;
     i++;
-    var jsonAtom = new JSONAtom(atom);
-    jsonAtoms.push(JSON.stringify(jsonAtom));
+    savedAtoms.push(new cleanAtom(atom));
   });
-  var jsonBonds = [];
+  var savedBonds = [];
   bonds.forEach(bond => {
-    console.log(bond.atom1.index)
-    console.log(bond.atom2.index)
     bond.atomIndex1 = bond.atom1.index;
     bond.atomIndex2 = bond.atom2.index;
-    var jsonBond = new JSONBond(bond);
-    jsonBonds.push(JSON.stringify(jsonBond));
+    savedBonds.push(new cleanBond(bond));
   });
-  var atomsAndBonds = new JSONAtomsAndBonds(jsonAtoms, jsonBonds);
+  var atomsAndBonds = {
+    atoms: savedAtoms,
+    bonds: savedBonds
+  };
   var jsonAtomsAndBonds = JSON.stringify(atomsAndBonds);
   axios.post('/save',
       qs.stringify({
@@ -38,9 +37,8 @@ export default function saveAtomsAndBonds(key, atoms, bonds) {
       });
 }
 
-function JSONAtom(atom) {
+function cleanAtom(atom) {
   this.location = atom.location;
-  this.location3D = atom.location3D;
   this.atomicSymbol = atom.atomicSymbol;
   this.elementName = atom.elementName;
   this.atomicRadius = atom.atomicRadius;
@@ -50,24 +48,8 @@ function JSONAtom(atom) {
 
 }
 
-function JSONBond(bond){
+function cleanBond(bond){
   this.bondType = bond.bondType;
   this.atomIndex1 = bond.atomIndex1;
   this.atomIndex2 = bond.atomIndex2;
 }
-
-function JSONAtomsAndBonds(jsonAtoms, jsonBonds){
-  this.jsonAtoms = JSON.stringify(jsonAtoms);
-  this.jsonBonds = JSON.stringify(jsonBonds);
-}
-
-// function JSONAtomsAndBonds(jsonAtoms, jsonBonds){
-//   this.jsonAtoms = [];
-//   this.jsonBonds = [];
-//   for (var i = 0; i < jsonAtoms.length; i++){
-//     this.jsonAtoms.push(JSON.stringify(jsonAtoms[i]));
-//   }
-//   for (var i = 0; i < jsonBonds.length; i++){
-//     this.jsonBonds.push(JSON.stringify(jsonBonds[i]));
-//   }
-// }

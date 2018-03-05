@@ -47,37 +47,37 @@ router.route('/api/insertUser').post(
 router.route('/save').post(
   function(req, res, next) {
     if (req.session.signedIn && req.session.userId) {
-      console.log("Saving data");
-      console.log("userId: " + req.session.userId);
       if(req.body.key && req.body.jsonAtomsAndBonds) {
-        console.log("key: " +req.body.key)
-        console.log("json: " +req.body.jsonAtomsAndBonds)
         var tmp = {
-                key : req.body.key, 
-                jsonAtomsAndBonds : req.body.jsonAtomsAndBonds
-              }
-        console.log("pair.key: " + tmp.key)
-        var check = User.update({_id : req.session.userId, 
-                    "jsonAtomsAndBondsArray.key": req.body.key},
+          key : req.body.key, 
+          jsonAtomsAndBonds : req.body.jsonAtomsAndBonds
+        }
+        
+        User.update({_id : req.session.userId, 
+                    "jsonAtomsAndBondsArray": { $elemMatch: { "key": req.body.key } } },
           {$set: 
             {
               "jsonAtomsAndBondsArray.$.jsonAtomsAndBonds" : req.body.jsonAtomsAndBonds              
             }
-          }, false, function (err, raw) {
-            if (err) console.log("error: " + err);
-            console.log('The raw response from Mongo was ', raw);
+          }, {}, function (err, raw) {
+
+            // console.log('The raw response from Mongo was ', raw);
+            if (err) {
+              console.log("error: " + err);
+            } else if(raw == null || raw.nModified == 0) {
+
+              User.update({_id : req.session.userId},
+                {$addToSet: 
+                  {
+                    jsonAtomsAndBondsArray : tmp              
+                  }
+                }, {}, function (err, raw) {
+                  if (err) console.log("error: " + err);
+                  // console.log('The 2nd raw response from Mongo was ', raw);
+                });
+            }
           });
-        if(check == null || check.nModified == 0) {
-          User.update({_id : req.session.userId},
-            {$addToSet: 
-              {
-                jsonAtomsAndBondsArray : tmp              
-              }
-            }, false, function (err, raw) {
-              if (err) console.log("error: " + err);
-              console.log('The 2nd raw response from Mongo was ', raw);
-            });
-        }
+        
       }
     } else {
       console.log("in /save but does not seem to be signed in")
