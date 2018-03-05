@@ -92,8 +92,8 @@ router.route('/retrieve').post(
       console.log("userId: " + req.session.userId);
       console.log("key: " + req.body.key)
       if(req.body.key) {
-        User.findOne({ "_id" : req.session.userId,
-                       "jsonAtomsAndBondsArray.key": req.body.key },
+        User.findOne({ "_id" : req.session.userId},
+                      { "jsonAtomsAndBondsArray": {$elemMatch: {key: req.body.key }}},
           function (err, data) {
             if(err) {
               console.log(err);
@@ -140,7 +140,7 @@ router.route('/user').post(
   }
 );
 
-router.get('/logout', function(req, res, next) {
+router.route('/logout').post(function(req, res, next) {
   if (req.session) {
     // delete session object
     req.session.destroy(function(err) {
