@@ -39,8 +39,8 @@ class CanvasComponent extends Component {
 
     //initial/default state of canvas size and label info
     this.state = {
-      width:640,
-      height: 425,
+      canvasWidth:640,
+      canvasHeight: 425,
       label: '',
       settingLabel: 0
     }
@@ -491,11 +491,17 @@ class CanvasComponent extends Component {
   updateDimensions() {
     if(window.innerWidth < 690) {
       //TODO fix so doesnt get taller at last fixed size step
-      this.setState({ width: 320, height: 300 });
+      this.setState({
+        canvasWidth: 320,
+        canvasHeight: 300 
+      });
     } else {
       let update_width  = (window.innerWidth/2)-30;
       let update_height = Math.round(update_width/1.5);
-      this.setState({ width: update_width, height: update_height });
+      this.setState({
+        canvasWidth: update_width,
+        canvasHeight: update_height 
+      });
     }
     this.drawCanvas2D();
     this.refs.canvas3d.draw3D();
@@ -526,14 +532,6 @@ class CanvasComponent extends Component {
 
   getBonds = () => {
     return this.bonds;
-  }
-
-  getCanvasWidth = () => {
-    return this.state.width;
-  }
-
-  getCanvasHeight = () => {
-    return this.state.height;
   }
 
   //-----Functions dedicated to showing and updating the Scene Label----//
@@ -603,7 +601,8 @@ class CanvasComponent extends Component {
   render() {
 
     return (
-      <div className="CanvasComponent" style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div className="CanvasComponent" 
+           style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
@@ -612,17 +611,17 @@ class CanvasComponent extends Component {
         <span>{this.showLabel()}</span>
         <div>
           <canvas ref="canvas2d"
-                  width={this.state.width} height={this.state.height} style={{border: '1px solid black', marginLeft: '10px'}}
+                  width={this.state.canvasWidth}
+                  height={this.state.canvasHeight}
+                  style={{border: '1px solid black', marginLeft: '10px'}}
                   onMouseDown={this.handleOnMouseDown2D.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>
           <CanvasComponent3D ref="canvas3d"
                              getAtoms={this.getAtoms}
                              getBonds={this.getBonds}
-                             getCanvasHeight={this.getCanvasHeight}
-                             getCanvasWidth={this.getCanvasWidth}
-                             canvasWidth={this.state.width}
-                             canvasHeight={this.state.height}
+                             canvasWidth={this.state.canvasWidth}
+                             canvasHeight={this.state.canvasHeight}
                              />
         </div>
         <div>
@@ -631,9 +630,15 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button className="RevertButton" onClick={this.reversionHandler}>Revert</button>
-          <button className="DrawButton" onClick={() => this.refs.canvas3d.draw3D()}>Draw</button>
-          <button className="DeleteSelectedButton" onClick={this.deleteHandler}>delete selected</button>
+          <button className="RevertButton" onClick={this.reversionHandler}>
+            Revert
+          </button>
+          <button className="DrawButton" onClick={() => this.refs.canvas3d.draw3D()}>
+            Draw
+          </button>
+          <button className="DeleteSelectedButton" onClick={this.deleteHandler}>
+            Delete Selected
+            </button>
           <span>{this.getLabel()}</span>
         </div>
         <Footer/>

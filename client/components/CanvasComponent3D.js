@@ -79,7 +79,6 @@ class CanvasComponent3D extends Component {
   }
 
   draw3D() {
-    console.log("In draw3D")
     var canvas = this.canvas3d;
     var atoms = this.props.getAtoms();
     var gl = this.gl;
