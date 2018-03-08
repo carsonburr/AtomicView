@@ -17,8 +17,8 @@ import '../css/buttons.css'
 * Class with a 2d and a 3d canvas.
 */
 class CanvasComponent extends Component {
-
   constructor() {
+
     super();
     this.atoms = new Set();
     this.bonds = new Set();
@@ -44,7 +44,9 @@ class CanvasComponent extends Component {
       settingLabel: 0
     }
 
-    this.revertChangein2D = this.revertChangein2D.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.deleteHandler = this.deleteHandler.bind(this);
+    this.reversionHandler = this.reversionHandler.bind(this);
     this.draw3D = this.draw3D.bind(this);
 
   }
@@ -218,8 +220,6 @@ class CanvasComponent extends Component {
     this.curSelected = null;
     this.tmpBond = null;
     this.curBond.atom2 = atom;
-    this.curBond.atom1.bonds.add(this.curBond);
-    this.curBond.atom2.bonds.add(this.curBond);
     for ( let bond of bonds ) {
       var atom1 = bond.atom1;
       var atom2 = bond.atom2;
@@ -229,6 +229,7 @@ class CanvasComponent extends Component {
             atom2.equals(curAtom2)) ||
            (atom2.equals(curAtom1) &&
             atom1.equals(curAtom2)) ) {
+        this.changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
         bond.bondType = this.curBond.bondType;
         notAdded = false;
         break;
@@ -236,7 +237,9 @@ class CanvasComponent extends Component {
     }
     if(notAdded){
       this.bonds.add(this.curBond);
-      this.changes.push({type:"bond", payLoad:this.curBond, atomOverwritten:null});
+      this.curBond.atom1.bonds.add(this.curBond);
+      this.curBond.atom2.bonds.add(this.curBond);
+      this.changes.push({type:"bond", payLoad:this.curBond, action:"added", overwritten:null});
     }
 
     this.curBond = null;
@@ -280,7 +283,7 @@ class CanvasComponent extends Component {
         if (atom != null) {
           var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
              curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, atom.bonds);
-          this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:atom});
+          this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
 
           // Change the overwritten atoms bonds to be to the new atom instead
           for( let bond of atom.bonds ){
@@ -299,7 +302,7 @@ class CanvasComponent extends Component {
       var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
         curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, new Set())
       atoms.add(newAtom);
-      this.changes.push({type:"atom", payLoad:newAtom, atomOverwritten:null});
+      this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
     }
 
     // TODO: Possibly use requestAnimitionFrame. Might not be needed though as we're
@@ -373,42 +376,95 @@ class CanvasComponent extends Component {
     }
   }
 
-  revertChangein2D(){
+  reversionHandler(){
     if(this.changes.length != 0){
       var reversion = this.changes.pop();
       switch(reversion.type){
         case "atom":
-          var atom = reversion.payLoad;
-
-          // Reinsert the old atom if one was overwritten
-          if(reversion.atomOverwritten != null){
-            var oldAtom = reversion.atomOverwritten;
-            // Reconnect the old atom's bonds
-            for( let bond of oldAtom.bonds ){
-              if(bond.atom1.equals(atom)){
-                bond.atom1 = oldAtom;
-              }
-              else if(bond.atom2.equals(atom)){
-                bond.atom2 = oldAtom;
-              }
-            }
-            this.atoms.add(oldAtom);
+          if(reversion.action == "added"){
+            this.revertAddedAtom(reversion);
           }
-
-          this.atoms.delete(atom);
+          else if (reversion.action == "deleted"){
+            this.revertDeletedAtom(reversion);
+          }
           break;
-
         case "bond":
-          var bond = reversion.payLoad;
-          bond.atom1.bonds.delete(bond);
-          bond.atom2.bonds.delete(bond);
-          this.bonds.delete(bond);
+          if(reversion.action == "added"){
+            this.revertAddedBond(reversion);
+          }
+          else if(reversion.action == "deleted"){
+            alert("Reverting a bond deletion not implemented");
+          }
           break;
       }
       this.drawCanvas2D();
     }
   }
 
+  revertDeletedAtom(reversion){
+    var atom = reversion.payLoad;
+    this.atoms.add(atom)
+    for(let bond of atom.bonds){
+      if(!bond.atom1.equals(atom)){
+        bond.atom1.bonds.add(bond);
+      }
+      else{
+        bond.atom2.bonds.add(bond);
+      }
+      this.bonds.add(bond)
+    }
+  }
+
+  revertAddedAtom(reversion){
+    var atom = reversion.payLoad;
+    // Reinsert the old atom if one was overwritten
+    if(reversion.overwritten != null){
+      var oldAtom = reversion.overwritten;
+      // Reconnect the old atom's bonds
+      for( let bond of oldAtom.bonds ){
+        if(bond.atom1.equals(atom)){
+          bond.atom1 = oldAtom;
+        }
+        else if(bond.atom2.equals(atom)){
+          bond.atom2 = oldAtom;
+        }
+      }
+      this.atoms.add(oldAtom);
+    }
+    this.atoms.delete(atom);
+  }
+
+  revertAddedBond(reversion){
+    var bond = reversion.payLoad;
+    // If bond was overwritten, return to original type
+    if(reversion.overwritten != null){
+      bond.bondType = reversion.overwritten;
+    }
+    else{
+      bond.atom1.bonds.delete(bond);
+      bond.atom2.bonds.delete(bond);
+      this.bonds.delete(bond);
+    }
+  }
+
+  deleteHandler(){
+    if(this.curSelected != null){
+      var atom = this.curSelected
+      this.changes.push({type:"atom", payLoad:this.curSelected, action:"deleted", overwritten:null})
+      // Remove all references to bonds
+      for(let bond of atom.bonds){
+        if(bond.atom1 != atom){
+          bond.atom1.bonds.delete(bond);
+        }
+        else{
+          bond.atom2.bonds.delete(bond);
+        }
+        this.bonds.delete(bond)
+      }
+      this.atoms.delete(this.curSelected);
+      this.drawCanvas2D();
+    }
+  }
 
   // Only sets up webgl right now.
   updateCanvas() {
@@ -449,7 +505,7 @@ class CanvasComponent extends Component {
       // Middle Click
     }
   }
-  
+
   draw3D() {
     var canvas = this.canvas3d;
     var atoms = this.atoms;
@@ -479,7 +535,7 @@ class CanvasComponent extends Component {
 	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
 	  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
 	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
-	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) { 
+	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
 		console.log('Failed to get the storage location');
 		return;
 	  }
@@ -489,7 +545,7 @@ class CanvasComponent extends Component {
     var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
     gl.uniform3fv(u_LightDirection, lightDirection.elements);
   	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
+  	gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.0);
   	// Set the view vector
   	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
   	//Initialize glossiness
@@ -505,7 +561,7 @@ class CanvasComponent extends Component {
   	Ntransform.setIdentity();
   	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
     //Generate unit circles and polygons for bonds
-    var radius = 7;
+    var radius = 5;
     var deg = 0;
     for(var i = 0; i <= 11; i++){ //First circle
       unitcircles.push(new Coord(0,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
@@ -536,6 +592,10 @@ class CanvasComponent extends Component {
       var i, ai, si, ci;
       var j, aj, sj, cj;
       var p1, p2;
+      var r = atom.atomicRadius
+      if (r == 0) r = 300;
+      var rscale = (10+r/5)
+      console.log(r);
       // Generate coordinates
       for (j = 0; j <= SPHERE_DIV; j++) {
         aj = j * Math.PI / SPHERE_DIV;
@@ -545,9 +605,9 @@ class CanvasComponent extends Component {
           ai = i * 2 * Math.PI / SPHERE_DIV;
           si = Math.sin(ai);
           ci = Math.cos(ai);
-          positions.push((si * sj*30)+atom.location.x);  // X
-          positions.push(cj*30+atom.location.y);       // Y
-          positions.push(ci * sj*30);  // Z
+          positions.push((si * sj*rscale)+atom.location.x);  // X
+          positions.push(cj*rscale+atom.location.y);       // Y
+          positions.push(ci * sj*rscale);  // Z
           sphereNormals.push(si * sj);  // X
           sphereNormals.push(cj);       // Y
           sphereNormals.push(ci * sj);  // Z
@@ -580,7 +640,7 @@ class CanvasComponent extends Component {
     }
     if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
     if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
-    if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;  
+    if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;
     // Unbind the buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     // Write the indices to the buffer object
@@ -593,17 +653,17 @@ class CanvasComponent extends Component {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     //Draw Spheres
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-    //Generate cylinders for bonds
+    //Draw Bonds
     var bonds = this.bonds;
     for( let bond of bonds ){
-      drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, bond.atom2.location.y);
+      drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, bond.atom2.location.y, bond.bondType);
     }
     function translateCoords(x1, y1, x2, y2){//translates unit cylinder coordinates
     var theta = Math.atan2(y2 - y1, x2 - x1);
     var l = Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
     for(var i = 0; i < unitcircles.length; i++){
       vertices.push(new Coord(unitcircles[i].x *l* Math.cos(theta) - unitcircles[i].y * Math.sin(theta) + x1, unitcircles[i].x *l* Math.sin(theta) + unitcircles[i].y * Math.cos(theta) + y1, unitcircles[i].z));
-      } 
+      }
     }
     function crossp (vec1, vec2){//returns the cross product of two vectors
 	    return new Coord(vec1.y*vec2.z - vec1.z*vec2.y, vec1.z*vec2.x - vec1.x*vec2.z, vec1.x*vec2.y - vec1.y*vec2.x);
@@ -626,7 +686,7 @@ class CanvasComponent extends Component {
         b: parseInt(result[3], 16)
       } : null;
     }
-    function drawCylinder(x1, y1, x2, y2){
+    function drawCylinder(x1, y1, x2, y2, type){
       vertices.length = 0;
       indices.length = 0;
       s_normals.length = 0;
@@ -688,9 +748,81 @@ class CanvasComponent extends Component {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices_e, gl.STATIC_DRAW);
       //Draw cylinders
-      for(var i = 0; i < indices_e.length; i+=3){
-        gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+     switch (type) {
+        case 1://Single bond
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
+        case 3://Triple bond
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          var dx = Math.abs(x2-x1);
+          var dy = Math.abs(y2-y1);
+          var sg = Math.sign(y2-y1);
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + ((-dy)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*dx*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + (dy*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);;
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
+        case 2: //Double bond
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          var dx = Math.abs(x2-x1);
+          var dy = Math.abs(y2-y1);
+          var sg = Math.sign(y2-y1);
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + ((-dy)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*dx*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          var vertices_e = new Float32Array(vertices.length*3);
+          //Generate vertex array for buffer
+          var j = 0;
+          for(var i = 0; i < vertices_e.length; i += 3){
+            vertices_e[i] = vertices[j].x + (dy*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
+            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);;
+            vertices_e[i+2] = vertices[j].z + 0.0;
+	          j++;
+          }
+          if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+          for(var i = 0; i < indices_e.length; i+=3){
+            gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+          }
+          break;
       }
+    /*  for(var i = 0; i < indices_e.length; i+=3){
+        gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, i*FSIZE);
+      }*/
     }
     function initArrayBuffer(gl, attribute, data, type, num) {
       // Create a buffer object
@@ -713,7 +845,7 @@ class CanvasComponent extends Component {
       gl.enableVertexAttribArray(a_attribute);
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
       return true;
-    }   
+    }
   }
 
 
@@ -782,11 +914,44 @@ class CanvasComponent extends Component {
     return(<h1>&nbsp;Molecule: {this.state.label}</h1>)
   }
 
+  handleKeyDown(event) {
+    switch(event.key){
+      // Testing key
+      case 'Enter':
+        console.log(event.key);
+        break;
+      // Pull up element table
+      case 'e':
+        console.log(event.key);
+        break;
+      // Enter bond mode / iterate bond type
+      case 'b':
+        console.log(event.key);
+        break;
+      // Enter atom Selection mode
+      case 's':
+        console.log(event.key);
+        break;
+      // Enter delete mode
+      case 'd':
+        this.deleteHandler();
+        break;
+      // Render 3d model
+      case 'r':
+        this.draw3D();
+        break;
+      // Revert change
+      case 'z':
+        this.reversionHandler();
+        break;
+    }
+   }
+
   // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
-    
+
     return (
-      <div className="CanvasComponent" style={{marginBottom: '50px'}}>
+      <div className="CanvasComponent" style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
@@ -794,7 +959,7 @@ class CanvasComponent extends Component {
                 />
         <span>{this.showLabel()}</span>
         <div>
-          <canvas ref="canvas2d" 
+          <canvas ref="canvas2d"
                   width={this.state.width} height={this.state.height} style={{border: '1px solid black', marginLeft: '10px'}}
                   onMouseDown={this.handleOnMouseDown2D.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
@@ -809,8 +974,9 @@ class CanvasComponent extends Component {
           <BondButton switchCurAction={this.switchCurAction}
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
-          <button className="RevertButton" onClick={this.revertChangein2D}>Revert</button>
+          <button className="RevertButton" onClick={this.reversionHandler}>Revert</button>
           <button className="DrawButton" onClick={this.draw3D}>Draw</button>
+          <button className="DeleteSelectedButton" onClick={this.deleteHandler}>delete selected</button>
           <span>{this.getLabel()}</span>
         </div>
         <Footer/>
@@ -854,7 +1020,7 @@ var FSHADER_SOURCE =
   '  float nDotL = max(dot(normalize(u_LightDirection), normal), 0.0);\n' +
   '  diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
   '  vec3 halfway = normalize(u_LightDirection + u_ViewVector);\n' +
-  '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' + 
+  '  specular = u_SpecularLight * u_LightColor * pow(max(dot(normal, halfway), 0.0), u_N);\n' +
   '  vec3 ambient = u_AmbientLight * u_LightColor;\n' +
   '  gl_FragColor.rgb = clamp(diffuse + ambient + specular, 0.0, 1.0);\n' +
   '  gl_FragColor.a = clamp(v_Color.a, 0.0, 1.0);\n' +
