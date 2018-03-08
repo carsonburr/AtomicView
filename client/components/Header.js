@@ -101,8 +101,4 @@ LoginPage.propTypes = {
   getUserId: PropTypes.func.isRequired,
 };
 
-/*Header.propTypes = {
-  switchCurAction: PropTypes.func.isRequired
-};*/
-
 export default Header;
