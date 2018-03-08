@@ -18,7 +18,7 @@ class Footer extends React.Component {
       position: 'relative', //Positions footer relative to other elements on hte page
       //zIndex: '1', //z-index positions elements in front or behind eachother, most have a //natual z-index of -1
       //height: '3em', //exactly what it says...
-      marginTop: '15em' //moves footer to bottom of all elements
+      marginTop: '20em' //moves footer to bottom of all elements
     };
     const flexStyle = {
       backgroundColor:'#433',
