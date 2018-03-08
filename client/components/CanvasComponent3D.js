@@ -47,10 +47,8 @@ var FSHADER_SOURCE =
   '  gl_FragColor.a = clamp(v_Color.a, 0.0, 1.0);\n' +
   '}\n';
 
-
-
 /**
-* Class with a 2d and a 3d canvas.
+* 3d canvas class.
 */
 class CanvasComponent3D extends Component {
   constructor(props) {

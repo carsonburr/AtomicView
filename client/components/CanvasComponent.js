@@ -7,6 +7,7 @@ import CuonMatrix from '../../webgl_lib/cuon-matrix.js';
 import PeriodicTablePopup from './PeriodicTablePopup';
 import BondButton from './BondButton';
 import CanvasComponent3D from './CanvasComponent3D';
+import CanvasComponent2D from './CanvasComponent2D';
 import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
@@ -26,11 +27,7 @@ class CanvasComponent extends Component {
     this.curAction = {action : "atom"}; // Can currently only be atom or bond
     // Current atom to be drawn.
     this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, 0x909090, null, new Set())};
-    this.curBond = null;
     this.curBondType = 1;
-    this.curSelected = null;
-    this.curMoving = null;
-    this.curMouseOver = null;
     this.canvas3d = null;
     this.gl = null;
     // Keeps track of changes for use in reversions
@@ -48,7 +45,6 @@ class CanvasComponent extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.deleteHandler = this.deleteHandler.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
-    // this.draw3D = this.refs.canvas3d.draw3D.bind(this);
 
   }
 
@@ -71,311 +67,16 @@ class CanvasComponent extends Component {
 
   switchCurAction = (action) => {
     switch (action) {
-      case "select": this.curSelected = null; break;
-      case "bond": this.curBond = null; break;
+      case "bond": this.refs.canvas2d.curBond = null; break;
       default: ;
     }
     this.curAction.action = action;
-    this.curSelected = null;
-    this.curMoving = null;
+    this.refs.canvas2d.curSelected = null;
+    this.refs.canvas2d.curMoving = null;
   }
 
-  // Calls drawScene2D() with the context as a parameter
   drawCanvas2D(){
-    const canvas2d = this.refs.canvas2d;
-    const context2d = canvas2d.getContext('2d');
-    this.drawScene2D(context2d);
-
-  }
-
-  // Clears the 2d Canvas and calls drawAtoms2D
-  drawScene2D(context2d) {
-    context2d.clearRect(0, 0, context2d.canvas.width, context2d.canvas.height);
-    this.drawAtoms2D(context2d);
-    this.drawBonds2D(context2d);
-  }
-
-  drawBond2D(context2d, bond) {
-    if(bond.bondType == 1) {
-      context2d.beginPath();
-      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-      context2d.stroke();
-    } else {
-      var x1 = bond.atom1.location.x;
-      var y1 = bond.atom1.location.y;
-      var x2 = bond.atom2.location.x;
-      var y2 = bond.atom2.location.y;
-      var slope = - 1.0/(1.0 * (y1 - y2)/(x1 - x2));
-      var displacementX, displacementY;
-      if (x1-x2 == 0) {
-        displacementX = 4;
-        displacementY = 0;
-      } else {
-        var angle = Math.atan2(y1-y2, x1-x2) + Math.PI / 2;
-        displacementX = Math.cos(angle) * 4;
-        displacementY = Math.sin(angle) * 4;
-      }
-      if (bond.bondType == 2) {
-        context2d.beginPath();
-        context2d.moveTo(x1+displacementX, y1+displacementY);
-        context2d.lineTo(x2+displacementX, y2+displacementY);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1-displacementX, y1-displacementY);
-        context2d.lineTo(x2-displacementX, y2-displacementY);
-        context2d.stroke();
-      } else if (bond.bondType == 3) {
-        displacementX *= 5/4;
-        displacementY *= 5/4;
-        context2d.beginPath();
-        context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-        context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1+displacementX, y1+displacementY);
-        context2d.lineTo(x2+displacementX, y2+displacementY);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1-displacementX, y1-displacementY);
-        context2d.lineTo(x2-displacementX, y2-displacementY);
-        context2d.stroke();
-      }
-    }
-  }
-
-  drawBonds2D(context2d) {
-    var bonds = this.bonds;
-    for( let bond of bonds ){
-      this.drawBond2D(context2d, bond);
-    }
-    if (this.tmpBond != null) {
-      this.drawBond2D(context2d, this.tmpBond);
-    }
-  }
-
-  // Draws all the atoms.
-  drawAtoms2D(context2d) {
-    var atoms = this.atoms;
-    for (let atom of atoms) {
-
-        if (atom.equals(this.curSelected) ||
-           (atom.equals(this.curMouseOver) && this.curMoving == null && this.curAction.action == "select") ||
-           (atom.equals(this.curMouseOver) && this.curAction.action == "bond")) {
-          context2d.fillStyle = "lightgreen";
-        } else if (this.curAction.action == "atom" && atom.equals(this.curMouseOver)) {
-          context2d.fillStyle = "#ff9933";
-        } else if (atom.equals(this.curMouseOver)) {
-          context2d.fillStyle = "#c82124"; //red
-        } else {
-          context2d.fillStyle = "lightgrey";
-        }
-        context2d.beginPath();
-        context2d.arc(atom.location.x,atom.location.y,30/2,0,Math.PI*2,true);
-        context2d.closePath();
-        context2d.fill();
-        context2d.fillStyle = "black";
-        context2d.font = 'normal bold 20px sans-serif';
-        context2d.textAlign = 'center';
-        context2d.textBaseline = 'middle';
-        context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);
-    }
-  }
-
-  handleLeftOnMouseDown2D(x, y) {
-    switch (this.curAction.action) {
-      case "atom":
-        this.handleLeftOnMouseDown2DAtom(x,y);
-        break;
-      case "bond":
-        this.handleLeftOnMouseDown2dBond(x,y);
-        break;
-      case "select":
-        this.handleLeftOnMouseDown2DSelect(x,y);
-        break;
-      default:
-        console.log("Unsupported Action: " + this.curAction.action);
-    }
-    if(this.curAction.action != "select") {
-      this.curMoving = null;
-    }
-  }
-
-  getAtomAtLocation(x, y) {
-    var atoms = this.atoms;
-    // TODO: Might want to use a hash map for this.
-    for (let atom of atoms) {
-        if(atom.equals(this.curMoving)) {
-          continue;
-        }
-        if( (Math.abs(atom.location.x - x) < 30) && (Math.abs(atom.location.y - y) < 30) ) {
-          return atom;
-        }
-    }
-    return null;
-  }
-
-  addNewBond(atom) {
-    var bonds = this.bonds;
-    var notAdded = true;
-    this.curSelected = null;
-    this.tmpBond = null;
-    this.curBond.atom2 = atom;
-    for ( let bond of bonds ) {
-      var atom1 = bond.atom1;
-      var atom2 = bond.atom2;
-      var curAtom1 = this.curBond.atom1;
-      var curAtom2 = this.curBond.atom2;
-      if ( (atom1.equals(curAtom1) &&
-            atom2.equals(curAtom2)) ||
-           (atom2.equals(curAtom1) &&
-            atom1.equals(curAtom2)) ) {
-        this.changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
-        bond.bondType = this.curBond.bondType;
-        notAdded = false;
-        break;
-      }
-    }
-    if(notAdded){
-      this.bonds.add(this.curBond);
-      this.curBond.atom1.bonds.add(this.curBond);
-      this.curBond.atom2.bonds.add(this.curBond);
-      this.changes.push({type:"bond", payLoad:this.curBond, action:"added", overwritten:null});
-    }
-
-    this.curBond = null;
-    this.drawCanvas2D();
-  }
-
-  // Handles left click for bonds
-  handleLeftOnMouseDown2dBond(x, y) {
-    var atom = this.getAtomAtLocation(x, y);
-    // If atom exists at this location
-    if(atom != null ) {
-      // If this is the first of the two atoms to be bonded
-      if(this.curBond == null ){
-        this.curBond = new Bond(atom, this.curBondType);
-        this.curSelected = atom;
-      }
-       else {
-        this.addNewBond(atom);
-      }
-    }
-  }
-
-  // Handles left click for selections
-  handleLeftOnMouseDown2DSelect(x, y) {
-    var atom = this.getAtomAtLocation(x, y);
-    // If atom exists at this location
-    if (atom != null) {
-      this.curSelected = atom;
-      this.curMoving = atom;
-    } else {
-      this.curSelected = null;
-    }
-  }
-
-  // Handles left click for atoms
-  handleLeftOnMouseDown2DAtom(x, y) {
-    var atoms = this.atoms;
-    var curAtom = this.curAtom;
-    var atom = this.getAtomAtLocation(x, y);
-    // if atom already exists in this spot then overwrite it (and maintain bonds)
-        if (atom != null) {
-          var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
-             curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, atom.bonds);
-          this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
-
-          // Change the overwritten atoms bonds to be to the new atom instead
-          for( let bond of atom.bonds ){
-            if(bond.atom1.equals(atom)){
-              bond.atom1 = newAtom;
-            }
-            else if(bond.atom2.equals(atom)){
-              bond.atom2 = newAtom;
-            }
-          }
-          atoms.delete(atom);
-          atoms.add(newAtom);
-    }
-    // If atom does not exist in this spot then create a new one
-    else {
-      var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
-        curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, new Set())
-      atoms.add(newAtom);
-      this.changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
-    }
-
-    // TODO: Possibly use requestAnimitionFrame. Might not be needed though as we're
-    // only drawing 2d stuff.
-    // requestAnimationFrame(this.drawCanvas);
-    this.drawCanvas2D();
-  }
-
-  handleOnMouseMoveBond(x, y) {
-    if(this.curBond != null) {
-      this.tmpBond = new Bond(this.curBond.atom1, this.curBondType);
-      this.tmpBond.atom2 = new Atom(new Coord(x,y,0), null, null, null, null, null);
-    }
-  }
-
-  handleOnMouseMoveSelect(x, y, atom) {
-    if(this.curMoving != null) {
-      if (atom == null || atom.equals(this.curMoving)) {
-        this.curMoving.location.x = x;
-        this.curMoving.location.y = y;
-      }
-    }
-  }
-
-  handleOnMouseMove(ev){
-    let boundingRect = ev.target.getBoundingClientRect();
-    var x = ev.clientX - boundingRect.left; // x coordinate of a mouse pointer
-    var y = ev.clientY - boundingRect.top; // y coordinate of a mouse pointer
-    var atom = this.getAtomAtLocation(x, y);
-    this.curMouseOver = atom;
-    switch (this.curAction.action) {
-      case "atom":
-        break;
-      case "bond":
-        this.handleOnMouseMoveBond(x, y);
-        break;
-      case "select":
-        this.handleOnMouseMoveSelect(x, y, atom);
-        break;
-      default:
-        console.log("Unsupported Action: " + this.curAction.action);
-    }
-    this.drawCanvas2D();
-  }
-
-  handleOnMouseUpSelect(x, y) {
-    this.curMoving = null;
-  }
-
-  handleOnMouseUpBond(x, y) {
-    var atom = this.getAtomAtLocation(x, y);
-    if(atom != null && this.curBond != null && atom != this.curSelected) {
-      this.addNewBond(atom);
-    }
-  }
-
-  handleOnMouseUp(ev){
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
-    this.curMouseOver = null;
-    switch (this.curAction.action) {
-      case "atom":
-        break;
-      case "bond":
-        this.handleOnMouseUpBond(x, y);
-        break;
-      case "select":
-        this.handleOnMouseUpSelect(x, y);
-        break;
-      default:
-        console.log("Unsupported Action: " + this.curAction.action);
-    }
+    this.refs.canvas2d.drawCanvas2D();
   }
 
   reversionHandler(){
@@ -450,9 +151,13 @@ class CanvasComponent extends Component {
   }
 
   deleteHandler(){
-    if(this.curSelected != null){
-      var atom = this.curSelected
-      this.changes.push({type:"atom", payLoad:this.curSelected, action:"deleted", overwritten:null})
+    if(this.refs.canvas2d.curSelected != null){
+      var atom = this.refs.canvas2d.curSelected;
+      this.changes.push({
+        type:    "atom",
+        payLoad: this.refs.canvas2dcurSelected,
+        action:  "deleted", overwritten:null
+      });
       // Remove all references to bonds
       for(let bond of atom.bonds){
         if(bond.atom1 != atom){
@@ -463,32 +168,13 @@ class CanvasComponent extends Component {
         }
         this.bonds.delete(bond)
       }
-      this.atoms.delete(this.curSelected);
+      this.atoms.delete(this.refs.canvas2d.curSelected);
       this.drawCanvas2D();
     }
   }
 
-  // On click handler
-  handleOnMouseDown2D(ev) {
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
-    var rect = ev.target.getBoundingClientRect() ;
-
-    x = (x - rect.left);
-    y = (y - rect.top);
-    if(ev.button === 2) {
-      // Right Click
-    } else if(ev.button === 0) {
-      // Left Click
-      this.handleLeftOnMouseDown2D(x,y);
-    } else if (ev.button === 1){
-      ev.preventDefault();
-      // Middle Click
-    }
-  }
-
   //update canvas sizes when needed
-  updateDimensions() {
+  updateDimensions(redraw=true) {
     if(window.innerWidth < 690) {
       //TODO fix so doesnt get taller at last fixed size step
       this.setState({
@@ -503,12 +189,14 @@ class CanvasComponent extends Component {
         canvasHeight: update_height 
       });
     }
-    this.drawCanvas2D();
-    this.refs.canvas3d.draw3D();
+    if(redraw) {
+      this.drawCanvas2D();
+      this.refs.canvas3d.draw3D();
+    }
   }
   //event listener for canvas resizing
   componentDidMount() {
-    this.updateDimensions();
+    this.updateDimensions(false);
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
 
@@ -521,6 +209,21 @@ class CanvasComponent extends Component {
     this.userId = userId;
   }
 
+  getCurAtom = () => {
+    return this.curAtom;
+  }
+
+  getCurAction = () => {
+    return this.curAction.action;
+  }
+
+  getCurBondType = () => {
+    return this.curBondType;
+  }
+
+  getChanges = () => {
+    return this.changes;
+  }
 
   getUserId = () => {
     return this.userId;
@@ -597,9 +300,7 @@ class CanvasComponent extends Component {
     }
   }
 
-  // TODO: Need to change the size of the canvases dynamically to fit half the screen.
   render() {
-
     return (
       <div className="CanvasComponent" 
            style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
@@ -610,13 +311,16 @@ class CanvasComponent extends Component {
                 />
         <span>{this.showLabel()}</span>
         <div>
-          <canvas ref="canvas2d"
-                  width={this.state.canvasWidth}
-                  height={this.state.canvasHeight}
-                  style={{border: '1px solid black', marginLeft: '10px'}}
-                  onMouseDown={this.handleOnMouseDown2D.bind(this)}
-                  onMouseMove={this.handleOnMouseMove.bind(this)}
-                  onMouseUp={this.handleOnMouseUp.bind(this)}/>
+          <CanvasComponent2D ref="canvas2d"
+                             getAtoms={this.getAtoms}
+                             getBonds={this.getBonds}
+                             getCurAtom={this.getCurAtom}
+                             getChanges={this.getChanges}
+                             getCurAction={this.getCurAction}
+                             getCurBondType={this.getCurBondType}
+                             canvasWidth={this.state.canvasWidth}
+                             canvasHeight={this.state.canvasHeight}
+                             />
           <CanvasComponent3D ref="canvas3d"
                              getAtoms={this.getAtoms}
                              getBonds={this.getBonds}
