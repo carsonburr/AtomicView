@@ -292,14 +292,18 @@ class CanvasComponent2D extends Component {
 
   handleOnMouseUpBond(x, y) {
     var atom = this.getAtomAtLocation(x, y);
+
+      console.log(atom)
     if(atom != null && this.curBond != null && atom != this.curSelected) {
+      console.log("test")
       this.addNewBond(atom);
     }
   }
 
   handleOnMouseUp(ev){
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
+    let boundingRect = ev.target.getBoundingClientRect();
+    var x = ev.clientX - boundingRect.left; // x coordinate of a mouse pointer
+    var y = ev.clientY - boundingRect.top; // y coordinate of a mouse pointer
     this.curMouseOver = null;
     switch (this.props.getCurAction()) {
       case "atom":
@@ -317,12 +321,9 @@ class CanvasComponent2D extends Component {
 
   // On click handler
   handleOnMouseDown2D(ev) {
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
-    var rect = ev.target.getBoundingClientRect() ;
-
-    x = (x - rect.left);
-    y = (y - rect.top);
+    let boundingRect = ev.target.getBoundingClientRect();
+    var x = ev.clientX - boundingRect.left; // x coordinate of a mouse pointer
+    var y = ev.clientY - boundingRect.top; // y coordinate of a mouse pointer
     if(ev.button === 2) {
       // Right Click
     } else if(ev.button === 0) {
