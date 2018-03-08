@@ -292,10 +292,7 @@ class CanvasComponent2D extends Component {
 
   handleOnMouseUpBond(x, y) {
     var atom = this.getAtomAtLocation(x, y);
-
-      console.log(atom)
     if(atom != null && this.curBond != null && atom != this.curSelected) {
-      console.log("test")
       this.addNewBond(atom);
     }
   }
