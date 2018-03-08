@@ -952,7 +952,7 @@ class CanvasComponent extends Component {
   render() {
 
     return (
-      <div className="CanvasComponent" style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
