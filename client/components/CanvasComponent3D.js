@@ -105,7 +105,8 @@ class CanvasComponent3D extends Component {
 	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
 	  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
 	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
-	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
+	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || 
+        !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
 		console.log('Failed to get the storage location');
 		return;
 	  }
@@ -134,12 +135,14 @@ class CanvasComponent3D extends Component {
     var radius = 5;
     var deg = 0;
     for(var i = 0; i <= 11; i++){ //First circle
-      unitcircles.push(new Coord(0,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
+      unitcircles.push(new Coord(0, radius*Math.cos(deg * (Math.PI / 180)),
+                                 radius*Math.sin(deg * (Math.PI / 180))));
       deg += 30;
     }
     deg = 0;
     for(var i = 12; i <= 23; i++){ //Second circle
-      unitcircles.push(new Coord(1,radius*Math.cos(deg * (Math.PI / 180)),radius*Math.sin(deg * (Math.PI / 180))));
+      unitcircles.push(new Coord(1, radius*Math.cos(deg * (Math.PI / 180)),
+                                 radius*Math.sin(deg * (Math.PI / 180))));
       deg += 30;
     }
     //Generate polygon array
@@ -239,15 +242,19 @@ class CanvasComponent3D extends Component {
       var theta = Math.atan2(y2 - y1, x2 - x1);
       var l = Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
       for(var i = 0; i < unitcircles.length; i++){
-        vertices.push(new Coord(unitcircles[i].x *l* Math.cos(theta) - unitcircles[i].y * Math.sin(theta) + x1, 
-                                unitcircles[i].x *l* Math.sin(theta) + unitcircles[i].y * Math.cos(theta) + y1, 
+        vertices.push(new Coord(unitcircles[i].x *l* Math.cos(theta) - unitcircles[i].y *
+                                  Math.sin(theta) + x1, 
+                                unitcircles[i].x *l* Math.sin(theta) + unitcircles[i].y *
+                                  Math.cos(theta) + y1, 
                                 unitcircles[i].z));
       }
     }
 
     //returns the cross product of two vectors
     function crossp (vec1, vec2){
-	    return new Coord(vec1.y*vec2.z - vec1.z*vec2.y, vec1.z*vec2.x - vec1.x*vec2.z, vec1.x*vec2.y - vec1.y*vec2.x);
+	    return new Coord(vec1.y*vec2.z - vec1.z*vec2.y,
+                       vec1.z*vec2.x - vec1.x*vec2.z,
+                       vec1.x*vec2.y - vec1.y*vec2.x);
     }
 
     //returns the length of a vector
@@ -399,7 +406,7 @@ class CanvasComponent3D extends Component {
           var j = 0;
           for(var i = 0; i < vertices_e.length; i += 3){
             vertices_e[i] = vertices[j].x + (dy*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
-            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);;
+            vertices_e[i+1] = vertices[j].y + (sg*(-dx)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+2] = vertices[j].z + 0.0;
 	          j++;
           }

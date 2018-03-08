@@ -221,7 +221,8 @@ class CanvasComponent2D extends Component {
     // if atom already exists in this spot then overwrite it (and maintain bonds)
         if (atom != null) {
           var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
-             curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, atom.bonds);
+             curAtom.atom.elementName, curAtom.atom.atomicRadius, 
+             curAtom.atom.atomColor, null, atom.bonds);
           changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
 
           // Change the overwritten atoms bonds to be to the new atom instead
@@ -239,14 +240,12 @@ class CanvasComponent2D extends Component {
     // If atom does not exist in this spot then create a new one
     else {
       var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
-        curAtom.atom.elementName, curAtom.atom.atomicRadius, curAtom.atom.atomColor, null, new Set())
+        curAtom.atom.elementName, curAtom.atom.atomicRadius,
+        curAtom.atom.atomColor, null, new Set());
       atoms.add(newAtom);
       changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
     }
 
-    // TODO: Possibly use requestAnimitionFrame. Might not be needed though as we're
-    // only drawing 2d stuff.
-    // requestAnimationFrame(this.drawCanvas);
     this.drawCanvas2D();
   }
 

@@ -24,9 +24,10 @@ class CanvasComponent extends Component {
     super();
     this.atoms = new Set();
     this.bonds = new Set();
-    this.curAction = {action : "atom"}; // Can currently only be atom or bond
+    this.curAction = {action : "atom"};
     // Current atom to be drawn.
-    this.curAtom = {atom : new Atom(new Coord(0,0,0), "C", "carbon", 70, 0x909090, null, new Set())};
+    this.curAtom = {atom : new Atom(
+      new Coord(0,0,0), "C", "carbon", 70, 0x909090, null, new Set())};
     this.curBondType = 1;
     this.canvas3d = null;
     this.gl = null;
@@ -58,7 +59,8 @@ class CanvasComponent extends Component {
   }
 
   setCurAtom = (symbol, name, atomicRadius, color) => {
-    this.curAtom.atom = new Atom(new Coord(0,0,0), symbol, name, atomicRadius,color,null, new Set());
+    this.curAtom.atom = new Atom(
+      new Coord(0,0,0), symbol, name, atomicRadius,color,null, new Set());
   }
 
   setCurBondType = (bondType) => {
@@ -255,7 +257,11 @@ class CanvasComponent extends Component {
     if(!this.state.settingLabel){
       return(<button className="LabelButton" onClick={this.setLabel}>Label Scene</button>);
     } else {
-      return(<span><input type="text" ref={input => this._label = input} placeholder="Set Label" /><input type="submit" onClick={this.updateLabel} value="Save"/></span>);
+      return(
+        <span>
+          <input type="text" ref={input => this._label = input} placeholder="Set Label" />
+          <input type="submit" onClick={this.updateLabel} value="Save"/>
+        </span>);
     }
   }
 
