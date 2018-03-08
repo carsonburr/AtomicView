@@ -9,8 +9,8 @@ import BondButton from './BondButton';
 import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
-import saveAtomsAndBonds from './SaveAtomsAndBonds'
-import loadAtomsAndBonds from './LoadAtomsAndBonds'
+import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds'
+import loadAtomsAndBonds from '../utils/LoadAtomsAndBonds'
 import '../css/buttons.css'
 
 /**
@@ -328,8 +328,9 @@ class CanvasComponent extends Component {
   }
 
   handleOnMouseMove(ev){
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
+    let boundingRect = ev.target.getBoundingClientRect();
+    var x = ev.clientX - boundingRect.left; // x coordinate of a mouse pointer
+    var y = ev.clientY - boundingRect.top; // y coordinate of a mouse pointer
     var atom = this.getAtomAtLocation(x, y);
     this.curMouseOver = atom;
     switch (this.curAction.action) {

@@ -79,6 +79,51 @@ export function Coord(x,y,z) {
   };
 }
 
+// modularizing buildAtom from buildTable
+function buildAtom(row, col) {
+  let atom = {}
+
+  //assign physical attributes
+  atom.symbol = atomicSymbols[row][col];
+  atom.radius = atomicRadii[row][col];
+  atom.number = atomicNumber[row][col];
+  atom.color3d = atomColor[row][col];
+
+  //TODO add atomic weight, atomic category
+  if(atom.number === '') {
+    atom.color = "#FFFFFF";
+  } else if(nobleGasses.includes(atom.symbol)) {
+    atom.color = "#81BEF7"
+  } else if(otherNonmetals.includes(atom.symbol)) {
+    atom.color = "#22FF22"
+  } else if (metalloids.includes(atom.symbol)) {
+    atom.color = "#77DD88"
+  } else if (postTransitionMetals.includes(atom.symbol)) {
+    atom.color = "#99DDCC"
+  } else if (transitionMetals.includes(atom.symbol)) {
+    atom.color = "#DDBBBB"
+  } else if (lanthanoids.includes(atom.symbol)) {
+    atom.color = "#FFBB99"
+  } else if (actinoids.includes(atom.symbol)) {
+    atom.color = "#EEBBDD"
+  } else if(alkaliMetals.includes(atom.symbol)) {
+    atom.color = "#FFCC33"
+  } else if(alkalineEarthMetals.includes(atom.symbol)) {
+    atom.color = "#FFFF44"
+  } else {
+    atom.color = "#FFFFFF";
+  }
+
+  //define the radius
+  //if(atom.symbol = '') {
+  //    atom.radius = ''
+  //} else {
+    //   atom.radius = radii[0]
+  //}
+
+  return atom;
+} 
+
 function buildTable() {
   //periodic table 2d array
   let rows = [];
@@ -86,47 +131,7 @@ function buildTable() {
   for(var row=0; row<atomicSymbols.length; row++) {
     let cell = [];
     for(var col=0; col<atomicSymbols[row].length; col++){
-
-      //create new atom
-      var atom = {}//new Object();
-
-      //assign physical attributes
-      atom.symbol = atomicSymbols[row][col];
-      atom.radius = atomicRadii[row][col];
-      atom.number = atomicNumber[row][col];
-      atom.color3d = atomColor[row][col];
-
-      //TODO add atomic weight, atomic category
-      if(atom.number === '') {
-        atom.color = "#FFFFFF";
-      } else if(nobleGasses.includes(atom.symbol)) {
-        atom.color = "#81BEF7"
-      } else if(otherNonmetals.includes(atom.symbol)) {
-        atom.color = "#22FF22"
-      } else if (metalloids.includes(atom.symbol)) {
-        atom.color = "#77DD88"
-      } else if (postTransitionMetals.includes(atom.symbol)) {
-        atom.color = "#99DDCC"
-      } else if (transitionMetals.includes(atom.symbol)) {
-        atom.color = "#DDBBBB"
-      } else if (lanthanoids.includes(atom.symbol)) {
-        atom.color = "#FFBB99"
-      } else if (actinoids.includes(atom.symbol)) {
-        atom.color = "#EEBBDD"
-      } else if(alkaliMetals.includes(atom.symbol)) {
-        atom.color = "#FFCC33"
-      } else if(alkalineEarthMetals.includes(atom.symbol)) {
-        atom.color = "#FFFF44"
-      } else {
-        atom.color = "#FFFFFF";
-      }
-
-      //define the radius
-      //if(atom.symbol = '') {
-      //    atom.radius = ''
-      //} else {
-       //   atom.radius = radii[0]
-      //}
+      let atom = buildAtom(row, col);
 
       cell.push(atom);
     }

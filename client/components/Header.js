@@ -84,7 +84,6 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left', paddingLeft: '5px'}}>Save</h3>
           <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
           <div style={{clear: "both"}}></div>
         </header>
