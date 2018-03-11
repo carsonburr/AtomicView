@@ -3,8 +3,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {getTable} from '../../models/Atom.js';
-import '../css/buttons.css'
-
+import '../css/buttons.css';
+//import 'font-awesome/css/font-awesome.min.css';
+var FontAwesome = require('react-fontawesome');
 class PeriodicTablePopup extends React.Component {
   constructor() {
     super();
@@ -46,7 +47,7 @@ class PeriodicTablePopup extends React.Component {
       return (
         <div style={divStyle} >
           <button className="PeriodicTableButton" onClick = {this.toggleModal}>
-            Select Element
+            <i className="fa fa-plus"></i>
           </button>
         </div>
       )

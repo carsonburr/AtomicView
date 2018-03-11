@@ -102,7 +102,7 @@
 	text-shadow:   0px 0px #000000;
 	transition: 0.4s;
 	-webkit-transition: 0.4s;
-	margin-left: 12px;
+	margin-left: 6px;
   }
   .DeleteSelectedButton:hover {
   	background: #556699;
@@ -127,4 +127,10 @@
   	background: #556699;
   	color: white;
   }
+
+  /*Add button*/
+  button.btn.add::before {
+	  font-family: fontAwesome;
+	  content: "\f067\00a0";
+	}
 }
