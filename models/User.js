@@ -1,5 +1,11 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+
+var keyMolPair = new mongoose.Schema({
+  key: String,
+  jsonAtomsAndBonds: String
+})
+
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -11,7 +17,7 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  jsonAtomsAndBondsArray: [{ key: String, jsonAtomsAndBonds: String }],
+  jsonAtomsAndBondsArray: [keyMolPair],
 });
 
 // authenticate against database

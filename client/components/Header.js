@@ -52,7 +52,13 @@ class Header extends React.Component {
     const headerStyle = {
       backgroundColor:'#433',
       width: '100%',
-      paddingBottom: '10px'
+      paddingBottom: '10px',
+      marginBottom: '10px',
+      position: 'fixed',
+      //position: 'relative',
+      top: '0',
+      left: '0',
+      zIndex: '999'
     };
     const flexStyle = {
       bottom: '10px',
@@ -84,7 +90,6 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left', paddingLeft: '5px'}}>Save</h3>
           <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
           <div style={{clear: "both"}}></div>
         </header>
@@ -101,9 +106,5 @@ LoginPage.propTypes = {
   setUserId: PropTypes.func.isRequired,
   getUserId: PropTypes.func.isRequired,
 };
-
-/*Header.propTypes = {
-  switchCurAction: PropTypes.func.isRequired
-};*/
 
 export default Header;
