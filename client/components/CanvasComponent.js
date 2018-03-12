@@ -15,6 +15,7 @@ import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds'
 import loadAtomsAndBonds from '../utils/LoadAtomsAndBonds'
 import '../css/buttons.css'
 import '../../node_modules/font-awesome/css/font-awesome.css'
+require('font-awesome/css/font-awesome.css');
 
 /**
 * Class with a 2d and a 3d canvas.
