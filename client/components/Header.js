@@ -52,7 +52,13 @@ class Header extends React.Component {
     const headerStyle = {
       backgroundColor:'#433',
       width: '100%',
-      paddingBottom: '10px'
+      paddingBottom: '10px',
+      marginBottom: '10px',
+      position: 'fixed',
+      //position: 'relative',
+      top: '0',
+      left: '0',
+      zIndex: '999'
     };
     const flexStyle = {
       bottom: '10px',

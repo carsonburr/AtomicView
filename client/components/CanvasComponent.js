@@ -255,7 +255,7 @@ class CanvasComponent extends Component {
   //get Label either shows label scene button or form
   getLabel = () => {
     if(!this.state.settingLabel){
-      return(<button className="LabelButton" onClick={this.setLabel}>Label Scene</button>);
+      return(<button className="LabelButton" onClick={this.setLabel}><i className="fa fa-tag"></i></button>);
     } else {
       return(
         <span>
@@ -308,8 +308,7 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" 
-           style={{marginBottom: '50px'}} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
@@ -341,13 +340,13 @@ class CanvasComponent extends Component {
                       setCurBondType={this.setCurBondType}/>
           <SelectButton switchCurAction={this.switchCurAction}/>
           <button className="RevertButton" onClick={this.reversionHandler}>
-            Revert
+            <i className="fa fa-undo"></i>
           </button>
           <button className="DrawButton" onClick={() => this.refs.canvas3d.draw3D()}>
-            Draw
+            <i className="fa fa-pencil"></i>
           </button>
           <button className="DeleteSelectedButton" onClick={this.deleteHandler}>
-            Delete Selected
+            <i className="fa fa-trash"></i>
             </button>
           <span>{this.getLabel()}</span>
         </div>
