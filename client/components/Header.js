@@ -21,12 +21,12 @@ class Header extends React.Component {
     this.props.setUserId(userId);
   };
 
-  saveAtomsAndBondsForUser = () => {
-    this.props.saveAtomsAndBondsForUser("test3");
+  saveAtomsAndBondsForUser = (key) => {
+    this.props.saveAtomsAndBondsForUser(key);
   };
 
-  loadAtomsAndBondsForUser = () => {
-    this.props.loadAtomsAndBondsForUser("test3");
+  loadAtomsAndBondsForUser = (key) => {
+    this.props.loadAtomsAndBondsForUser(key);
   };
 
   logout = () => {

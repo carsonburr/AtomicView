@@ -85,6 +85,29 @@ router.route('/save').post(
   }  
 );
 
+router.route('/molList').post(
+  function(req, res, next) {
+    if (req.session.signedIn && req.session.userId) {
+
+      User.find({ "_id": req.session.userId },
+                { "jsonAtomsAndBondsArray.jsonAtomsAndBonds": 0},
+        function(err, data) {
+          if (err) {
+            console.log(err);
+            return err;
+          }
+          if (data) {
+            res.send(data);
+          } else {
+            console.log("No data found");
+          }
+        })
+    } else {
+      console.log("in /molList but not signed in");
+    }
+  }
+);
+
 router.route('/retrieve').post(
   function(req, res, next) {
     if (req.session.signedIn && req.session.userId) {
@@ -100,7 +123,6 @@ router.route('/retrieve').post(
               return err;
             }
             if (data) {
-              console.log("Data found");
               res.send(data)
             } else {
               console.log("No data found")
@@ -109,7 +131,7 @@ router.route('/retrieve').post(
           );
       }
     } else {
-      console.log("in /get but does not seem to be signed in")
+      console.log("in /retrieve but does not seem to be signed in")
     }
   }  
 
