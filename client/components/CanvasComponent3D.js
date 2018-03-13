@@ -282,7 +282,7 @@ class CanvasComponent3D extends Component {
         var projMatrix = new CuonMatrix.Matrix4();
         projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        actualDraw();
+        window.requestAnimationFrame(actualDraw);
       }
     }
 
@@ -302,7 +302,7 @@ class CanvasComponent3D extends Component {
         projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
         leftMouseDown = false;
-        actualDraw();
+        window.requestAnimationFrame(actualDraw);
       }
     }
 
