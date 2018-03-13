@@ -168,11 +168,12 @@ class CanvasComponent2D extends Component {
            (atom2.equals(curAtom1) &&
             atom1.equals(curAtom2)) ) {
         changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
-        bond.bondType = curBond;
+        bond.bondType = curBond.bondType;
         notAdded = false;
         break;
       }
     }
+
     if(notAdded){
       bonds.add(curBond);
       curBond.atom1.bonds.add(curBond);
@@ -292,10 +293,7 @@ class CanvasComponent2D extends Component {
 
   handleOnMouseUpBond(x, y) {
     var atom = this.getAtomAtLocation(x, y);
-
-      console.log(atom)
     if(atom != null && this.curBond != null && atom != this.curSelected) {
-      console.log("test")
       this.addNewBond(atom);
     }
   }

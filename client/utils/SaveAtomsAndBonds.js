@@ -2,7 +2,6 @@ import axios from 'axios';
 import qs from 'querystring';
 
 export default function saveAtomsAndBonds(key, atoms, bonds) {
-  console.log("In saveAtomsAndBonds")
   var savedAtoms = [];
   var i = 0;
   atoms.forEach(atom => {

@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   devtool: 'inline-source-map',
@@ -26,9 +27,21 @@ module.exports = {
         ]
       },
     },
+    // {
+    //   test: /\.css$/,
+    //   loader: "style-loader!css-loader"
+    // },
     {
       test: /\.css$/,
       loader: "style-loader!css-loader"
+    },
+    {
+      test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+    },
+    {
+      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: 'file-loader'
     }]
   },
   plugins: [
@@ -39,9 +52,16 @@ module.exports = {
       'process.env': {
         'BUILD_TARGET': JSON.stringify('client')
       }
-    })
+    }),
+    new ExtractTextPlugin('client.css')
   ],
   devServer: {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-id, Content-Length, X-Requested-With",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+    },
     host: 'localhost',
     port: 3001,
     historyApiFallback: true,

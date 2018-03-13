@@ -3,7 +3,19 @@ import qs from 'querystring';
 import {Atom, Coord} from '../../models/Atom.js';
 import {Bond} from '../../models/Bond.js';
 
-export default function loadAtomsAndBonds(key, atoms, bonds) {
+export function loadList() {
+  axios.post(
+    '/molList'
+  ).then((response) => {
+    console.log(response.data);
+  }).catch(
+    function(err) {
+      console.log(err);
+    }
+  );
+}
+
+export function loadAtomsAndBonds(key, atoms, bonds) {
   axios.post('/retrieve',
       qs.stringify({
         key: key,
@@ -14,10 +26,9 @@ export default function loadAtomsAndBonds(key, atoms, bonds) {
           "Accept": "application/json"
         }
       }).then((response)=>{
-        console.log('In loadAtomsAndBonds')
-        //console.log(response.data)
         atoms.clear();
         bonds.clear();
+        console.log(response.data);
         let atomsAndBonds = JSON.parse(response.data.jsonAtomsAndBondsArray[0].jsonAtomsAndBonds);
         let loadedAtoms = atomsAndBonds.atoms;
         let loadedBonds = atomsAndBonds.bonds;

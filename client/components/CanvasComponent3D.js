@@ -79,11 +79,13 @@ class CanvasComponent3D extends Component {
   draw3D() {
     var canvas = this.canvas3d;
     var atoms = this.props.getAtoms();
+    var bonds = this.props.getBonds();
     var gl = this.gl;
     if (!gl) {
       console.log('Failed to get the rendering context for WebGL');
       return;
     }
+    var g_eyeX = 0, g_eyeY = 0;
     var SPHERE_DIV = 13;
     var positions = [];
     var sphereNormals = [];
@@ -93,7 +95,6 @@ class CanvasComponent3D extends Component {
     var unitpolygons = [];
     var vertices = [];
     var s_normals = [];
-    var viewMatrix; //The view matrix for projection view
     var projMatrix; //The projection matrix
     var Ntransform = new CuonMatrix.Matrix4();
     // Get the storage locations of uniform variables
@@ -125,9 +126,7 @@ class CanvasComponent3D extends Component {
   	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
   	//Set initial orthographic view
   	projMatrix = new CuonMatrix.Matrix4();
-  	projMatrix.setOrtho(0, 640, 425, 0, -100, 100);
-  	viewMatrix = new CuonMatrix.Matrix4();
-  	viewMatrix.setIdentity();
+    projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
   	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
   	Ntransform.setIdentity();
   	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
@@ -153,84 +152,163 @@ class CanvasComponent3D extends Component {
     unitpolygons.push([11, 0, 12]);
 	  unitpolygons.push([11, 12, 23]);
     // Register function (event handler) to be called on a mouse press
-    //canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
+    canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
     // Register function (event handler) to be called on a mouse move
-    //canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
-    // Clearing canvas
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-    // Generate spheres for each atom
-    var n = 0;
-    for (let atom of atoms) {
-      var i, ai, si, ci;
-      var j, aj, sj, cj;
-      var p1, p2;
-      var r = atom.atomicRadius
-      if (r == 0) r = 300;
-      var rscale = (10+r/5)
-      console.log(r);
-      // Generate coordinates
-      for (j = 0; j <= SPHERE_DIV; j++) {
-        aj = j * Math.PI / SPHERE_DIV;
-        sj = Math.sin(aj);
-        cj = Math.cos(aj);
-        for (i = 0; i <= SPHERE_DIV; i++) {
-          ai = i * 2 * Math.PI / SPHERE_DIV;
-          si = Math.sin(ai);
-          ci = Math.cos(ai);
-          positions.push((si * sj*rscale)+atom.location.x);  // X
-          positions.push(cj*rscale+atom.location.y);       // Y
-          positions.push(ci * sj*rscale);  // Z
-          sphereNormals.push(si * sj);  // X
-          sphereNormals.push(cj);       // Y
-          sphereNormals.push(ci * sj);  // Z
+    canvas.onmousemove = function(ev){ onmousemove(ev, gl, canvas); };
+    // Register function (event handler) to be called on a mouse move
+    canvas.onmouseup = function(ev){ onmouseup(ev, gl, canvas); };
+    // Register function (event handler) to be called on a mouse move
+    document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
+    actualDraw();
+
+    function actualDraw(){
+      // Clearing canvas
+      gl.clearColor(1.0, 1.0, 1.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+      // Generate spheres for each atom
+      var n = 0;
+      for (let atom of atoms) {
+        var i, ai, si, ci;
+        var j, aj, sj, cj;
+        var p1, p2;
+        var r = atom.atomicRadius
+        if (r == 0) r = 300;
+        var rscale = (10+r/5)
+        console.log(r);
+        // Generate coordinates
+        for (j = 0; j <= SPHERE_DIV; j++) {
+          aj = j * Math.PI / SPHERE_DIV;
+          sj = Math.sin(aj);
+          cj = Math.cos(aj);
+          for (i = 0; i <= SPHERE_DIV; i++) {
+            ai = i * 2 * Math.PI / SPHERE_DIV;
+            si = Math.sin(ai);
+            ci = Math.cos(ai);
+            positions.push((si * sj*rscale)+atom.location.x);  // X
+            positions.push(cj*rscale+atom.location.y);       // Y
+            positions.push(ci * sj*rscale);  // Z
+            sphereNormals.push(si * sj);  // X
+            sphereNormals.push(cj);       // Y
+            sphereNormals.push(ci * sj);  // Z
+          }
+        }
+        // Generate indices
+        for (j = 0; j < SPHERE_DIV; j++) {
+          for (i = 0; i < SPHERE_DIV; i++) {
+            p1 = j * (SPHERE_DIV+1) + i;
+            p2 = p1 + (SPHERE_DIV+1);
+            indices.push(p1+n);
+            indices.push(p2+n);
+            indices.push(p1 + 1 + n);
+            indices.push(p1 + 1 + n);
+            indices.push(p2 + n);
+            indices.push(p2 + 1 + n);
+          }
+        }
+        n = positions.length/3
+        // Generate colors
+        for (j = 0; j <= SPHERE_DIV; j++) {
+          for (i = 0; i <= SPHERE_DIV; i++) {
+            var color = hexToRgb(atom.atomColor.toString(16));
+            colors.push(color.r/255);
+            colors.push(color.g/255);
+            colors.push(color.b/255);
+            colors.push(1.0);
+          }
         }
       }
-      // Generate indices
-      for (j = 0; j < SPHERE_DIV; j++) {
-        for (i = 0; i < SPHERE_DIV; i++) {
-          p1 = j * (SPHERE_DIV+1) + i;
-          p2 = p1 + (SPHERE_DIV+1);
-          indices.push(p1+n);
-          indices.push(p2+n);
-          indices.push(p1 + 1 + n);
-          indices.push(p1 + 1 + n);
-          indices.push(p2 + n);
-          indices.push(p2 + 1 + n);
-        }
+      if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
+      if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
+      if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;
+      // Unbind the buffer object
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      // Write the indices to the buffer object
+      var indexBuffer = gl.createBuffer();
+      if (!indexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
       }
-      n = positions.length/3
-      // Generate colors
-      for (j = 0; j <= SPHERE_DIV; j++) {
-        for (i = 0; i <= SPHERE_DIV; i++) {
-          var color = hexToRgb(atom.atomColor.toString(16));
-          colors.push(color.r/255);
-          colors.push(color.g/255);
-          colors.push(color.b/255);
-          colors.push(1.0);
-        }
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      //Draw Spheres
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+      //Draw Bonds
+      for( let bond of bonds ){
+        drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
+                     bond.atom2.location.y, bond.bondType);
       }
     }
-    if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
-    if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
-    if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;
-    // Unbind the buffer object
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    // Write the indices to the buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-      console.log('Failed to create the buffer object');
-      return -1;
+
+    //----------------------------------------------------------------------------------------------
+    // Begin Event Handlers
+    //----------------------------------------------------------------------------------------------
+
+    var oldMouseX, oldMouseY;
+    var leftMouseDown = false;
+    var scale=50;
+
+    // Panning Code
+    function pan (newX, newY) {
+
     }
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-    //Draw Spheres
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-    //Draw Bonds
-    var bonds = this.props.getBonds();
-    for( let bond of bonds ){
-      drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
-                   bond.atom2.location.y, bond.bondType);
+
+    function onmousedown(ev, gl, canvas){
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      var rect = ev.target.getBoundingClientRect() ;
+
+      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
+      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
+      if(ev.button == 0) {
+        oldMouseX = x;
+        oldMouseY = y;
+        leftMouseDown = true;
+      } 
+      actualDraw()
+    }
+
+    function onmousemove(ev, gl, canvas){
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      var rect = ev.target.getBoundingClientRect() ;
+
+      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
+      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
+      if(ev.button == 0 && leftMouseDown) {        
+        g_eyeX += x-oldMouseX;
+        g_eyeY += y-oldMouseY;
+        oldMouseX = x;
+        oldMouseY = y;
+        var projMatrix = new CuonMatrix.Matrix4();
+        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+        window.requestAnimationFrame(actualDraw);
+      }
+    }
+
+    function onmouseup(ev, gl, canvas) {
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      var rect = ev.target.getBoundingClientRect() ;
+
+      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
+      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
+      if(leftMouseDown) {        
+        g_eyeX += x-oldMouseX;
+        g_eyeY += y-oldMouseY;
+        oldMouseX = x;
+        oldMouseY = y;
+        var projMatrix = new CuonMatrix.Matrix4();
+        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+        leftMouseDown = false;
+        window.requestAnimationFrame(actualDraw);
+      }
+    }
+
+    function doconmouseup(ev,gl,canvas) {
+      console.log("in doconmouseup")
+      leftMouseDown = false;
     }
 
     //----------------------------------------------------------------------------------------------
