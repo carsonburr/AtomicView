@@ -90,7 +90,7 @@
   	color: white;
   }
 
-  .DeleteSelectedButton {
+  .ClearAllButton {
   	background:    #ffffff;
 	border:        5px solid #556699;
 	border-radius: 8px;
@@ -104,7 +104,7 @@
 	-webkit-transition: 0.4s;
 	margin-left: 6px;
   }
-  .DeleteSelectedButton:hover {
+  .ClearAllButton:hover {
   	background: #556699;
   	color: white;
   }
