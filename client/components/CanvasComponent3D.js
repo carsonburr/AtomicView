@@ -153,9 +153,9 @@ class CanvasComponent3D extends Component {
     unitpolygons.push([11, 0, 12]);
 	  unitpolygons.push([11, 12, 23]);
     // Register function (event handler) to be called on a mouse press
-    //canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
+    canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position); };
     // Register function (event handler) to be called on a mouse move
-    //canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
+    canvas.onmousemove = function(ev){ move(ev, gl, canvas, a_Position); };
     // Clearing canvas
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -232,6 +232,22 @@ class CanvasComponent3D extends Component {
       drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
                    bond.atom2.location.y, bond.bondType);
     }
+
+    //----------------------------------------------------------------------------------------------
+    // Begin Event Handlers
+    //----------------------------------------------------------------------------------------------
+
+    var oldMouseX, oldMouseY;
+
+    // Panning Code
+    function pan (newX, newY) {
+      
+    }
+
+    function click(ev, gl, canvas, a_Position){
+
+    }
+
 
     //----------------------------------------------------------------------------------------------
     // Begin Inner Functions
