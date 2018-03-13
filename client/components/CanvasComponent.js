@@ -11,6 +11,7 @@ import CanvasComponent2D from './CanvasComponent2D';
 import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
+import Toolbox from './Toolbox';
 import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
 import {loadAtomsAndBonds, loadList} from '../utils/LoadAtomsAndBonds';
 import '../css/buttons.css';
@@ -47,6 +48,10 @@ class CanvasComponent extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.clearAll = this.clearAll.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
+    this.getLabel = this.getLabel.bind(this);
+    this.setLabel = this.setLabel.bind(this);
+    this.updateLabel = this.updateLabel.bind(this);
+    this.showLabel = this.showLabel.bind(this);
   }
 
   saveAtomsAndBondsForUser = (key) => {
@@ -280,6 +285,10 @@ class CanvasComponent extends Component {
         break;
     }
   }
+  
+  draw = () => {
+    this.refs.canvas3d.draw3D()
+  }
 
   render() {
     return (
@@ -289,8 +298,15 @@ class CanvasComponent extends Component {
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
-        <span>{this.showLabel()}</span>
         <div>
+          <Toolbox setCurAtom={this.setCurAtom} 
+                  switchCurAction={this.switchCurAction}
+                  clearAll={this.clearAll}
+                  setCurBondType={this.setCurBondType} 
+                  draw={this.draw} 
+                  reversionHandler={this.reversionHandler}
+                  />
+          <span>{this.showLabel()}</span>
           <CanvasComponent2D ref="canvas2d"
                              getAtoms={this.getAtoms}
                              getBonds={this.getBonds}
@@ -308,23 +324,8 @@ class CanvasComponent extends Component {
                              canvasHeight={this.state.canvasHeight}
                              />
         </div>
-        <div>
-          <PeriodicTablePopup setCurAtom={this.setCurAtom}
-                              switchCurAction={this.switchCurAction}/>
-          <BondButton switchCurAction={this.switchCurAction}
-                      setCurBondType={this.setCurBondType}/>
-          <SelectButton switchCurAction={this.switchCurAction}/>
-          <button className="RevertButton" onClick={this.reversionHandler}>
-            <i className="fa fa-undo"></i>
-          </button>
-          <button className="DrawButton" onClick={() => this.refs.canvas3d.draw3D()}>
-            <i className="fa fa-pencil"></i>
-          </button>
-          <button className="ClearAllButton" onClick={this.clearAll}>
-            <i className="fa fa-trash"></i>
-            </button>
           <span>{this.getLabel()}</span>
-        </div>
+
         <Footer/>
       </div>
     );
