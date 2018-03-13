@@ -11,9 +11,10 @@ import CanvasComponent2D from './CanvasComponent2D';
 import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
-import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds'
-import loadAtomsAndBonds from '../utils/LoadAtomsAndBonds'
-import '../css/buttons.css'
+import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
+import {loadAtomsAndBonds, loadList} from '../utils/LoadAtomsAndBonds';
+import '../css/buttons.css';
+import {Icon} from 'react-fa';
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -54,6 +55,7 @@ class CanvasComponent extends Component {
   }
 
   loadAtomsAndBondsForUser = (key) => {
+    loadList();
     loadAtomsAndBonds(key, this.atoms, this.bonds);
     this.drawCanvas2D();
   }
