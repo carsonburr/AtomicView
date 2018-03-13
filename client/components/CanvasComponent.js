@@ -67,16 +67,19 @@ class CanvasComponent extends Component {
 
   setCurBondType = (bondType) => {
     this.curBondType = bondType;
+    this.refs.canvas2d.curBond = null;
+    this.refs.canvas2d.tmpBond = null;
+    this.refs.canvas2d.curSelected = null;
+    this.refs.canvas2d.curMoving = null;
   }
 
   switchCurAction = (action) => {
-    switch (action) {
-      case "bond": this.refs.canvas2d.curBond = null; break;
-      default: ;
-    }
+    this.refs.canvas2d.curBond = null;
+    this.refs.canvas2d.tmpBond = null;
     this.curAction.action = action;
     this.refs.canvas2d.curSelected = null;
     this.refs.canvas2d.curMoving = null;
+    // this.refs.canvas2d.drawCanvas();
   }
 
   drawCanvas2D(){
