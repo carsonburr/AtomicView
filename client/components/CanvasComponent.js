@@ -45,9 +45,8 @@ class CanvasComponent extends Component {
     }
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.deleteHandler = this.deleteHandler.bind(this);
+    this.clearAll = this.clearAll.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
-
   }
 
   saveAtomsAndBondsForUser = (key) => {
@@ -94,34 +93,14 @@ class CanvasComponent extends Component {
           if(reversion.action == "added"){
             this.revertAddedAtom(reversion);
           }
-          else if (reversion.action == "deleted"){
-            this.revertDeletedAtom(reversion);
-          }
           break;
         case "bond":
           if(reversion.action == "added"){
             this.revertAddedBond(reversion);
           }
-          else if(reversion.action == "deleted"){
-            alert("Reverting a bond deletion not implemented");
-          }
           break;
       }
       this.drawCanvas2D();
-    }
-  }
-
-  revertDeletedAtom(reversion){
-    var atom = reversion.payLoad;
-    this.atoms.add(atom)
-    for(let bond of atom.bonds){
-      if(!bond.atom1.equals(atom)){
-        bond.atom1.bonds.add(bond);
-      }
-      else{
-        bond.atom2.bonds.add(bond);
-      }
-      this.bonds.add(bond)
     }
   }
 
@@ -157,27 +136,13 @@ class CanvasComponent extends Component {
     }
   }
 
-  deleteHandler(){
-    if(this.refs.canvas2d.curSelected != null){
-      var atom = this.refs.canvas2d.curSelected;
-      this.changes.push({
-        type:    "atom",
-        payLoad: this.refs.canvas2dcurSelected,
-        action:  "deleted", overwritten:null
-      });
-      // Remove all references to bonds
-      for(let bond of atom.bonds){
-        if(bond.atom1 != atom){
-          bond.atom1.bonds.delete(bond);
-        }
-        else{
-          bond.atom2.bonds.delete(bond);
-        }
-        this.bonds.delete(bond)
-      }
-      this.atoms.delete(this.refs.canvas2d.curSelected);
-      this.drawCanvas2D();
-    }
+  clearAll(){
+    this.atoms = new Set();
+    this.bonds = new Set();
+    this.curAtom = {atom : new Atom(
+      new Coord(0,0,0), "C", "carbon", 70, 0x909090, null, new Set())};
+    this.changes = [];
+    this.drawCanvas2D();
   }
 
   //update canvas sizes when needed
@@ -186,14 +151,14 @@ class CanvasComponent extends Component {
       //TODO fix so doesnt get taller at last fixed size step
       this.setState({
         canvasWidth: 320,
-        canvasHeight: 300 
+        canvasHeight: 300
       });
     } else {
       let update_width  = (window.innerWidth/2)-30;
       let update_height = Math.round(update_width/1.5);
       this.setState({
         canvasWidth: update_width,
-        canvasHeight: update_height 
+        canvasHeight: update_height
       });
     }
     if(redraw) {
@@ -284,6 +249,11 @@ class CanvasComponent extends Component {
       case 'Enter':
         console.log(event.key);
         break;
+      // Log info
+      case 'l':
+        console.log(this.atoms)
+        console.log(this.bonds)
+        break;
       // Pull up element table
       case 'e':
         console.log(event.key);
@@ -350,7 +320,7 @@ class CanvasComponent extends Component {
           <button className="DrawButton" onClick={() => this.refs.canvas3d.draw3D()}>
             <i className="fa fa-pencil"></i>
           </button>
-          <button className="DeleteSelectedButton" onClick={this.deleteHandler}>
+          <button className="ClearAllButton" onClick={this.clearAll}>
             <i className="fa fa-trash"></i>
             </button>
           <span>{this.getLabel()}</span>
