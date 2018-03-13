@@ -280,7 +280,7 @@ class CanvasComponent3D extends Component {
         oldMouseX = x;
         oldMouseY = y;
         var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425+g_eyeY, 0+g_eyeY, -100, 100);
+        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
         actualDraw();
       }
@@ -293,7 +293,7 @@ class CanvasComponent3D extends Component {
 
       x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
       y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
-      if(ev.button == 0 && leftMouseDown) {        
+      if(leftMouseDown) {        
         g_eyeX += x-oldMouseX;
         g_eyeY += y-oldMouseY;
         oldMouseX = x;
@@ -307,6 +307,7 @@ class CanvasComponent3D extends Component {
     }
 
     function doconmouseup(ev,gl,canvas) {
+      console.log("in doconmouseup")
       leftMouseDown = false;
     }
 
