@@ -95,6 +95,7 @@ class CanvasComponent3D extends Component {
     var unitcircles = [];
     var unitpolygons = [];
     var vertices = [];
+    var bondIndices = [];
     var s_normals = [];
     var projMatrix; //The projection matrix
     var Ntransform = new CuonMatrix.Matrix4();
@@ -113,7 +114,7 @@ class CanvasComponent3D extends Component {
     // Function to initialize the canvas and webgl elements before the actual
     // drawing takes place.
     function initWebGl() {
-    // Get the storage locations of uniform variables
+      // Get the storage locations of uniform variables
       u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
       u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
       u_ViewVector = gl.getUniformLocation(gl.program, 'u_ViewVector');
@@ -169,14 +170,24 @@ class CanvasComponent3D extends Component {
   	  unitpolygons.push([11, 12, 23]);
       // Register function (event handler) to be called on a mouse press
       canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
-      actualDraw();
+      setupAtoms();
+      actuallyDraw();
     }
 
     // Function to actually draw on the canvas.
-    function actualDraw(){
+    function actuallyDraw(){
       // Clearing canvas
       gl.clearColor(1.0, 1.0, 1.0, 1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+      actuallyDrawAtoms();
+      //Draw Bonds
+      for( let bond of bonds ){
+        drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
+                     bond.atom2.location.y, bond.bondType);
+      }
+    }
+
+    function setupAtoms() {
       // Generate spheres for each atom
       var n = 0;
       for (let atom of atoms) {
@@ -229,6 +240,9 @@ class CanvasComponent3D extends Component {
           }
         }
       }
+    }
+
+    function actuallyDrawAtoms() {
       if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
       if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(sphereNormals), gl.FLOAT, 3))  return -1;
       if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors),  gl.FLOAT, 4)) return -1;
@@ -243,13 +257,7 @@ class CanvasComponent3D extends Component {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
       console.log("Drawing 3d models");
-      //Draw Spheres
       gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-      //Draw Bonds
-      for( let bond of bonds ){
-        drawCylinder(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
-                     bond.atom2.location.y, bond.bondType);
-      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -265,13 +273,12 @@ class CanvasComponent3D extends Component {
         g_eyeX += x-oldMouseX;
         g_eyeY += y-oldMouseY;
         var projMatrix = new CuonMatrix.Matrix4();
-        console.log("g_eyeX: "+g_eyeX+", g_eyeY: "+g_eyeY)
         projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
                             425+scale*g_eyeY, 0+scale*g_eyeY, 
                             -100, 100);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        // window.requestAnimationFrame(actualDraw);
-        actualDraw();
+        // window.requestAnimationFrame(actuallyDraw);
+        actuallyDraw();
     }
 
     function onmousedown(ev, gl, canvas){
@@ -364,27 +371,26 @@ class CanvasComponent3D extends Component {
         b: parseInt(result[3], 16)
       } : null;
     }
-
-
+    
     function drawCylinder(x1, y1, x2, y2, type){
       vertices.length = 0;
-      indices.length = 0;
+      bondIndices.length = 0;
       s_normals.length = 0;
       translateCoords(x1, y1, x2, y2); //vertex array
       for(var j = 0; j < unitpolygons.length; j++){ //index array
-        indices.push([unitpolygons[j][0], unitpolygons[j][1], unitpolygons[j][2]]);
+        bondIndices.push([unitpolygons[j][0], unitpolygons[j][1], unitpolygons[j][2]]);
       }
       //Generate surface normals
       for(var j = 0; j < 12; j++){
-			  var vertex = vertices[j];
-			  var vertex1 = vertices[j+1];
-			  var vertex2 = vertices[j+12];
-			  var vec1 = new Coord(vertex1.x - vertex.x, vertex1.y - vertex.y, vertex1.z - vertex.z);
-			  var vec2 = new Coord(vertex2.x - vertex.x, vertex2.y - vertex.y, vertex2.z - vertex.z);
-			  var normal = normalize(crossp(vec1, vec2));
-			  s_normals.push(normal);
-		  }
-		  var indices_e = new Uint16Array(indices.length*3);
+        var vertex = vertices[j];
+        var vertex1 = vertices[j+1];
+        var vertex2 = vertices[j+12];
+        var vec1 = new Coord(vertex1.x - vertex.x, vertex1.y - vertex.y, vertex1.z - vertex.z);
+        var vec2 = new Coord(vertex2.x - vertex.x, vertex2.y - vertex.y, vertex2.z - vertex.z);
+        var normal = normalize(crossp(vec1, vec2));
+        s_normals.push(normal);
+      }
+      var indices_e = new Uint16Array(bondIndices.length*3);
       var vertices_e = new Float32Array(vertices.length*3);
       //Generate vertex array for buffer
       var j = 0;
@@ -392,38 +398,38 @@ class CanvasComponent3D extends Component {
         vertices_e[i] = vertices[j].x + 0.0;
         vertices_e[i+1] = vertices[j].y + 0.0;
         vertices_e[i+2] = vertices[j].z + 0.0;
-	      j++;
+        j++;
       }
       j = 0;
       //Generate index array for buffer
       for(var i = 0; i < indices_e.length; i += 3){
-        indices_e[i] = indices[j][0];
-        indices_e[i+1] = indices[j][1];
-        indices_e[i+2] = indices[j][2];
+        indices_e[i] = bondIndices[j][0];
+        indices_e[i+1] = bondIndices[j][1];
+        indices_e[i+2] = bondIndices[j][2];
         j++;
       }
       //Generate vertex normals
       var vertex_normals = new Float32Array(vertices.length*3);
-		  for (var i = 0; i < indices_e.length; i++){
-			  var n = s_normals[Math.floor(i/6)];
-			  var pos = indices_e[i];
-			  vertex_normals[3*pos] += n.x;
-			  vertex_normals[3*pos+1] += n.y;
-			  vertex_normals[3*pos+2] += n.z;
-		  }
-		  var colors = new Float32Array(vertices.length*3)
-		  for(var i = 0; i < colors.length; i+=3){
-			  colors[i] = 0.5;
-			  colors[i+1] = 0.5;
-			  colors[i+2] = 0.5;
-		  }
-		  //Create index buffer
+      for (var i = 0; i < indices_e.length; i++){
+        var n = s_normals[Math.floor(i/6)];
+        var pos = indices_e[i];
+        vertex_normals[3*pos] += n.x;
+        vertex_normals[3*pos+1] += n.y;
+        vertex_normals[3*pos+2] += n.z;
+      }
+      var colors = new Float32Array(vertices.length*3)
+      for(var i = 0; i < colors.length; i+=3){
+        colors[i] = 0.5;
+        colors[i+1] = 0.5;
+        colors[i+2] = 0.5;
+      }
+      //Create index buffer
       var indBuffer = gl.createBuffer();
-	    var FSIZE = indices_e.BYTES_PER_ELEMENT;
-	    //Create buffers
-	    if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
-	    if (!initArrayBuffer(gl, 'a_Color', colors, gl.FLOAT, 3)) return -1;
-	    if (!initArrayBuffer(gl, 'a_Normal', vertex_normals, gl.FLOAT, 3)) return -1;
+      var FSIZE = indices_e.BYTES_PER_ELEMENT;
+      //Create buffers
+      if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
+      if (!initArrayBuffer(gl, 'a_Color', colors, gl.FLOAT, 3)) return -1;
+      if (!initArrayBuffer(gl, 'a_Normal', vertex_normals, gl.FLOAT, 3)) return -1;
       //Write polygon indices to index buffer
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices_e, gl.STATIC_DRAW);
@@ -448,7 +454,7 @@ class CanvasComponent3D extends Component {
             vertices_e[i] = vertices[j].x + ((-dy)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+1] = vertices[j].y + (sg*dx*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+2] = vertices[j].z + 0.0;
-	          j++;
+            j++;
           }
           if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
           for(var i = 0; i < indices_e.length; i+=3){
@@ -461,7 +467,7 @@ class CanvasComponent3D extends Component {
             vertices_e[i] = vertices[j].x + (dy*2.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+1] = vertices[j].y + (sg*(-dx)*2.5*radius)/Math.sqrt(dx*dx+dy*dy);;
             vertices_e[i+2] = vertices[j].z + 0.0;
-	          j++;
+            j++;
           }
           if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
           for(var i = 0; i < indices_e.length; i+=3){
@@ -479,7 +485,7 @@ class CanvasComponent3D extends Component {
             vertices_e[i] = vertices[j].x + ((-dy)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+1] = vertices[j].y + (sg*dx*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+2] = vertices[j].z + 0.0;
-	          j++;
+            j++;
           }
           if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
           for(var i = 0; i < indices_e.length; i+=3){
@@ -492,7 +498,7 @@ class CanvasComponent3D extends Component {
             vertices_e[i] = vertices[j].x + (dy*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+1] = vertices[j].y + (sg*(-dx)*1.5*radius)/Math.sqrt(dx*dx+dy*dy);
             vertices_e[i+2] = vertices[j].z + 0.0;
-	          j++;
+            j++;
           }
           if(!initArrayBuffer(gl,'a_Position', vertices_e, gl.FLOAT, 3))return -1;
           for(var i = 0; i < indices_e.length; i+=3){
@@ -501,7 +507,6 @@ class CanvasComponent3D extends Component {
           break;
       }
     }
-
 
     function initArrayBuffer(gl, attribute, data, type, num) {
       // Create a buffer object
