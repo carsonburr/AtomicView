@@ -51,10 +51,10 @@ class Header extends React.Component {
 
   render() {
     const headerStyle = {
-      backgroundColor:'#433',
+      backgroundColor:'#d4d4dcaa',
       width: '100%',
-      paddingBottom: '10px',
-      marginBottom: '10px',
+      paddingBottom: '20px',
+      marginBottom: '20px',
       position: 'fixed',
       //position: 'relative',
       top: '0',
@@ -62,23 +62,31 @@ class Header extends React.Component {
       zIndex: '999'
     };
     const flexStyle = {
-      bottom: '10px',
-      color: 'white'
+      //bottom: '10px',
+      color: '#d4d4dc',
+      backgroundColor: "#1d1e22"
     }
     if(this.state.userId!=null) {
       return (
         <div>
-        <div className="flex-container" style={flexStyle}>
+        <div className="flex-container">
           <header style = {headerStyle}>
             <LoadMolList loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser} saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}/>
-            <button onClick={this.logout}>
-              <h3 style={{float: 'right', paddingRight: '10px'}}>Logout</h3>
-            </button>
+            <h3 style={{float: 'right'}}>
+              <button onClick={this.logout}>Logout</button>
+            </h3>
             <div style={{clear: "both"}}></div>
           </header>
         </div>
         <br />
+        <div align="center" style={flexStyle} overflow="hidden"  >
+        <hr/>
+        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
+        AtomicView</h2>
+        <hr/>
+      </div>
         </div>
+
       );
     }
 
@@ -86,11 +94,18 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
+          <h3 style={{float: 'left'}}>
           <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
-          <div style={{clear: "both"}}></div>
+          </h3><div style={{clear: "both"}}></div>
         </header>
       </div>
       <br />
+      <div align="center" style={flexStyle} overflow="hidden"  >
+        <hr/>
+        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
+        AtomicView</h2>
+        <hr/>
+      </div>
       </div>
     );
   }

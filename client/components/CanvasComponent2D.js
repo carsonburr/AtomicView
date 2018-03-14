@@ -168,11 +168,12 @@ class CanvasComponent2D extends Component {
            (atom2.equals(curAtom1) &&
             atom1.equals(curAtom2)) ) {
         changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
-        bond.bondType = curBond;
+        bond.bondType = curBond.bondType;
         notAdded = false;
         break;
       }
     }
+
     if(notAdded){
       bonds.add(curBond);
       curBond.atom1.bonds.add(curBond);
