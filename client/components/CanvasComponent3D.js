@@ -86,7 +86,6 @@ class CanvasComponent3D extends Component {
       console.log('Failed to get the rendering context for WebGL');
       return;
     }
-    var g_eyeX = 0, g_eyeY = 0;
     var SPHERE_DIV = 13;
     var positions = [];
     var sphereNormals = [];
@@ -109,7 +108,14 @@ class CanvasComponent3D extends Component {
 	  var u_SpecularLight;
 	  var u_LightDirection;
 	  var u_N;
+    // Variables for panning.
+    var g_eyeX = 0, g_eyeY = 0;
+    // Initializes webgl
     initWebGl();
+
+    //----------------------------------------------------------------------------------------------
+    // Begin Inner Functions
+    //----------------------------------------------------------------------------------------------
 
     // Function to initialize the canvas and webgl elements before the actual
     // drawing takes place.
@@ -259,74 +265,6 @@ class CanvasComponent3D extends Component {
       console.log("Drawing 3d models");
       gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Begin Event Handlers
-    //----------------------------------------------------------------------------------------------
-
-    var oldMouseX, oldMouseY;
-    var leftMouseDown = false;
-    var scale=.5;
-
-    // Panning Code
-    function pan (x, y) {
-        g_eyeX += x-oldMouseX;
-        g_eyeY += y-oldMouseY;
-        var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
-                            425+scale*g_eyeY, 0+scale*g_eyeY, 
-                            -100, 100);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        // window.requestAnimationFrame(actuallyDraw);
-        actuallyDraw();
-    }
-
-    function onmousedown(ev, gl, canvas){
-      var x = ev.clientX; // x coordinate of a mouse pointer
-      var y = ev.clientY; // y coordinate of a mouse pointer
-      // var rect = ev.target.getBoundingClientRect() ;
-
-      // x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      // y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
-      if(ev.button == 0) {
-        ev.preventDefault();
-        oldMouseX = x;
-        oldMouseY = y;
-        leftMouseDown = true;
-        // Register function (event handler) to be called on a mouse up
-        document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
-        // Register function (event handler) to be called on a mouse move
-        document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
-      } 
-    }
-
-    function doconmousemove(ev, gl, canvas){
-      var x = ev.clientX; // x coordinate of a mouse pointer
-      var y = ev.clientY; // y coordinate of a mouse pointer
-      if(ev.button == 0 && leftMouseDown) {
-        ev.preventDefault();
-        pan(x,y);
-      }
-      oldMouseX = x;
-      oldMouseY = y;
-    }
-
-    function doconmouseup(ev,gl,canvas) {
-      var x = ev.clientX; // x coordinate of a mouse pointer
-      var y = ev.clientY; // y coordinate of a mouse pointer
-      if(leftMouseDown) {
-        ev.preventDefault();
-        console.log("doconmouseup turning leftMouseDown to false")
-        pan(x,y);
-        leftMouseDown = false;
-        document.onmousemove = null;
-        document.onmouseup = null;
-      }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Begin Inner Functions
-    //----------------------------------------------------------------------------------------------
 
     //translates unit cylinder coordinates
     function translateCoords(x1, y1, x2, y2){
@@ -529,6 +467,70 @@ class CanvasComponent3D extends Component {
       gl.enableVertexAttribArray(a_attribute);
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
       return true;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Begin Event Handlers
+    //----------------------------------------------------------------------------------------------
+
+    var oldMouseX, oldMouseY;
+    var leftMouseDown = false;
+    var scale=.5;
+
+    // Panning Code
+    function pan (x, y) {
+        g_eyeX += x-oldMouseX;
+        g_eyeY += y-oldMouseY;
+        var projMatrix = new CuonMatrix.Matrix4();
+        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
+                            425+scale*g_eyeY, 0+scale*g_eyeY, 
+                            -100, 100);
+        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+        // window.requestAnimationFrame(actuallyDraw);
+        actuallyDraw();
+    }
+
+    function onmousedown(ev, gl, canvas){
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      // var rect = ev.target.getBoundingClientRect() ;
+
+      // x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
+      // y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
+      if(ev.button == 0) {
+        ev.preventDefault();
+        oldMouseX = x;
+        oldMouseY = y;
+        leftMouseDown = true;
+        // Register function (event handler) to be called on a mouse up
+        document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
+        // Register function (event handler) to be called on a mouse move
+        document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
+      } 
+    }
+
+    function doconmousemove(ev, gl, canvas){
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      if(ev.button == 0 && leftMouseDown) {
+        ev.preventDefault();
+        pan(x,y);
+      }
+      oldMouseX = x;
+      oldMouseY = y;
+    }
+
+    function doconmouseup(ev,gl,canvas) {
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      if(leftMouseDown) {
+        ev.preventDefault();
+        console.log("doconmouseup turning leftMouseDown to false")
+        pan(x,y);
+        leftMouseDown = false;
+        document.onmousemove = null;
+        document.onmouseup = null;
+      }
     }
   }
 
