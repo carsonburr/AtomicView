@@ -96,7 +96,7 @@ class CanvasComponent3D extends Component {
     var unitpolygons = [];
     var vertices = [];
     var bondIndices = [];
-    var s_normals = [];
+    var surfaceNormals = [];
     var projMatrix; //The projection matrix
     var Ntransform = new CuonMatrix.Matrix4();
     var radius;
@@ -306,7 +306,7 @@ class CanvasComponent3D extends Component {
     function setupBond(x1, y1, x2, y2, type){
       vertices.length = 0;
       bondIndices.length = 0;
-      s_normals.length = 0;
+      surfaceNormals.length = 0;
       for(var j = 0; j < unitpolygons.length; j++){ //index array
         bondIndices.push([unitpolygons[j][0], unitpolygons[j][1], unitpolygons[j][2]]);
       }
@@ -318,9 +318,9 @@ class CanvasComponent3D extends Component {
       var colors = new Float32Array(verticesLength);
 
       SetupBondsForWebGLHelper.translateCoordsAndStoreInVertexArray(vertices, unitcircles, x1, y1, x2, y2); //vertex array
-      SetupBondsForWebGLHelper.generateSurfaceNormals(s_normals, vertices);
+      SetupBondsForWebGLHelper.generateSurfaceNormals(surfaceNormals, vertices);
       SetupBondsForWebGLHelper.generateIndices(indices_e, bondIndices, indicesLength);
-      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e, s_normals, bondIndices);
+      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e, surfaceNormals, bondIndices);
       SetupBondsForWebGLHelper.generateColors(colors);
       SetupBondsForWebGLHelper.generateVertexArray(vertices_e, vertices, type, verticesLength, x1, y1, x2, y2, radius);
       bond3DMatricesList.push(

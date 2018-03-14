@@ -47,7 +47,7 @@ var SetupBondsForWebGLHelper = function(){
     }     
   }
 
-  function generateSurfaceNormals(s_normals, vertices) {
+  function generateSurfaceNormals(surfaceNormals, vertices) {
     for(var j = 0; j < 12; j++){
       var vertex = vertices[j];
       var vertex1 = vertices[j+1];
@@ -55,7 +55,7 @@ var SetupBondsForWebGLHelper = function(){
       var vec1 = new Coord(vertex1.x - vertex.x, vertex1.y - vertex.y, vertex1.z - vertex.z);
       var vec2 = new Coord(vertex2.x - vertex.x, vertex2.y - vertex.y, vertex2.z - vertex.z);
       var normal = normalize(crossProduct(vec1, vec2));
-      s_normals.push(normal);
+      surfaceNormals.push(normal);
     }
 
   }
@@ -77,10 +77,10 @@ var SetupBondsForWebGLHelper = function(){
 
   }
 
-  function generateVertexNormals(vertexNormals, indices, s_normals, bondIndices) {
+  function generateVertexNormals(vertexNormals, indices, surfaceNormals, bondIndices) {
     var j = 0;
     for (var i = 0; i < indices.length; i++){
-      var n = s_normals[Math.floor(j/6)];
+      var n = surfaceNormals[Math.floor(j/6)];
       j++;
       if(j==bondIndices.length) {
         j = 0;
