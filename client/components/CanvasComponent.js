@@ -279,19 +279,19 @@ class CanvasComponent extends Component {
     switch(event.key){
       // Testing key
       case 'Enter':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Pull up element table
       case 'e':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter bond mode / iterate bond type
       case 'b':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter atom Selection mode
       case 's':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter delete mode
       case 'd':

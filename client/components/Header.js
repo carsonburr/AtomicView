@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import LoginPage from './LoginPage'
 import axios from 'axios';
 import qs from 'querystring';
+import LoadMolList from './LoadMolList.js';
 
 class Header extends React.Component {
   constructor(props) {
@@ -69,12 +70,7 @@ class Header extends React.Component {
         <div>
         <div className="flex-container" style={flexStyle}>
           <header style = {headerStyle}>
-            <h3 style={{float: 'left', paddingLeft: '5px'}}>
-              <button onClick={this.saveAtomsAndBondsForUser}>Save</button>
-            </h3>
-            <h3 style={{float: 'left', paddingLeft: '5px'}}>
-              <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
-            </h3>
+            <LoadMolList loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser} saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}/>
             <button onClick={this.logout}>
               <h3 style={{float: 'right', paddingRight: '10px'}}>Logout</h3>
             </button>

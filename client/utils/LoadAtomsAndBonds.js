@@ -3,11 +3,13 @@ import qs from 'querystring';
 import {Atom, Coord} from '../../models/Atom.js';
 import {Bond} from '../../models/Bond.js';
 
-export function loadList() {
+export function loadList(molList, ready) {
   axios.post(
     '/molList'
   ).then((response) => {
     console.log(response.data);
+    molList = response.data[0].jsonAtomsAndBondsArray;
+    ready = true;
   }).catch(
     function(err) {
       console.log(err);

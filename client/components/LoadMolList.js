@@ -1,20 +1,26 @@
 import React from 'react';
-import loadList from '../utils/LoadAtomsAndBonds.js';
+import {loadList} from '../utils/LoadAtomsAndBonds.js';
 
-class LoadMolList extends React.Component {
+export default class LoadMolList extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { open: false }
+    this.state = { open: false, ready: false }
     this.savedMols = [];
+    this.onOpen = this.onOpen.bind(this);
+  }
+
+  updateMols(mols) {
+    
   }
 
   onOpen() {
-    loadList(this.savedMols);
+    loadList(this.savedMols, this.state.ready);
     this.state.open = true;
+    console.log(this.state.open);
   }
 
   makeList() {
-    return this.savedMols.map(
+    let result = this.savedMols.map(
       function(mol) {
         return (
         <li>
@@ -22,25 +28,38 @@ class LoadMolList extends React.Component {
         </li>
       )
       });
+    console.log("in makeList");
+    console.log(result);
+    return result;
   }
 
   saveAtomsAndBondsForUser = (key) => {
-    this.props.saveAtomsAndBondsForUser(key);
+    return function() {
+      this.props.saveAtomsAndBondsForUser(key);
+    }
   };
 
   loadAtomsAndBondsForUser = (key) => {
-    this.props.loadAtomsAndBondsForUser(key);
+    return function() {
+      this.props.loadAtomsAndBondsForUser(key);
+    }
   };
 
   render() {
+    console.log(this.state.open);
     if (!this.state.open) {
       return (
-        <button onClick={this.onOpen}></button>
+        <button onClick={this.onOpen}>Not Open</button>
       )
-    } else {
-      <div>
-        
-      </div>
+    } else if (this.state.ready) {
+      return (
+        <div>
+          <ul>
+            {this.makeList()}
+          </ul>
+        </div>
+      )
     }
+    return (<div></div>)
   }
 }
