@@ -299,6 +299,7 @@ class CanvasComponent extends Component {
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
         <div>
+           <img height="400" src="../logoTransparent.jpg" alt="" />
           <Toolbox setCurAtom={this.setCurAtom} 
                   switchCurAction={this.switchCurAction}
                   clearAll={this.clearAll}
@@ -324,7 +325,7 @@ class CanvasComponent extends Component {
                              canvasHeight={this.state.canvasHeight}
                              />
         </div>
-          <span>{this.getLabel()}</span>
+          <div>{this.getLabel()}</div>
 
         <Footer/>
       </div>
