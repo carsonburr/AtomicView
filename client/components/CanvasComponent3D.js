@@ -406,7 +406,6 @@ class CanvasComponent3D extends Component {
       var y = ev.clientY; // y coordinate of a mouse pointer
       if(leftMouseDown) {
         ev.preventDefault();
-        console.log("doconmouseup turning leftMouseDown to false")
         pan(x,y);
         leftMouseDown = false;
         document.onmousemove = null;
