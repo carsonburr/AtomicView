@@ -486,8 +486,7 @@ class CanvasComponent3D extends Component {
                             425+scale*g_eyeY, 0+scale*g_eyeY, 
                             -100, 100);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        // window.requestAnimationFrame(actuallyDraw);
-        actuallyDraw();
+        window.requestAnimationFrame(actuallyDraw);
     }
 
     function onmousedown(ev, gl, canvas){
