@@ -77,6 +77,7 @@ class CanvasComponent3D extends Component {
   }
 
   draw3D() {
+    // Global function variables
     var canvas = this.canvas3d;
     var atoms = this.props.getAtoms();
     var bonds = this.props.getBonds();
@@ -97,70 +98,81 @@ class CanvasComponent3D extends Component {
     var s_normals = [];
     var projMatrix; //The projection matrix
     var Ntransform = new CuonMatrix.Matrix4();
-    // Get the storage locations of uniform variables
-	  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
-	  var u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-    var u_ViewVector = gl.getUniformLocation(gl.program, 'u_ViewVector');
-  	var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
-    var	u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
-	  var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
-	  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
-	  var u_N = gl.getUniformLocation(gl.program, 'u_N');
-	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || 
-        !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
-		console.log('Failed to get the storage location');
-		return;
-	  }
-	  // Set the light colors
-	  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
-  	// Set the light direction (in the world coordinate)
-    var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
-    gl.uniform3fv(u_LightDirection, lightDirection.elements);
-  	// Set the ambient light
-  	gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.0);
-  	// Set the view vector
-  	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
-  	//Initialize glossiness
-  	gl.uniform1f(u_N, 10.0);
-  	//Initialize specluar light
-  	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
-  	//Set initial orthographic view
-  	projMatrix = new CuonMatrix.Matrix4();
-    projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-  	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-  	Ntransform.setIdentity();
-  	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
-    //Generate unit circles and polygons for bonds
-    var radius = 5;
-    var deg = 0;
-    for(var i = 0; i <= 11; i++){ //First circle
-      unitcircles.push(new Coord(0, radius*Math.cos(deg * (Math.PI / 180)),
-                                 radius*Math.sin(deg * (Math.PI / 180))));
-      deg += 30;
-    }
-    deg = 0;
-    for(var i = 12; i <= 23; i++){ //Second circle
-      unitcircles.push(new Coord(1, radius*Math.cos(deg * (Math.PI / 180)),
-                                 radius*Math.sin(deg * (Math.PI / 180))));
-      deg += 30;
-    }
-    //Generate polygon array
-    for(var i = 0; i <= 10; i++){
-      unitpolygons.push([i, i+1, i+13]);
-		  unitpolygons.push([i, i+13, i+12]);
-    }
-    unitpolygons.push([11, 0, 12]);
-	  unitpolygons.push([11, 12, 23]);
-    // Register function (event handler) to be called on a mouse press
-    canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
-    // Register function (event handler) to be called on a mouse move
-    canvas.onmousemove = function(ev){ onmousemove(ev, gl, canvas); };
-    // Register function (event handler) to be called on a mouse move
-    canvas.onmouseup = function(ev){ onmouseup(ev, gl, canvas); };
-    // Register function (event handler) to be called on a mouse move
-    document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
-    actualDraw();
+    var radius;
+    // Uniform shader variable holders
+	  var u_MvpMatrix;
+	  var u_NormalMatrix;
+    var u_ViewVector;
+  	var u_LightColor;
+    var	u_AmbientLight;
+	  var u_SpecularLight;
+	  var u_LightDirection;
+	  var u_N;
+    initWebGl();
 
+    // Function to initialize the canvas and webgl elements before the actual
+    // drawing takes place.
+    function initWebGl() {
+    // Get the storage locations of uniform variables
+      u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+      u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+      u_ViewVector = gl.getUniformLocation(gl.program, 'u_ViewVector');
+      u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
+      u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+      u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
+      u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+      u_N = gl.getUniformLocation(gl.program, 'u_N');
+  	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || 
+          !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
+  		console.log('Failed to get the storage location');
+  		return;
+  	  }
+  	  // Set the light colors
+  	  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
+    	// Set the light direction (in the world coordinate)
+      var lightDirection = new CuonMatrix.Vector3([1.0, -1.0, 1.0]);
+      gl.uniform3fv(u_LightDirection, lightDirection.elements);
+    	// Set the ambient light
+    	gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.0);
+    	// Set the view vector
+    	gl.uniform3f(u_ViewVector, 0.0, 0.0, 1.0);
+    	// Initialize glossiness
+    	gl.uniform1f(u_N, 10.0);
+    	// Initialize specluar light
+    	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
+    	// Set initial orthographic view
+    	projMatrix = new CuonMatrix.Matrix4();
+      projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+    	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+    	Ntransform.setIdentity();
+    	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
+      //Generate unit circles and polygons for bonds
+      radius = 5;
+      var deg = 0;
+      for(var i = 0; i <= 11; i++){ //First circle
+        unitcircles.push(new Coord(0, radius*Math.cos(deg * (Math.PI / 180)),
+                                   radius*Math.sin(deg * (Math.PI / 180))));
+        deg += 30;
+      }
+      deg = 0;
+      for(var i = 12; i <= 23; i++){ //Second circle
+        unitcircles.push(new Coord(1, radius*Math.cos(deg * (Math.PI / 180)),
+                                   radius*Math.sin(deg * (Math.PI / 180))));
+        deg += 30;
+      }
+      //Generate polygon array
+      for(var i = 0; i <= 10; i++){
+        unitpolygons.push([i, i+1, i+13]);
+  		  unitpolygons.push([i, i+13, i+12]);
+      }
+      unitpolygons.push([11, 0, 12]);
+  	  unitpolygons.push([11, 12, 23]);
+      // Register function (event handler) to be called on a mouse press
+      canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
+      actualDraw();
+    }
+
+    // Function to actually draw on the canvas.
     function actualDraw(){
       // Clearing canvas
       gl.clearColor(1.0, 1.0, 1.0, 1.0);
@@ -174,7 +186,7 @@ class CanvasComponent3D extends Component {
         var r = atom.atomicRadius
         if (r == 0) r = 300;
         var rscale = (10+r/5)
-        console.log(r);
+        // console.log(r);
         // Generate coordinates
         for (j = 0; j <= SPHERE_DIV; j++) {
           aj = j * Math.PI / SPHERE_DIV;
@@ -230,6 +242,7 @@ class CanvasComponent3D extends Component {
       }
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      console.log("Drawing 3d models");
       //Draw Spheres
       gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
       //Draw Bonds
@@ -245,70 +258,63 @@ class CanvasComponent3D extends Component {
 
     var oldMouseX, oldMouseY;
     var leftMouseDown = false;
-    var scale=50;
+    var scale=.5;
 
     // Panning Code
-    function pan (newX, newY) {
-
+    function pan (x, y) {
+        g_eyeX += x-oldMouseX;
+        g_eyeY += y-oldMouseY;
+        var projMatrix = new CuonMatrix.Matrix4();
+        console.log("g_eyeX: "+g_eyeX+", g_eyeY: "+g_eyeY)
+        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
+                            425+scale*g_eyeY, 0+scale*g_eyeY, 
+                            -100, 100);
+        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+        // window.requestAnimationFrame(actualDraw);
+        actualDraw();
     }
 
     function onmousedown(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
-      var rect = ev.target.getBoundingClientRect() ;
+      // var rect = ev.target.getBoundingClientRect() ;
 
-      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
+      // x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
+      // y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
       if(ev.button == 0) {
+        ev.preventDefault();
         oldMouseX = x;
         oldMouseY = y;
         leftMouseDown = true;
+        // Register function (event handler) to be called on a mouse up
+        document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
+        // Register function (event handler) to be called on a mouse move
+        document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
       } 
-      actualDraw()
     }
 
-    function onmousemove(ev, gl, canvas){
+    function doconmousemove(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
-      var rect = ev.target.getBoundingClientRect() ;
-
-      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
-      if(ev.button == 0 && leftMouseDown) {        
-        g_eyeX += x-oldMouseX;
-        g_eyeY += y-oldMouseY;
-        oldMouseX = x;
-        oldMouseY = y;
-        var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        window.requestAnimationFrame(actualDraw);
+      if(ev.button == 0 && leftMouseDown) {
+        ev.preventDefault();
+        pan(x,y);
       }
-    }
-
-    function onmouseup(ev, gl, canvas) {
-      var x = ev.clientX; // x coordinate of a mouse pointer
-      var y = ev.clientY; // y coordinate of a mouse pointer
-      var rect = ev.target.getBoundingClientRect() ;
-
-      x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
-      if(leftMouseDown) {        
-        g_eyeX += x-oldMouseX;
-        g_eyeY += y-oldMouseY;
-        oldMouseX = x;
-        oldMouseY = y;
-        var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        leftMouseDown = false;
-        window.requestAnimationFrame(actualDraw);
-      }
+      oldMouseX = x;
+      oldMouseY = y;
     }
 
     function doconmouseup(ev,gl,canvas) {
-      console.log("in doconmouseup")
-      leftMouseDown = false;
+      var x = ev.clientX; // x coordinate of a mouse pointer
+      var y = ev.clientY; // y coordinate of a mouse pointer
+      if(leftMouseDown) {
+        ev.preventDefault();
+        console.log("doconmouseup turning leftMouseDown to false")
+        pan(x,y);
+        leftMouseDown = false;
+        document.onmousemove = null;
+        document.onmouseup = null;
+      }
     }
 
     //----------------------------------------------------------------------------------------------
