@@ -152,9 +152,9 @@ class CanvasComponent3D extends Component {
     	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
     	// Set initial orthographic view
     	projMatrix = new CuonMatrix.Matrix4();
-      // projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-      projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-      projMatrix.lookAt(g_eyeX+365, g_eyeY+100, 1700, g_eyeX, g_eyeY, 0, 0, 1, 0);
+      projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+      // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
+      // projMatrix.lookAt(g_eyeX+100, g_eyeY+100, 1700, g_eyeX, g_eyeY, 0, 0, 1, 0);
     	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
@@ -366,11 +366,11 @@ class CanvasComponent3D extends Component {
         g_eyeX += x-oldMouseX;
         g_eyeY += y-oldMouseY;
         var projMatrix = new CuonMatrix.Matrix4();
-        // projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
-        //                     425+scale*g_eyeY, 0+scale*g_eyeY, 
-        //                     -100, 100);
-        projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-        projMatrix.lookAt((-g_eyeX+365), -(g_eyeY+100), 1700, -g_eyeX, g_eyeY, 0, 0, 1, 0);
+        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
+                            425+scale*g_eyeY, 0+scale*g_eyeY, 
+                            -100, 100);
+        // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
+        // projMatrix.lookAt((-g_eyeX+365), -(g_eyeY+100), 2000, -g_eyeX, g_eyeY, 0, 0, 1, 0);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
         window.requestAnimationFrame(actuallyDraw);
     }
