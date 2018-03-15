@@ -81,7 +81,7 @@ class Header extends React.Component {
         <br />
         <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
+        <h2 ><img height="200" src="../images/logo.png" alt="" align="center"/>
         AtomicView</h2>
         <hr/>
       </div>
@@ -102,7 +102,7 @@ class Header extends React.Component {
       <br />
       <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
+        <h2 ><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
         AtomicView</h2>
         <hr/>
       </div>
