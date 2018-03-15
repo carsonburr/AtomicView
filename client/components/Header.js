@@ -71,7 +71,7 @@ class Header extends React.Component {
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <LoadMolList loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser} saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}/>
+            <LoadMolList loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
             <h3 style={{float: 'right'}}>
               <button onClick={this.logout}>Logout</button>
             </h3>

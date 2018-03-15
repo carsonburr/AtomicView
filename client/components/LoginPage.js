@@ -36,6 +36,7 @@ export default class LoginPage extends Component {
   }
 
   handleChange = (event) => {
+    event.stopPropagation();
     this.setState({
       [event.target.id]: event.target.value
     });

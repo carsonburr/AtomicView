@@ -12,8 +12,8 @@ import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
 import Toolbox from './Toolbox';
-import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
-import {loadAtomsAndBonds, loadList} from '../utils/LoadAtomsAndBonds';
+import {saveAtomsAndBonds} from '../utils/SaveAtomsAndBonds';
+import {loadAtomsAndBonds} from '../utils/LoadAtomsAndBonds';
 import '../css/buttons.css';
 import {Icon} from 'react-fa';
 
@@ -59,7 +59,7 @@ class CanvasComponent extends Component {
   }
 
   loadAtomsAndBondsForUser = (key) => {
-    loadList();
+    console.log(key);
     loadAtomsAndBonds(key, this.atoms, this.bonds);
     this.drawCanvas2D();
   }
@@ -273,7 +273,8 @@ class CanvasComponent extends Component {
         break;
       // Enter delete mode
       case 'd':
-        this.deleteHandler();
+        // TypeError: this.deleteHandler is not a function
+        // this.deleteHandler();
         break;
       // Render 3d model
       case 'r':
