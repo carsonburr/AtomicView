@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {getTable} from '../../models/Atom.js';
 import '../css/buttons.css';
+import onClickOutside from "react-onclickoutside"
 //import 'font-awesome/css/font-awesome.min.css';
 var FontAwesome = require('react-fontawesome');
 class PeriodicTablePopup extends React.Component {
@@ -18,10 +19,24 @@ class PeriodicTablePopup extends React.Component {
     });
   };
 
+  handleClickOutside = evt => {
+    //catches clicks in other components, header, etc
+    if(this.state.isOpen) {
+      this.setState({isOpen: false});
+    }
+  }
+
   handleClick = (atom) => {
-    this.toggleModal();
-    this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
-    this.props.switchCurAction("atom");
+    //catches clicks on modal background or wrong part of table
+    if(atom == null) {
+      this.setState({isOpen: false});
+    } else if(atom.name === '' || atom.name === null) {
+      this.setState({isOpen: false});
+    } else {
+      this.toggleModal();
+      this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
+      this.props.switchCurAction("atom");
+    }
   };
 
   render() {
@@ -76,7 +91,7 @@ class PeriodicTablePopup extends React.Component {
     } 
 
     return (
-      <div className="PeriodicTablePopup">
+      <div className="PeriodicTablePopup" onClick={this.handleClick.bind(this, null)}>
         <div style={backdropStyle}>
           <div style={modalStyle}>
             <div>
@@ -104,4 +119,4 @@ PeriodicTablePopup.propTypes = {
 };
 
 
-export default PeriodicTablePopup;
+export default onClickOutside(PeriodicTablePopup);
