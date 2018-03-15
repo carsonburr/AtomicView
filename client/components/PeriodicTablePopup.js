@@ -27,11 +27,12 @@ class PeriodicTablePopup extends React.Component {
   }
 
   handleClick = (atom) => {
+    // console.log(atom)
     //catches clicks on modal background or wrong part of table
     if(atom == null) {
       this.setState({isOpen: false});
-    } else if(atom.name === '' || atom.name === null) {
-      this.setState({isOpen: false});
+    } else if(atom.symbol == '' || atom.symbol == null) {
+      // this.setState({isOpen: false});
     } else {
       this.toggleModal();
       this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
