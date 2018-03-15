@@ -73,7 +73,6 @@ export function loadAtomsAndBonds(key, atoms, bonds) {
           atom1.bonds.add(bond);
           atom2.bonds.add(bond);
         }
-
       }).catch(function(error) {
         console.log(error);
       });

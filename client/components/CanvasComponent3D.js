@@ -153,6 +153,8 @@ class CanvasComponent3D extends Component {
     	// Set initial orthographic view
     	projMatrix = new CuonMatrix.Matrix4();
       projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+      // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
+      // projMatrix.lookAt(g_eyeX+100, g_eyeY+100, 1700, g_eyeX, g_eyeY, 0, 0, 1, 0);
     	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
@@ -360,13 +362,15 @@ class CanvasComponent3D extends Component {
     var scale=.5;
 
     // Panning Code
-    function pan (x, y) {
+    function pan (x, y, canvas) {
         g_eyeX += x-oldMouseX;
         g_eyeY += y-oldMouseY;
         var projMatrix = new CuonMatrix.Matrix4();
         projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
                             425+scale*g_eyeY, 0+scale*g_eyeY, 
                             -100, 100);
+        // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
+        // projMatrix.lookAt((-g_eyeX+365), -(g_eyeY+100), 2000, -g_eyeX, g_eyeY, 0, 0, 1, 0);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
         window.requestAnimationFrame(actuallyDraw);
     }
@@ -395,7 +399,7 @@ class CanvasComponent3D extends Component {
       var y = ev.clientY; // y coordinate of a mouse pointer
       if(ev.button == 0 && leftMouseDown) {
         ev.preventDefault();
-        pan(x,y);
+        pan(x, y, canvas);
       }
       oldMouseX = x;
       oldMouseY = y;
@@ -406,8 +410,7 @@ class CanvasComponent3D extends Component {
       var y = ev.clientY; // y coordinate of a mouse pointer
       if(leftMouseDown) {
         ev.preventDefault();
-        console.log("doconmouseup turning leftMouseDown to false")
-        pan(x,y);
+        pan(x, y, canvas);
         leftMouseDown = false;
         document.onmousemove = null;
         document.onmouseup = null;
