@@ -26,18 +26,16 @@ class PeriodicTablePopup extends React.Component {
     }
   }
 
-  handleClick = (atom) => {
+  handleClick = () => {
     //catches clicks on modal background or wrong part of table
-    if(atom == null) {
-      this.setState({isOpen: false});
-    } else if(atom.name === '' || atom.name === null) {
-      this.setState({isOpen: false});
-    } else {
-      this.toggleModal();
-      this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
-      this.props.switchCurAction("atom");
-    }
+    this.setState({isOpen: false});
   };
+
+  handleAtomClick = (atom) => {
+    this.toggleModal();
+    this.props.setCurAtom(atom.symbol, atom.name, atom.radius, atom.color3d);
+    this.props.switchCurAction("atom");
+  }
 
   render() {
 
@@ -83,7 +81,7 @@ class PeriodicTablePopup extends React.Component {
         let cellID = `cell${i}-${j}`;
         let atom = table[i][j];
         cell.push(<td key={cellID} id={cellID} align="center" bgcolor={atom.color} 
-                  onClick={this.handleClick.bind(this, atom)} width="100">
+                  onClick={this.handleAtomClick.bind(this, atom)} width="100">
                   <sup>{atom.number}</sup><br />{atom.symbol}</td>);
                   
       }
@@ -91,7 +89,7 @@ class PeriodicTablePopup extends React.Component {
     } 
 
     return (
-      <div className="PeriodicTablePopup" onClick={this.handleClick.bind(this, null)}>
+      <div className="PeriodicTablePopup" onClick={this.handleClick}>
         <div style={backdropStyle}>
           <div style={modalStyle}>
             <div>
