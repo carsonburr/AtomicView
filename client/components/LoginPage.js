@@ -6,10 +6,11 @@ import "../css/LoginPage.css";
 import qs from 'querystring';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
+import onClickOutside from "react-onclickoutside";
 
 var finishedLoggingIn=false;
 
-export default class LoginPage extends Component {
+class LoginPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -25,6 +26,13 @@ export default class LoginPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  handleClickOutside = evt => {
+    //catches clicks in other components, header, etc
+    if(this.state.isOpen) {
+      this.setState({isOpen: false});
+    }
+  }
+
   toggleModal = () => {
     this.setState({
       isOpen: !this.state.isOpen
@@ -36,6 +44,7 @@ export default class LoginPage extends Component {
   }
 
   handleChange = (event) => {
+    event.stopPropagation();
     this.setState({
       [event.target.id]: event.target.value
     });
@@ -67,11 +76,11 @@ export default class LoginPage extends Component {
   setWrapperRef(node) {
         this.wrapperRef = node;
     }
-  handleClickOutside(event) {
+  /*handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
             this.toggleModal();
         }
-    }
+    }*/
 
 
   render() {
@@ -86,11 +95,12 @@ export default class LoginPage extends Component {
     }
 
     const modalStyle = {
+      position: 'absolute',
       backgroundColor: '#fff',
       borderRadius: 5,
+      border: '1px solid #ccc',
       maxWidth: 700,
       minHeight: 400,
-      margin: '0 auto',
       padding: 30
     };
     return (
@@ -153,3 +163,5 @@ export default class LoginPage extends Component {
 LoginPage.propTypes = {
   setUserId: PropTypes.func.isRequired,
 };
+
+export default onClickOutside(LoginPage);

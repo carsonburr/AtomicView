@@ -27,10 +27,6 @@ module.exports = {
         ]
       },
     },
-    // {
-    //   test: /\.css$/,
-    //   loader: "style-loader!css-loader"
-    // },
     {
       test: /\.css$/,
       loader: "style-loader!css-loader"
@@ -67,9 +63,11 @@ module.exports = {
     historyApiFallback: true,
     hot: true
   },
+  devtool: "cheap-module-source-map",
   output: {
     path: path.join(__dirname, '.build'),
     publicPath: 'http://localhost:3001/',
-    filename: 'client.js'
+    filename: 'client.js',
+    crossOriginLoading: "anonymous"
   }
 }

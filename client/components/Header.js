@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import LoginPage from './LoginPage'
 import axios from 'axios';
 import qs from 'querystring';
+import LoadMolList from './LoadMolList.js';
 
 class Header extends React.Component {
   constructor(props) {
@@ -70,16 +71,11 @@ class Header extends React.Component {
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <h3 style={{float: 'left'}}>
-              <button onClick={this.saveAtomsAndBondsForUser}>Save</button>
+            <h3 style={{float: 'left', paddingLeft: 10}}>
+              <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
             </h3>
-
-            <h3 style={{float: 'left'}}>
-              <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
-            </h3>
-
             <h3 style={{float: 'right'}}>
-              <button onClick={this.logout}>Logout</button>
+              <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
             </h3>
             <div style={{clear: "both"}}></div>
           </header>
@@ -87,8 +83,8 @@ class Header extends React.Component {
         <br />
         <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
-        AtomicView</h2>
+        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
         <hr/>
       </div>
         </div>
@@ -100,16 +96,17 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left'}}>
-          <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
-          </h3><div style={{clear: "both"}}></div>
+          <h3 style={{float: 'left', paddingLeft: 10}}>
+            <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
+          </h3>
+          <div style={{clear: "both"}}></div>
         </header>
       </div>
       <br />
       <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logoTransparent.png" alt="" align="center"/>
-        AtomicView</h2>
+        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
         <hr/>
       </div>
       </div>

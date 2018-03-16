@@ -13,7 +13,7 @@ import Header from './Header';
 import Footer from './Footer';
 import Toolbox from './Toolbox';
 import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
-import {loadAtomsAndBonds, loadList} from '../utils/LoadAtomsAndBonds';
+import {loadAtomsAndBonds} from '../utils/LoadAtomsAndBonds';
 import '../css/buttons.css';
 import {Icon} from 'react-fa';
 
@@ -59,7 +59,7 @@ class CanvasComponent extends Component {
   }
 
   loadAtomsAndBondsForUser = (key) => {
-    loadList();
+    console.log(key);
     loadAtomsAndBonds(key, this.atoms, this.bonds);
     this.drawCanvas2D();
   }
@@ -254,7 +254,7 @@ class CanvasComponent extends Component {
     switch(event.key){
       // Testing key
       case 'Enter':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Log info
       case 'l':
@@ -263,19 +263,20 @@ class CanvasComponent extends Component {
         break;
       // Pull up element table
       case 'e':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter bond mode / iterate bond type
       case 'b':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter atom Selection mode
       case 's':
-        console.log(event.key);
+        //console.log(event.key);
         break;
       // Enter delete mode
       case 'd':
-        this.deleteHandler();
+        // TypeError: this.deleteHandler is not a function
+        // this.deleteHandler();
         break;
       // Render 3d model
       case 'r':

@@ -3,20 +3,6 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/User');
 
-// var UserSchema = new mongoose.Schema({
-//   email: {
-//     type: String,
-//     unique: true,
-//     required: true,
-//     trim: true
-//   },
-//   password: {
-//     type: String,
-//     required: true,
-//   },
-//   jsonAtomsAndBondsArray: [{ key: String, jsonAtomsAndBonds: String }],
-// });
-
 router.get('/*', function(req, res, next) {
   res.render('index');
 });
@@ -52,32 +38,29 @@ router.route('/save').post(
           key : req.body.key, 
           jsonAtomsAndBonds : req.body.jsonAtomsAndBonds
         }
-        
-        User.update({_id : req.session.userId, 
-                    "jsonAtomsAndBondsArray": { $elemMatch: { "key": req.body.key } } },
-          {$set: 
-            {
-              "jsonAtomsAndBondsArray.$.jsonAtomsAndBonds" : req.body.jsonAtomsAndBonds              
-            }
-          }, {}, function (err, raw) {
 
-            // console.log('The raw response from Mongo was ', raw);
+        User.update(
+          { _id : req.session.userId, 
+            "jsonAtomsAndBondsArray.key": req.body.key },
+          { $set: 
+            { "jsonAtomsAndBondsArray.$.jsonAtomsAndBonds" : req.body.jsonAtomsAndBonds } },
+          function (err, raw) {
+
             if (err) {
               console.log("error: " + err);
-            } else if(raw == null || raw.nModified == 0) {
 
-              User.update({_id : req.session.userId},
-                {$addToSet: 
-                  {
-                    jsonAtomsAndBondsArray : tmp              
-                  }
-                }, {}, function (err, raw) {
+            } else if(raw == null || raw.n == 0) {
+
+              User.update(
+                { _id : req.session.userId},
+                { $addToSet: 
+                  { jsonAtomsAndBondsArray : tmp } },
+                function (err, raw) {
+
                   if (err) console.log("error: " + err);
-                  // console.log('The 2nd raw response from Mongo was ', raw);
                 });
             }
           });
-        
       }
     } else {
       console.log("in /save but does not seem to be signed in")
@@ -111,9 +94,6 @@ router.route('/molList').post(
 router.route('/retrieve').post(
   function(req, res, next) {
     if (req.session.signedIn && req.session.userId) {
-      console.log("Retrieving data");
-      console.log("userId: " + req.session.userId);
-      console.log("key: " + req.body.key)
       if(req.body.key) {
         User.findOne({ "_id" : req.session.userId},
                       { "jsonAtomsAndBondsArray": {$elemMatch: {key: req.body.key }}},
