@@ -39,8 +39,10 @@ class CanvasComponent extends Component {
 
     //initial/default state of canvas size and label info
     this.state = {
+      //canvasWidth:640,
+      //canvasHeight: 425,
       canvasWidth:640,
-      canvasHeight: 425,
+      canvasHeight:425,
       label: '',
       settingLabel: 0
     }
