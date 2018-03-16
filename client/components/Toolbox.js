@@ -57,8 +57,8 @@ class Toolbox extends React.Component {
       				<td><BondButton setCurBondType={this.selectBond}
       					switchCurAction={this.switchAction}/></td>
       				<td><RevertButton reversionHandler={this.reversionHandler}/></td>
-      				<td><DrawButton draw={this.draw}/></td>
       				<td><DeleteButton clearAll={this.clearAll} /></td>
+      				<td><DrawButton draw={this.draw}/></td>
               <td><ExportButton export3dCanvasImage={this.export3dCanvasImage} /></td>
       			</tr>
       			</tbody>

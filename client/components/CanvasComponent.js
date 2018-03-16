@@ -253,10 +253,6 @@ class CanvasComponent extends Component {
 
   handleKeyDown(event) {
     switch(event.key){
-      // Testing key
-      case 'Enter':
-        //console.log(event.key);
-        break;
       // Log info
       case 'l':
         console.log(this.atoms)

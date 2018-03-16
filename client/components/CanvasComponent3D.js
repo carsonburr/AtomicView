@@ -437,7 +437,6 @@ class CanvasComponent3D extends Component {
 
 
   export3dCanvasImage(){
-    alert("Hello export3dCanvasImage");
     var mycanvas = this.refs.canvas3d;
     if(mycanvas.getContext) {
       var img = mycanvas.toDataURL("image/png;base64;");
@@ -446,7 +445,7 @@ class CanvasComponent3D extends Component {
       anchor.click();
     }
     else {
-      alert("Can not export");
+      console.log("Failed to export");
     }
   }
 

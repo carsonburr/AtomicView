@@ -10,7 +10,7 @@ class ExportButton extends React.Component {
     return (
       <div className="exportButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
           <button className="exportButton" onClick={this.export3dCanvasImage}>
-            <i>export</i>
+            <i>Export</i>
             </button>
       </div>
     );
