@@ -36,12 +36,12 @@ class Footer extends React.Component {
             <hr/>
           </div>
           <h4 style={{float: 'left', paddingLeft: '50px'}}>
-            <a href="/about" style={{color: 'inherit'}}>
+            <a href="/about">
               About Us
             </a>
           </h4>
           <h4 style={{float: 'right', paddingRight: '50px'}}>
-            <a href="/resources" style={{color: 'inherit'}}>
+            <a href="/resources">
               Extra Resources
             </a>
           </h4>

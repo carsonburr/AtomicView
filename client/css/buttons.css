@@ -25,7 +25,11 @@
 	  font-family: fontAwesome;
 	  content: "\f067\00a0";
 	}
+  a {
+  	color: inherit;
+  }
   a:hover {
-  	text-dcoration: underline;
+  	text-decoration: underline;
+  	color: #feda6a;
   }
 }
