@@ -310,6 +310,7 @@ class CanvasComponent3D extends Component {
     }
 
     function hexToRgb(hex) {
+      while (hex.length < 6 ) { hex = "0" + hex; }
       var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       return result ? {
         r: parseInt(result[1], 16),
