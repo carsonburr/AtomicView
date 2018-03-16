@@ -112,9 +112,11 @@ class CanvasComponent3D extends Component {
 	  var u_N;
     // Variables for panning.
     var g_eyeX = 0, g_eyeY = 0;
+    var g_eyeOnlyX = 0, g_eyeOnlyY = 0;
     // orthographic zoom
     var g_orthoZoomY = 0;
     var g_orthoZoomX = 0;
+    var g_fov = 30, g_eyeZ = 0;
     var aspectRatio =1;
     // Container for matrices for bonds.
     var bond3DMatricesList = [];
@@ -128,6 +130,7 @@ class CanvasComponent3D extends Component {
     // Function to initialize the canvas and webgl elements before the actual
     // drawing takes place.
     function initWebGl() {
+      window.oncontextmenu = function(ev) {return false;};
       // Get the storage locations of uniform variables
       u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
       u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
@@ -195,11 +198,17 @@ class CanvasComponent3D extends Component {
 
     function setProjectionMatrix() {
       var projMatrix = new CuonMatrix.Matrix4();
-      projMatrix.setOrtho(g_eyeX - g_orthoZoomX,
-                          screen.width + g_eyeX + g_orthoZoomX,
-                          screen.height/2 + g_eyeY+g_orthoZoomY,
-                          -screen.height/2 + g_eyeY-g_orthoZoomY, 
-                          -100, 100);
+      // projMatrix.setOrtho(g_eyeX - g_orthoZoomX,
+      //                     screen.width + g_eyeX + g_orthoZoomX,
+      //                     screen.height/2 + g_eyeY+g_orthoZoomY,
+      //                     -screen.height/2 + g_eyeY-g_orthoZoomY, 
+      //                     -100, 100);
+      var centerX = (screen.width + g_eyeX)/2;
+      var centerY = (screen.height + g_eyeY)/2;
+      projMatrix.setPerspective(g_fov, canvas.width/canvas.height, 400, 3000);
+      projMatrix.lookAt(centerX + (g_eyeOnlyX/2), centerY + (g_eyeOnlyY/2), g_eyeZ + 1700,
+                        centerX, centerY, g_eyeZ,
+                        0, 1, 0);
       gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     }
 
@@ -374,7 +383,7 @@ class CanvasComponent3D extends Component {
     //----------------------------------------------------------------------------------------------
 
     var oldMouseX, oldMouseY;
-    var leftMouseDown = false;
+    var leftMouseDown = false, middleMouseDown = false, rightMouseDown = false;
     var scale=.5;
 
     // Panning Code
@@ -385,12 +394,19 @@ class CanvasComponent3D extends Component {
       window.requestAnimationFrame(actuallyDraw);
     }
 
+    function rotationPan(x,y, canvas){
+      g_eyeOnlyX += x-oldMouseX;
+      g_eyeOnlyY += y-oldMouseY;      
+      setProjectionMatrix();
+      window.requestAnimationFrame(actuallyDraw);
+    }
+
     function onmousedown(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
 
+      ev.preventDefault();
       if(ev.button == 0) {
-        ev.preventDefault();
         oldMouseX = x;
         oldMouseY = y;
         leftMouseDown = true;
@@ -398,15 +414,27 @@ class CanvasComponent3D extends Component {
         document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
         // Register function (event handler) to be called on a mouse move
         document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
-      } 
+      } else if (ev.button == 1){
+        document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
+      } else {
+        oldMouseX = x;
+        oldMouseY = y;
+        rightMouseDown = true;
+        // Register function (event handler) to be called on a mouse up
+        document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
+        // Register function (event handler) to be called on a mouse move
+        document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
+      }
     }
 
     function doconmousemove(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
-      if(ev.button == 0 && leftMouseDown) {
-        ev.preventDefault();
+      ev.preventDefault();
+      if(leftMouseDown) {
         pan(x, y, canvas);
+      } else if (rightMouseDown) {
+        rotationPan(x, y, canvas)
       }
       oldMouseX = x;
       oldMouseY = y;
@@ -415,21 +443,34 @@ class CanvasComponent3D extends Component {
     function doconmouseup(ev,gl,canvas) {
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
+      ev.preventDefault();
       if(leftMouseDown) {
-        ev.preventDefault();
         pan(x, y, canvas);
         leftMouseDown = false;
-        document.onmousemove = null;
-        document.onmouseup = null;
+      } else if (rightMouseDown) {
+        rightMouseDown = false;
+        rotationPan(x,y, canvas);
       }
+      document.onmousemove = null;
+      document.onmouseup = null;
     }
 
     function onWheel(e){
       e.preventDefault();
-      var oldZoomX = g_orthoZoomX, oldZoomY = g_orthoZoomY;
-      g_orthoZoomY += 3*e.deltaY;
-      g_orthoZoomY = Math.min(g_orthoZoomY, 3000);
-      g_orthoZoomX = aspectRatio * g_orthoZoomY;
+      if(middleMouseDown){
+        g_eyeZ += e.deltaY;
+      } else {
+        // Perspective zoom below:
+        g_fov += e.deltaY;
+        g_fov = Math.min(g_fov, 80);
+        g_fov = Math.max(g_fov, 1);
+        
+        // Ortho zoom below:
+        // var oldZoomX = g_orthoZoomX, oldZoomY = g_orthoZoomY;
+        // g_orthoZoomY += 3*e.deltaY;
+        // g_orthoZoomY = Math.min(g_orthoZoomY, 3000);
+        // g_orthoZoomX = aspectRatio * g_orthoZoomY;
+      }
       setProjectionMatrix();
       window.requestAnimationFrame(actuallyDraw);
     }
