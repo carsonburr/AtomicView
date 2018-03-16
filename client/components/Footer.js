@@ -40,7 +40,11 @@ class Footer extends React.Component {
               About Us
             </a>
           </h4>
-          <h4 style={{float: 'right', paddingRight: '50px'}}>Extra Resources</h4>
+          <h4 style={{float: 'right', paddingRight: '50px'}}>
+            <a href="/resources" style={{color: 'inherit'}}>
+              Extra Resources
+            </a>
+          </h4>
           <div style={{clear: "both"}}></div>
           <br />
         </footer>

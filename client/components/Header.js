@@ -99,8 +99,10 @@ class Header extends React.Component {
             <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
           </h3>
           <h3 style={{float: 'left', paddingLeft: 15}}>
-            <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
-            &nbsp;AtomicView</h2>
+            <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
+              <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
+              &nbsp;AtomicView</h2>
+            </a>
           </h3>
           <div style={{clear: "both"}}></div>
         </header>

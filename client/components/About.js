@@ -1,24 +1,10 @@
 import React, { Component } from 'react';
-import {Atom, Coord, RGBA} from '../../models/Atom.js';
-import {Bond} from '../../models/Bond.js';
-import WebGLUtils from '../../webgl_lib/webgl-utils.js';
-import CuonUtils from '../../webgl_lib/cuon-utils.js';
-import CuonMatrix from '../../webgl_lib/cuon-matrix.js';
-import PeriodicTablePopup from './PeriodicTablePopup';
-import BondButton from './BondButton';
-import CanvasComponent3D from './CanvasComponent3D';
-import CanvasComponent2D from './CanvasComponent2D';
-import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
-import Toolbox from './Toolbox';
-import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
-import {loadAtomsAndBonds} from '../utils/LoadAtomsAndBonds';
-import '../css/buttons.css';
-import {Icon} from 'react-fa';
+
 
 /**
-* Class with a 2d and a 3d canvas.
+* Class for about us page
 */
 class About extends React.Component {
   constructor() {
