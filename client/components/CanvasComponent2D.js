@@ -236,10 +236,11 @@ class CanvasComponent2D extends Component {
       this.curSelected = atom;
       this.curMoving = atom;
     } else {
-      this.curSelected = null;
-      this.panning = true;
-      this.prevPanningX = x - this.lastEndPanningX;
-      this.prevPanningY = x - this.lastEndPanningY;
+      // TODO: Implement 2D panning
+      // this.curSelected = null;
+      // this.panning = true;
+      // this.prevPanningX = x - this.lastEndPanningX;
+      // this.prevPanningY = x - this.lastEndPanningY;
     }
   }
 
