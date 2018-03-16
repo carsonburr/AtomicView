@@ -96,7 +96,13 @@ class PeriodicTablePopup extends React.Component {
     } 
 
     return (
+
       <div className="PeriodicTablePopup" onClick={this.handleClick}>
+        <div style={divStyle} >
+          <button className="PeriodicTableButton" onClick = {this.toggleModal}>
+            <i className="fa fa-plus"></i>
+          </button>
+        </div>
         <div style={backdropStyle}>
           <div style={modalStyle}>
             <div>
