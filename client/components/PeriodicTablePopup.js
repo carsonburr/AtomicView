@@ -4,9 +4,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {getTable} from '../../models/Atom.js';
 import '../css/buttons.css';
-import onClickOutside from "react-onclickoutside"
-//import 'font-awesome/css/font-awesome.min.css';
+import onClickOutside from "react-onclickoutside";
+
 var FontAwesome = require('react-fontawesome');
+
 class PeriodicTablePopup extends React.Component {
   constructor() {
     super();

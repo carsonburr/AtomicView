@@ -156,18 +156,6 @@ class LoginPage extends React.Component {
               >
               Login
             </Button>
-
-            <p className="centered-text">
-              or
-            </p>
-
-            <Button
-              block
-              bsSize="large"
-              type="submit"
-              >
-              Continue without logging in
-              </Button>
           </form>
 
           <p className="centered-text">Dont have an accout? <Link to="/signup">Create one!</Link></p>

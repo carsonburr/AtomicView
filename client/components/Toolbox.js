@@ -9,18 +9,14 @@ import DeleteButton from  './DeleteButton'
 import LabelButton from  './LabelButton'
 import ExportButton from './ExportButton'
 import {Atom, Coord, RGBA} from '../../models/Atom.js';
-//TODO: figure out how to display button meaning on mouse hover
+
 class Toolbox extends React.Component {
 
     selectAtom = (symbol, name, atomicRadius, color) => {
-    	//this.curAtom.atom = new Atom(
-      	//new Coord(0,0,0), symbol, name, atomicRadius,color,null, new Set());
-      	//console.log("sa");
-      	this.props.setCurAtom(symbol, name, atomicRadius, color, null, new Set());
+      this.props.setCurAtom(symbol, name, atomicRadius, color, null, new Set());
   	}
 
   	switchAction = (action) => {
-  		//console.log("sw");
 	    this.props.switchCurAction(action);
   	}
 
