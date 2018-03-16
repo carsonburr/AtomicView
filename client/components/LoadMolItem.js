@@ -18,10 +18,25 @@ export default class LoadMolItem extends React.Component {
   }
 
   render() {
+    const itemStyle = {
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      padding: 10,
+      maxHeight: 50,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+      borderBottomStyle: 'solid',
+    }
+    const nameStyle = {
+      flex: 1,
+    }
     return (
-      <li>
-        <button onClick={this.loadMol}>{this.props.savekey}</button>
-      </li>
+      <div style={itemStyle}>
+        <span style={nameStyle}>{this.props.savekey}</span>
+        <button onClick={this.saveMol}>Save</button>
+        <button onClick={this.loadMol}>Load</button>
+      </div>
     )
   }
 }

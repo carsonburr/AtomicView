@@ -12,7 +12,7 @@ import SelectButton from './SelectButton';
 import Header from './Header';
 import Footer from './Footer';
 import Toolbox from './Toolbox';
-import {saveAtomsAndBonds} from '../utils/SaveAtomsAndBonds';
+import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
 import {loadAtomsAndBonds} from '../utils/LoadAtomsAndBonds';
 import '../css/buttons.css';
 import {Icon} from 'react-fa';

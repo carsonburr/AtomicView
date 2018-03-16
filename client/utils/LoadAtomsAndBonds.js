@@ -29,7 +29,6 @@ export function loadAtomsAndBonds(key, atoms, bonds) {
       }).then((response)=>{
         atoms.clear();
         bonds.clear();
-        console.log(response.data);
         let atomsAndBonds = JSON.parse(response.data.jsonAtomsAndBondsArray[0].jsonAtomsAndBonds);
         let loadedAtoms = atomsAndBonds.atoms;
         let loadedBonds = atomsAndBonds.bonds;

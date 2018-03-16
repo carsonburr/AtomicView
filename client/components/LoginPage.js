@@ -6,7 +6,7 @@ import "../css/LoginPage.css";
 import qs from 'querystring';
 import { Redirect } from 'react-router';
 import PropTypes from 'prop-types';
-import onClickOutside from "react-onclickoutside"
+import onClickOutside from "react-onclickoutside";
 
 var finishedLoggingIn=false;
 
@@ -95,11 +95,12 @@ class LoginPage extends React.Component {
     }
 
     const modalStyle = {
+      position: 'absolute',
       backgroundColor: '#fff',
       borderRadius: 5,
+      border: '1px solid #ccc',
       maxWidth: 700,
       minHeight: 400,
-      margin: '0 auto',
       padding: 30
     };
     return (

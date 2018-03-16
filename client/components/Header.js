@@ -71,7 +71,9 @@ class Header extends React.Component {
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <LoadMolList loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
+            <h3 style={{float: 'left', paddingLeft: 10}}>
+              <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
+            </h3>
             <h3 style={{float: 'right'}}>
               <button onClick={this.logout}>Logout</button>
             </h3>
@@ -94,9 +96,10 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left'}}>
-          <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
-          </h3><div style={{clear: "both"}}></div>
+          <h3 style={{float: 'left', paddingLeft: 10}}>
+            <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
+          </h3>
+          <div style={{clear: "both"}}></div>
         </header>
       </div>
       <br />
