@@ -23,6 +23,7 @@ export default class LoadMolItem extends React.Component {
       display: 'flex',
       alignItems: 'center',
       padding: 10,
+      minHeight: 45,
       maxHeight: 50,
       borderBottomWidth: 1,
       borderBottomColor: '#ccc',
