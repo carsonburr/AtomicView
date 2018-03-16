@@ -236,9 +236,10 @@ class CanvasComponent extends Component {
       return(<button className="LabelButton" onClick={this.setLabel}><i className="fa fa-tag"></i></button>);
     } else {
       return(
-        <span>
+        <span style={{paddingLeft: '6px'}}>
           <input type="text" ref={input => this._label = input} placeholder="Set Label" />
-          <input type="submit" onClick={this.updateLabel} value="Save"/>
+          
+          <button onClick={this.updateLabel}> Save</button>
         </span>);
     }
   }
@@ -248,7 +249,7 @@ class CanvasComponent extends Component {
     if(!this.state.label) {
       return null;
     }
-    return(<h1>&nbsp;Molecule: {this.state.label}</h1>)
+    return(<h1 style={{fontFamily: 'Garamond'}}>&nbsp;Molecule: {this.state.label}</h1>)
   }
 
   handleKeyDown(event) {
@@ -312,6 +313,7 @@ class CanvasComponent extends Component {
                   reversionHandler={this.reversionHandler}
                   export3dCanvasImage={this.export3dCanvasImage}
                   />
+          <div style={{paddingLeft: '6px', paddingBottom: '6px'}}>{this.getLabel()}</div>
           <span>{this.showLabel()}</span>
           <CanvasComponent2D ref="canvas2d"
                              getAtoms={this.getAtoms}
@@ -331,8 +333,6 @@ class CanvasComponent extends Component {
                              label={this.state.label}
                              />
         </div>
-          <div>{this.getLabel()}</div>
-
         <Footer/>
       </div>
     );
