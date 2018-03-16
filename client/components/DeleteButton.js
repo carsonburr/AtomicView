@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class DeleteButton extends React.Component {
   clearAll = () => {
     this.props.clearAll();
-  };  
+  };
 
   render() {
     return (
