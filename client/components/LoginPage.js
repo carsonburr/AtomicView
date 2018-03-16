@@ -110,9 +110,9 @@ class LoginPage extends React.Component {
       minHeight: 400,
       padding: 30,
       position: 'absolute',
-      top: '280%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
+      top: '215%',
+      right: '35%',
+      margin: '0 auto', 
     };
     return (
       <div>

@@ -81,6 +81,9 @@ class LoadMolList extends React.Component {
       height: 400,
       margin: '0 auto',
       padding: 10,
+      top: '370%',
+      right: '-10%',
+      transform: 'translate(-50%, -50%)'
     };
     const listStyle = {
       border: '1px solid #cdf',
@@ -110,6 +113,10 @@ class LoadMolList extends React.Component {
       )
     } else {
       return (
+        <div>
+        <div>
+          <button onClick={this.onOpen}>Store Molecules</button>
+        </div>
         <div style={popupStyle}>
           <div style={listStyle}>
             {this.makeList()}
@@ -118,6 +125,7 @@ class LoadMolList extends React.Component {
             <input type="text" style={nameField} value={this.state.saveVal} onChange={this.handleChange} />
             <button onClick={this.handleSave} style={saveButton}><i class="fa fa-save"></i></button>
           </div>
+        </div>
         </div>
       )
     }
