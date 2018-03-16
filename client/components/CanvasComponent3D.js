@@ -153,7 +153,9 @@ class CanvasComponent3D extends Component {
     	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
     	// Set initial orthographic view
     	projMatrix = new CuonMatrix.Matrix4();
-      projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
+      projMatrix.setOrtho(g_eyeX, screen.width + g_eyeX, 
+                          screen.height/2 + g_eyeY, -screen.height/2+g_eyeY,
+                          -100, 100);
     	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
@@ -318,12 +320,15 @@ class CanvasComponent3D extends Component {
       var vertex_normals = new Float32Array(verticesLength);
       var colors = new Float32Array(verticesLength);
 
-      SetupBondsForWebGLHelper.translateCoordsAndStoreInVertexArray(vertices, unitcircles, x1, y1, x2, y2); //vertex array
+      SetupBondsForWebGLHelper.translateCoordsAndStoreInVertexArray(vertices, unitcircles,
+                                                                    x1, y1, x2, y2);
       SetupBondsForWebGLHelper.generateSurfaceNormals(surfaceNormals, vertices);
       SetupBondsForWebGLHelper.generateIndices(indices_e, bondIndices, indicesLength);
-      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e, surfaceNormals, bondIndices);
+      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e,
+                                                     surfaceNormals, bondIndices);
       SetupBondsForWebGLHelper.generateColors(colors);
-      SetupBondsForWebGLHelper.generateVertexArray(vertices_e, vertices, type, verticesLength, x1, y1, x2, y2, radius);
+      SetupBondsForWebGLHelper.generateVertexArray(vertices_e, vertices, type,
+                                                   verticesLength, x1, y1, x2, y2, radius);
       bond3DMatricesList.push(
         new Bond3DMatricesContainer(vertices_e, colors, vertex_normals, indices_e)
       );
@@ -362,23 +367,20 @@ class CanvasComponent3D extends Component {
 
     // Panning Code
     function pan (x, y, canvas) {
-        g_eyeX += x-oldMouseX;
-        g_eyeY += y-oldMouseY;
-        var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
-                            425+scale*g_eyeY, 0+scale*g_eyeY, 
-                            -100, 100);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        window.requestAnimationFrame(actuallyDraw);
+      g_eyeX += x-oldMouseX;
+      g_eyeY += y-oldMouseY;
+      var projMatrix = new CuonMatrix.Matrix4();
+      projMatrix.setOrtho(g_eyeX, screen.width + g_eyeX,
+                          screen.height/2 + g_eyeY,
+                          -screen.height/2+g_eyeY, -100, 100);
+      gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+      window.requestAnimationFrame(actuallyDraw);
     }
 
     function onmousedown(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
-      // var rect = ev.target.getBoundingClientRect() ;
 
-      // x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      // y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
       if(ev.button == 0) {
         ev.preventDefault();
         oldMouseX = x;

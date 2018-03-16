@@ -175,6 +175,17 @@ class CanvasComponent2D extends Component {
     }
   }
 
+  isCurBondOverriding(bond) {
+      var atom1 = bond.atom1;
+      var atom2 = bond.atom2;
+      var curAtom1 = this.curBond.atom1;
+      var curAtom2 = this.curBond.atom2;
+      return ( atom1.equals(curAtom1) &&
+               atom2.equals(curAtom2)) ||
+             ( atom2.equals(curAtom1) &&
+               atom1.equals(curAtom2));
+  }
+
   addNewBond(atom) {
     var curBond = this.curBond;
     var bonds = this.props.getBonds();
@@ -184,28 +195,19 @@ class CanvasComponent2D extends Component {
     this.tmpBond = null;
     this.curBond.atom2 = atom;
     for ( let bond of bonds ) {
-      var atom1 = bond.atom1;
-      var atom2 = bond.atom2;
-      var curAtom1 = this.curBond.atom1;
-      var curAtom2 = this.curBond.atom2;
-      if ( (atom1.equals(curAtom1) &&
-            atom2.equals(curAtom2)) ||
-           (atom2.equals(curAtom1) &&
-            atom1.equals(curAtom2)) ) {
+      if (this.isCurBondOverriding(bond)) {
         changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
         bond.bondType = curBond.bondType;
         notAdded = false;
         break;
       }
     }
-
-    if(notAdded){
+    if (notAdded) {
       bonds.add(curBond);
       curBond.atom1.bonds.add(curBond);
       curBond.atom2.bonds.add(curBond);
       changes.push({type:"bond", payLoad:curBond, action:"added", overwritten:null});
     }
-
     this.curBond = null;
     this.drawCanvas2D();
   }
