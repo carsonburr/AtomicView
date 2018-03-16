@@ -112,6 +112,10 @@ class CanvasComponent3D extends Component {
 	  var u_N;
     // Variables for panning.
     var g_eyeX = 0, g_eyeY = 0;
+    // orthographic zoom
+    var g_orthoZoomY = 0;
+    var g_orthoZoomX = 0;
+    var aspectRatio =1;
     // Container for matrices for bonds.
     var bond3DMatricesList = [];
     // Initializes webgl
@@ -152,11 +156,8 @@ class CanvasComponent3D extends Component {
     	// Initialize specluar light
     	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
     	// Set initial orthographic view
-    	projMatrix = new CuonMatrix.Matrix4();
-      projMatrix.setOrtho(g_eyeX, screen.width + g_eyeX, 
-                          screen.height/2 + g_eyeY, -screen.height/2+g_eyeY,
-                          -100, 100);
-    	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+      aspectRatio = screen.width/screen.height;
+    	setProjectionMatrix();
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
       //Generate unit circles and polygons for bonds
@@ -182,6 +183,7 @@ class CanvasComponent3D extends Component {
   	  unitpolygons.push([11, 12, 23]);
       // Register function (event handler) to be called on a mouse press
       canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
+      canvas.addEventListener("wheel", onWheel);
       setupAtoms();
       //Draw Bonds
       for( let bond of bonds ){
@@ -189,6 +191,16 @@ class CanvasComponent3D extends Component {
                      bond.atom2.location.y, bond.bondType);
       }
       actuallyDraw();
+    }
+
+    function setProjectionMatrix() {
+      var projMatrix = new CuonMatrix.Matrix4();
+      projMatrix.setOrtho(g_eyeX - g_orthoZoomX,
+                          screen.width + g_eyeX + g_orthoZoomX,
+                          screen.height/2 + g_eyeY+g_orthoZoomY,
+                          -screen.height/2 + g_eyeY-g_orthoZoomY, 
+                          -100, 100);
+      gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     }
 
     // Function to actually draw on the canvas.
@@ -369,11 +381,7 @@ class CanvasComponent3D extends Component {
     function pan (x, y, canvas) {
       g_eyeX += x-oldMouseX;
       g_eyeY += y-oldMouseY;
-      var projMatrix = new CuonMatrix.Matrix4();
-      projMatrix.setOrtho(g_eyeX, screen.width + g_eyeX,
-                          screen.height/2 + g_eyeY,
-                          -screen.height/2+g_eyeY, -100, 100);
-      gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+      setProjectionMatrix();
       window.requestAnimationFrame(actuallyDraw);
     }
 
@@ -414,6 +422,16 @@ class CanvasComponent3D extends Component {
         document.onmousemove = null;
         document.onmouseup = null;
       }
+    }
+
+    function onWheel(e){
+      e.preventDefault();
+      var oldZoomX = g_orthoZoomX, oldZoomY = g_orthoZoomY;
+      g_orthoZoomY += 3*e.deltaY;
+      g_orthoZoomY = Math.min(g_orthoZoomY, 3000);
+      g_orthoZoomX = aspectRatio * g_orthoZoomY;
+      setProjectionMatrix();
+      window.requestAnimationFrame(actuallyDraw);
     }
   }
 
