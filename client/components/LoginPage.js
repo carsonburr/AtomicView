@@ -87,7 +87,7 @@ class LoginPage extends React.Component {
     if(!this.state.isOpen) {
       return (
         <div className="LoginPageButton">
-          <button onClick = {this.toggleModal}>
+          <button onClick = {this.toggleModal} style = {{border: '2px solid #feda6a'}}>
             Login
           </button>
         </div>
@@ -117,7 +117,7 @@ class LoginPage extends React.Component {
     return (
       <div>
         <div className="LoginPageButton">
-          <button onClick = {this.toggleModal}>
+          <button onClick = {this.toggleModal} style = {{border: '2px solid #feda6a'}}>
             Login
           </button>
         </div>

@@ -32,16 +32,16 @@ class Footer extends React.Component {
            <div align="center" style={flexStyle} overflow="hidden"  >
             <hr/>
             <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
-            <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
+            <span style={{color: '#feda6a'}}>A</span>tomic<span style={{color: '#feda6a'}}>V</span>iew</h2>
             <hr/>
           </div>
           <h4 style={{float: 'left', paddingLeft: '50px'}}>
-            <a href="/about" style={{color: 'inherit'}}>
+            <a href="/about">
               About Us
             </a>
           </h4>
           <h4 style={{float: 'right', paddingRight: '50px'}}>
-            <a href="/resources" style={{color: 'inherit'}}>
+            <a href="/resources" >
               Extra Resources
             </a>
           </h4>

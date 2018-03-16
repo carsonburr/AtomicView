@@ -51,7 +51,7 @@ class Header extends React.Component {
 
   render() {
     const headerStyle = {
-      backgroundColor:'#d4d4dcaa',
+      backgroundColor:'#393f4daa',
       width: '100%',
       paddingBottom: '0px',
       marginBottom: '20px',
@@ -63,7 +63,7 @@ class Header extends React.Component {
     };
     const flexStyle = {
       //bottom: '10px',
-      color: '#393f4d;',
+      color: '#393f4d',
       backgroundColor: "#1d1e2200"
     }
     if(this.state.userId!=null) {
@@ -78,7 +78,7 @@ class Header extends React.Component {
               </a>
             </span>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
-              <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
+              <button onClick={this.logout} style = {{border: '2px solid #feda6a'}}><i class="fa fa-sign-out"></i></button>
             </h3>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
               <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>

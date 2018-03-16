@@ -108,14 +108,14 @@ class LoadMolList extends React.Component {
     if (!this.state.open) {
       return (
         <div>
-          <button onClick={this.onOpen}>Store Molecules</button>
+          <button onClick={this.onOpen} style = {{border: '2px solid #feda6a'}}>Store Molecules</button>
         </div>
       )
     } else {
       return (
         <div>
         <div>
-          <button onClick={this.onOpen}>Store Molecules</button>
+          <button onClick={this.onOpen} style = {{border: '2px solid #feda6a'}}>Store Molecules</button>
         </div>
         <div style={popupStyle}>
           <div style={listStyle}>
