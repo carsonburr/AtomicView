@@ -75,11 +75,12 @@ class PeriodicTablePopup extends React.Component {
       backgroundColor: '#fff',
       borderRadius: 5,
       border: '1px solid #ccc',
-      maxWidth: 700,
+      maxWidth: 900,
+      minWidth: 600,
       minHeight: 400,
       padding: 30,
       position: 'absolute',
-      top: '50%',
+      top: '35%',
       left: '50%',
       transform: 'translate(-50%, -50%)'
     };
