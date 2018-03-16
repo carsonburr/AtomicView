@@ -38,10 +38,10 @@ Sprint 4: https://docs.google.com/spreadsheets/d/121mOBzAx23M0oCItCxhmElh-HEvDvh
 
 ----Sprint Reports------------------------------
 
-Sprint 1: https://docs.google.com/document/d/13MC7kiOQVVZOiS42cjpOgselwVbNpmboVL6vcBAOGRg/edit
+Sprint 1: https://docs.google.com/document/d/13MC7kiOQVVZOiS42cjpOgselwVbNpmboVL6vcBAOGRg/edit?usp=sharing
 
 Sprint 2: https://docs.google.com/document/d/1yIcoQ3_50EvfWUUu69Vk3iacwIef5kvuBy7puajuBLU/edit?usp=sharing
 
 Sprint 3: https://docs.google.com/document/d/1dypV6fTAxJbuPrEFKSTyUY9klZIVhsbjQpEAv0bC60E/edit?usp=sharing
 
-
+Sprint 4: https://docs.google.com/document/d/1WxkjxQBYbMRLm_oAzYQ6ZdgtKd3X-Qtg_NHv1vGtkG0/edit?usp=sharing
