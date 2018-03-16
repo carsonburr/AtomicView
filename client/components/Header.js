@@ -71,15 +71,15 @@ class Header extends React.Component {
         <div className="flex-container">
           <header style = {headerStyle}>
             <h3 style={{float: 'left'}}>
-              <button onClick={this.saveAtomsAndBondsForUser}>Save</button>
+              <button onClick={this.saveAtomsAndBondsForUser}><i class="fa fa-save"></i></button>
             </h3>
 
             <h3 style={{float: 'left'}}>
-              <button onClick={this.loadAtomsAndBondsForUser}>Load</button>
+              <button onClick={this.loadAtomsAndBondsForUser}><i class="fa fa-upload"></i></button>
             </h3>
 
             <h3 style={{float: 'right'}}>
-              <button onClick={this.logout}>Logout</button>
+              <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
             </h3>
             <div style={{clear: "both"}}></div>
           </header>
@@ -87,8 +87,8 @@ class Header extends React.Component {
         <br />
         <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logo.png" alt="" align="center"/>
-        AtomicView</h2>
+        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
         <hr/>
       </div>
         </div>
@@ -108,8 +108,8 @@ class Header extends React.Component {
       <br />
       <div align="center" style={flexStyle} overflow="hidden"  >
         <hr/>
-        <h2 ><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
-        AtomicView</h2>
+        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
         <hr/>
       </div>
       </div>

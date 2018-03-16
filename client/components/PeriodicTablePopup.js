@@ -100,7 +100,7 @@ class PeriodicTablePopup extends React.Component {
         <div style={backdropStyle}>
           <div style={modalStyle}>
             <div>
-              <table id="periodic table">
+              <table id="periodic table" style={{border: '1px solid white'}}>
                 <tbody>
                   {rows}
                 </tbody>

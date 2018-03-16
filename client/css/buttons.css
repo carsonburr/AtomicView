@@ -130,6 +130,7 @@
 
   button {
   	background:    #ffffff;
+  	background-color: transparent;
 	border:        2px solid #393f4d;
 	border-radius: 8px;
 	padding:       8px 20px;
