@@ -5,6 +5,7 @@ import { hashHistory } from 'react-router';
 import SignupPage from '../components/SignupPage';
 import LoginPage from '../components/LoginPage';
 import CanvasComponent from '../components/CanvasComponent';
+import About from '../components/About';
 
 
 export default () => (
@@ -13,6 +14,7 @@ export default () => (
       <Route path="/" exact component={CanvasComponent} />
       <Route path="/login" exact component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
+      <Route path="/about" component={About} />
     </div>
   </BrowserRouter>
 );

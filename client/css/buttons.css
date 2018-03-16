@@ -153,4 +153,7 @@
 	  font-family: fontAwesome;
 	  content: "\f067\00a0";
 	}
+  a:hover {
+  	text-dcoration: underline;
+  }
 }

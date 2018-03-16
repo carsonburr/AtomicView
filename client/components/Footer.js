@@ -35,7 +35,11 @@ class Footer extends React.Component {
             <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
             <hr/>
           </div>
-          <h4 style={{float: 'left', paddingLeft: '50px'}}>About Us</h4>
+          <h4 style={{float: 'left', paddingLeft: '50px'}}>
+            <a href="/about" style={{color: 'inherit'}}>
+              About Us
+            </a>
+          </h4>
           <h4 style={{float: 'right', paddingRight: '50px'}}>Extra Resources</h4>
           <div style={{clear: "both"}}></div>
           <br />
