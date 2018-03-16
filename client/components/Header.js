@@ -71,11 +71,17 @@ class Header extends React.Component {
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <h3 style={{float: 'left', paddingLeft: '15px'}}>
-              <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
-            </h3>
+            <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
+              <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
+                <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
+                &nbsp;AtomicView</h2>
+              </a>
+            </span>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
               <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
+            </h3>
+            <h3 style={{float: 'right', paddingRight: '15px'}}>
+              <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
             </h3>
             <div style={{clear: "both"}}></div>
           </header>
@@ -95,15 +101,15 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'right', paddingRight: 15}}>
+          <h3 style={{float: 'right', paddingRight: 15, verticalAlign: 'middle'}}>
             <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
           </h3>
-          <h3 style={{float: 'left', paddingLeft: 15}}>
+          <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
             <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
               <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
               &nbsp;AtomicView</h2>
             </a>
-          </h3>
+          </span>
           <div style={{clear: "both"}}></div>
         </header>
       </div>

@@ -8,7 +8,7 @@ class SelectButton extends React.Component {
 
   render() {
     return (
-      <div className="SelectButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
+      <div className="SelectButtonContainer" background="#3d85c6" style={{paddingLeft: '6px'}}>
           <button className="SelectButton"
             onClick={this.handleClick.bind(this)} full="true">
             <i className="fa fa-hand-o-up"></i>

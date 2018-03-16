@@ -8,7 +8,7 @@ class RevertButton extends React.Component {
 
   render() {
     return (
-      <div className="SelectButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
+      <div className="SelectButtonContainer" background="#3d85c6" >
           <button className="RevertButton" onClick={this.handleClick}>
             <i className="fa fa-undo"></i>
           </button>

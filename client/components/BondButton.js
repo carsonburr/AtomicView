@@ -80,7 +80,7 @@ class BondButton extends React.Component {
       marginRight: '6px'    
     };
     return (
-      <div className="BondButtonContainer" style ={{paddingLeft:'6px'}}>
+      <div className="BondButtonContainer">
           <button className="BondButton" onClick={this.handleClickSingle.bind(this)}>
             |
           </button>

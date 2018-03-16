@@ -8,7 +8,7 @@ class ExportButton extends React.Component {
 
   render() {
     return (
-      <div className="exportButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
+      <div className="exportButtonContainer" background="#3d85c6">
           <button className="exportButton" onClick={this.export3dCanvasImage}>
             <i>Export</i>
             </button>

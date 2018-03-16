@@ -47,7 +47,8 @@ class PeriodicTablePopup extends React.Component {
   render() {
 
     const divStyle = {
-      padding:'6px'
+      paddingBottom:'6px',
+      paddingTop: '6px'
     }
 
     if(!this.state.isOpen) {

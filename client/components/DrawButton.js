@@ -8,7 +8,7 @@ class DrawButton extends React.Component {
 
   render() {
     return (
-      <div className="SelectButtonContainer" background="#3d85c6" style={{padding: '6px'}}>
+      <div className="SelectButtonContainer" background="#3d85c6">
           <button className="DrawButton"
             onClick={this.handleClick} full="true">
             <i>Draw</i>
