@@ -13,7 +13,7 @@ class Header extends React.Component {
   }
   /*handleClick = () => {
     this.props.switchCurAction("select");
-  };*/  
+  };*/
 
   setUserId = (userId) => {
     this.setState({
@@ -63,7 +63,7 @@ class Header extends React.Component {
     };
     const flexStyle = {
       //bottom: '10px',
-      color: '#393f4d;',
+      color: '#393f4d',
       backgroundColor: "#1d1e2200"
     }
     if(this.state.userId!=null) {
@@ -78,7 +78,7 @@ class Header extends React.Component {
               </a>
             </span>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
-              <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
+              <button onClick={this.logout}><i className="fa fa-sign-out"></i></button>
             </h3>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
               <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>

@@ -123,7 +123,7 @@ class LoadMolList extends React.Component {
           </div>
           <div style={controlBarStyle}>
             <input type="text" style={nameField} value={this.state.saveVal} onChange={this.handleChange} />
-            <button onClick={this.handleSave} style={saveButton}><i class="fa fa-save"></i></button>
+            <button onClick={this.handleSave} style={saveButton}><i className="fa fa-save"></i></button>
           </div>
         </div>
         </div>

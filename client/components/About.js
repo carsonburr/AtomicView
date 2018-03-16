@@ -37,21 +37,21 @@ class About extends React.Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
         <div style={{paddingLeft: '8%', color: '#393f4d', width: '92%'}} >
-        <h2 align="center">About Us</h2>
-        <hr />
-        <p align="center">We are a team of Computer Scientists with an interest in making Chemistry easier
+          <h2 align="center">About Us</h2>
+          <hr />
+          <p align="center">We are a team of Computer Scientists with an interest in making Chemistry easier
         and more accessible to all. Our web app serves to allow users to visualize the
         molecules that they so often read about. Though are audience is primarily Chemistry
         students who wish to see what is in their textbooks, we believe people from any
         academic background, and of any age, will enjoy using our web app.</p> <br />
-        <p align="center">If you set foot into any Chemistry student's room, you are likely
+          <p align="center">If you set foot into any Chemistry student's room, you are likely
         to see a "Molecular Model Kit". While these kits are fun to play with, they have
         some severe limitations. The biggest of which, is that not every molecule is
         creatable with these physical kits. By bringing software into the mix, we allow

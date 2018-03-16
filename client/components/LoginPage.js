@@ -21,7 +21,7 @@ class LoginPage extends React.Component {
       isOpen: false
     };
 
-    this.setWrapperRef = this.setWrapperRef.bind(this); 
+    this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -65,12 +65,10 @@ class LoginPage extends React.Component {
         }
       }).then((response)=>{
         this.toggleModal();
-        console.log(response.data)
         this.props.setUserId(response.data);
       }).catch(function(error) {
         console.log(error);
       });
-    console.log(test)
   }
 
   setWrapperRef(node) {
@@ -112,7 +110,7 @@ class LoginPage extends React.Component {
       position: 'absolute',
       top: '215%',
       right: '35%',
-      margin: '0 auto', 
+      margin: '0 auto',
     };
     return (
       <div>

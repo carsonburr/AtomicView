@@ -34,8 +34,8 @@ export default class LoadMolItem extends React.Component {
     return (
       <div style={itemStyle}>
         <span style={nameStyle}>{this.props.savekey}</span>
-        <button onClick={this.saveMol}><i class="fa fa-save"></i></button>
-        <button onClick={this.loadMol}><i class="fa fa-upload"></i></button>
+        <button onClick={this.saveMol}><i className="fa fa-save"></i></button>
+        <button onClick={this.loadMol}><i className="fa fa-upload"></i></button>
       </div>
     )
   }

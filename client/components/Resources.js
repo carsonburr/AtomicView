@@ -18,11 +18,11 @@ class About extends React.Component {
   // Should have a way of not offering to save for users in this page
   saveAtomsAndBondsForUser = (key) => {
     //saveAtomsAndBonds(key, this.atoms, this.bonds);
-    console.log("Can't save Atoms in about page you fool");
+    console.log("Can't save Atoms in about page");
   }
 
   loadAtomsAndBondsForUser = (key) => {
-    console.log("Can't save Atoms in about page you fool");
+    console.log("Can't save Atoms in about page");
   }
 
   setUserId = (userId) => {
