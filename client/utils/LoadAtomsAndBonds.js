@@ -3,11 +3,12 @@ import qs from 'querystring';
 import {Atom, Coord} from '../../models/Atom.js';
 import {Bond} from '../../models/Bond.js';
 
-export function loadList() {
+export function loadList(update_molList) {
   axios.post(
     '/molList'
   ).then((response) => {
-    console.log(response.data);
+    let molList = response.data[0].jsonAtomsAndBondsArray;
+    update_molList(molList);
   }).catch(
     function(err) {
       console.log(err);
@@ -28,7 +29,6 @@ export function loadAtomsAndBonds(key, atoms, bonds) {
       }).then((response)=>{
         atoms.clear();
         bonds.clear();
-        console.log(response.data);
         let atomsAndBonds = JSON.parse(response.data.jsonAtomsAndBondsArray[0].jsonAtomsAndBonds);
         let loadedAtoms = atomsAndBonds.atoms;
         let loadedBonds = atomsAndBonds.bonds;

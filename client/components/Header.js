@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import LoginPage from './LoginPage'
 import axios from 'axios';
 import qs from 'querystring';
+import LoadMolList from './LoadMolList.js';
 
 class Header extends React.Component {
   constructor(props) {
@@ -70,14 +71,9 @@ class Header extends React.Component {
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <h3 style={{float: 'left'}}>
-              <button onClick={this.saveAtomsAndBondsForUser}><i class="fa fa-save"></i></button>
+            <h3 style={{float: 'left', paddingLeft: 10}}>
+              <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
             </h3>
-
-            <h3 style={{float: 'left'}}>
-              <button onClick={this.loadAtomsAndBondsForUser}><i class="fa fa-upload"></i></button>
-            </h3>
-
             <h3 style={{float: 'right'}}>
               <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
             </h3>
@@ -100,9 +96,10 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left'}}>
-          <LoginPage style={{float: 'right', paddingRight: '10px'}} setUserId={this.setUserId}/>
-          </h3><div style={{clear: "both"}}></div>
+          <h3 style={{float: 'left', paddingLeft: 10}}>
+            <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
+          </h3>
+          <div style={{clear: "both"}}></div>
         </header>
       </div>
       <br />

@@ -59,6 +59,7 @@ class CanvasComponent3D extends Component {
   // Sets up webgl right now.
   updateCanvas() {
     this.canvas3d = this.refs.canvas3d;
+    var tmp = this.gl
     this.gl = WebGLUtils.setupWebGL(this.canvas3d,{preserveDrawingBuffer: true});
     // Initialize shaders
     if (!CuonUtils.initShaders(this.gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
@@ -111,6 +112,10 @@ class CanvasComponent3D extends Component {
 	  var u_N;
     // Variables for panning.
     var g_eyeX = 0, g_eyeY = 0;
+    // orthographic zoom
+    var g_orthoZoomY = 0;
+    var g_orthoZoomX = 0;
+    var aspectRatio =1;
     // Container for matrices for bonds.
     var bond3DMatricesList = [];
     // Initializes webgl
@@ -151,11 +156,8 @@ class CanvasComponent3D extends Component {
     	// Initialize specluar light
     	gl.uniform3f(u_SpecularLight, 0.7, 0.7, 0.7);
     	// Set initial orthographic view
-    	projMatrix = new CuonMatrix.Matrix4();
-      projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-      // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-      // projMatrix.lookAt(g_eyeX+100, g_eyeY+100, 1700, g_eyeX, g_eyeY, 0, 0, 1, 0);
-    	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
+      aspectRatio = screen.width/screen.height;
+    	setProjectionMatrix();
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
       //Generate unit circles and polygons for bonds
@@ -181,6 +183,7 @@ class CanvasComponent3D extends Component {
   	  unitpolygons.push([11, 12, 23]);
       // Register function (event handler) to be called on a mouse press
       canvas.onmousedown = function(ev){ onmousedown(ev, gl, canvas); };
+      canvas.addEventListener("wheel", onWheel);
       setupAtoms();
       //Draw Bonds
       for( let bond of bonds ){
@@ -188,6 +191,16 @@ class CanvasComponent3D extends Component {
                      bond.atom2.location.y, bond.bondType);
       }
       actuallyDraw();
+    }
+
+    function setProjectionMatrix() {
+      var projMatrix = new CuonMatrix.Matrix4();
+      projMatrix.setOrtho(g_eyeX - g_orthoZoomX,
+                          screen.width + g_eyeX + g_orthoZoomX,
+                          screen.height/2 + g_eyeY+g_orthoZoomY,
+                          -screen.height/2 + g_eyeY-g_orthoZoomY, 
+                          -100, 100);
+      gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     }
 
     // Function to actually draw on the canvas.
@@ -319,12 +332,15 @@ class CanvasComponent3D extends Component {
       var vertex_normals = new Float32Array(verticesLength);
       var colors = new Float32Array(verticesLength);
 
-      SetupBondsForWebGLHelper.translateCoordsAndStoreInVertexArray(vertices, unitcircles, x1, y1, x2, y2); //vertex array
+      SetupBondsForWebGLHelper.translateCoordsAndStoreInVertexArray(vertices, unitcircles,
+                                                                    x1, y1, x2, y2);
       SetupBondsForWebGLHelper.generateSurfaceNormals(surfaceNormals, vertices);
       SetupBondsForWebGLHelper.generateIndices(indices_e, bondIndices, indicesLength);
-      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e, surfaceNormals, bondIndices);
+      SetupBondsForWebGLHelper.generateVertexNormals(vertex_normals, indices_e,
+                                                     surfaceNormals, bondIndices);
       SetupBondsForWebGLHelper.generateColors(colors);
-      SetupBondsForWebGLHelper.generateVertexArray(vertices_e, vertices, type, verticesLength, x1, y1, x2, y2, radius);
+      SetupBondsForWebGLHelper.generateVertexArray(vertices_e, vertices, type,
+                                                   verticesLength, x1, y1, x2, y2, radius);
       bond3DMatricesList.push(
         new Bond3DMatricesContainer(vertices_e, colors, vertex_normals, indices_e)
       );
@@ -363,25 +379,16 @@ class CanvasComponent3D extends Component {
 
     // Panning Code
     function pan (x, y, canvas) {
-        g_eyeX += x-oldMouseX;
-        g_eyeY += y-oldMouseY;
-        var projMatrix = new CuonMatrix.Matrix4();
-        projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
-                            425+scale*g_eyeY, 0+scale*g_eyeY, 
-                            -100, 100);
-        // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-        // projMatrix.lookAt((-g_eyeX+365), -(g_eyeY+100), 2000, -g_eyeX, g_eyeY, 0, 0, 1, 0);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
-        window.requestAnimationFrame(actuallyDraw);
+      g_eyeX += x-oldMouseX;
+      g_eyeY += y-oldMouseY;
+      setProjectionMatrix();
+      window.requestAnimationFrame(actuallyDraw);
     }
 
     function onmousedown(ev, gl, canvas){
       var x = ev.clientX; // x coordinate of a mouse pointer
       var y = ev.clientY; // y coordinate of a mouse pointer
-      // var rect = ev.target.getBoundingClientRect() ;
 
-      // x = scale*((x - rect.left) - canvas.width/2)/(canvas.width/2);
-      // y = scale*(canvas.height/2 - (y - rect.top))/(canvas.height/2);
       if(ev.button == 0) {
         ev.preventDefault();
         oldMouseX = x;
@@ -416,9 +423,21 @@ class CanvasComponent3D extends Component {
         document.onmouseup = null;
       }
     }
+
+    function onWheel(e){
+      e.preventDefault();
+      var oldZoomX = g_orthoZoomX, oldZoomY = g_orthoZoomY;
+      g_orthoZoomY += 3*e.deltaY;
+      g_orthoZoomY = Math.min(g_orthoZoomY, 3000);
+      g_orthoZoomX = aspectRatio * g_orthoZoomY;
+      setProjectionMatrix();
+      window.requestAnimationFrame(actuallyDraw);
+    }
   }
 
   render() {
+    console.log("canvas3d render")
+    console.log(this.props.canvasWidth)
     return (
       <canvas ref="canvas3d"
               width={this.props.canvasWidth} height={this.props.canvasHeight}

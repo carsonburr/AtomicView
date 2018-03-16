@@ -11,6 +11,11 @@ class CanvasComponent2D extends Component {
     this.curBond = null;
     this.curMouseOver = null;
     this.tmpBond = null;
+    this.panning = false;
+    this.prevPanningX = 0;
+    this.prevPanningY = 0;
+    this.lastEndPanningX = 0;
+    this.lastEndPanningY = 0;
   }
 
   // Calls drawScene2D() with the context as a parameter
@@ -20,7 +25,6 @@ class CanvasComponent2D extends Component {
     if(context2d != null && context2d != 'undefined') {
       this.drawScene2D(context2d);
     }
-
   }
 
   // Clears the 2d Canvas and calls drawAtoms2D
@@ -31,16 +35,25 @@ class CanvasComponent2D extends Component {
   }
 
   drawBond2D(context2d, bond) {
+    var x1 = bond.atom1.location.x;
+    var y1 = bond.atom1.location.y;
+    var x2 = bond.atom2.location.x;
+    var y2 = bond.atom2.location.y;
     if(bond.bondType == 1) {
-      context2d.beginPath();
-      context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-      context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-      context2d.stroke();
+      this.drawSingleBond2D(context2d, x1, y1, x2, y2);
     } else {
-      var x1 = bond.atom1.location.x;
-      var y1 = bond.atom1.location.y;
-      var x2 = bond.atom2.location.x;
-      var y2 = bond.atom2.location.y;
+      this.drawDoubleOrTripleBond2D(context2d, x1, y1, x2, y2, bond);
+    }
+  }
+
+  drawSingleBond2D(context2d, x1, y1, x2, y2) {
+    context2d.beginPath();
+    context2d.moveTo(x1, y1);
+    context2d.lineTo(x2, y2);
+    context2d.stroke();
+  }
+
+  drawDoubleOrTripleBond2D(context2d, x1, y1, x2, y2, bond) {
       var slope = - 1.0/(1.0 * (y1 - y2)/(x1 - x2));
       var displacementX, displacementY;
       if (x1-x2 == 0) {
@@ -52,31 +65,28 @@ class CanvasComponent2D extends Component {
         displacementY = Math.sin(angle) * 4;
       }
       if (bond.bondType == 2) {
-        context2d.beginPath();
-        context2d.moveTo(x1+displacementX, y1+displacementY);
-        context2d.lineTo(x2+displacementX, y2+displacementY);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1-displacementX, y1-displacementY);
-        context2d.lineTo(x2-displacementX, y2-displacementY);
-        context2d.stroke();
+        this.drawDoubleBond2D(context2d, x1, y1, x2, y2, displacementX, displacementY);
       } else if (bond.bondType == 3) {
-        displacementX *= 5/4;
-        displacementY *= 5/4;
-        context2d.beginPath();
-        context2d.moveTo(bond.atom1.location.x, bond.atom1.location.y);
-        context2d.lineTo(bond.atom2.location.x, bond.atom2.location.y);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1+displacementX, y1+displacementY);
-        context2d.lineTo(x2+displacementX, y2+displacementY);
-        context2d.stroke();
-        context2d.beginPath();
-        context2d.moveTo(x1-displacementX, y1-displacementY);
-        context2d.lineTo(x2-displacementX, y2-displacementY);
-        context2d.stroke();
+        this.drawTripleBond2D(context2d, x1, y1, x2, y2, displacementX, displacementY)
       }
-    }
+
+  }
+
+  drawDoubleBond2D(context2d, x1, y1, x2, y2, displacementX, displacementY) {
+    this.drawSingleBond2D(context2d, x1+displacementX, y1+displacementY,
+                          x2+displacementX, y2+displacementY);
+    this.drawSingleBond2D(context2d, x1-displacementX, y1-displacementY,
+                          x2-displacementX, y2-displacementY);
+  }
+
+  drawTripleBond2D(context2d, x1, y1, x2, y2, displacementX, displacementY) {
+    displacementX *= 5/4;
+    displacementY *= 5/4;
+    this.drawSingleBond2D(context2d, x1, y1, x2, y2);
+    this.drawSingleBond2D(context2d, x1+displacementX, y1+displacementY,
+                          x2+displacementX, y2+displacementY);
+    this.drawSingleBond2D(context2d, x1-displacementX, y1-displacementY,
+                          x2-displacementX, y2-displacementY);
   }
 
   drawBonds2D(context2d) {
@@ -89,31 +99,46 @@ class CanvasComponent2D extends Component {
     }
   }
 
+  setAtomColor2D(context2d, atom) {
+    if (atom.equals(this.curSelected) ||
+       (atom.equals(this.curMouseOver) && this.curMoving == null && this.props.getCurAction() == "select") ||
+       (atom.equals(this.curMouseOver) && this.props.getCurAction() == "bond")) {
+      context2d.fillStyle = "lightgreen";
+    } else if (this.props.getCurAction() == "atom" && atom.equals(this.curMouseOver)) {
+      context2d.fillStyle = "#ff9933";
+    } else if (atom.equals(this.curMouseOver)) {
+      context2d.fillStyle = "#c82124"; //red
+    } else {
+      context2d.fillStyle = "lightgrey";
+    }
+  }
+
+  drawCircleForAtom2D(context2d, atom) {
+    this.setAtomColor2D(context2d, atom);
+    context2d.beginPath();
+    context2d.arc(atom.location.x,atom.location.y,30/2,0,Math.PI*2,true);
+    context2d.closePath();
+    context2d.fill();    
+  }
+
+  drawTextForAtom2D(context2d, atom) {
+    context2d.fillStyle = "black";
+    context2d.font = 'normal bold 20px sans-serif';
+    context2d.textAlign = 'center';
+    context2d.textBaseline = 'middle';
+    context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);    
+  }
+
+  actuallyDrawAtom2D(context2d, atom) {
+    this.drawCircleForAtom2D(context2d, atom);
+    this.drawTextForAtom2D(context2d, atom);
+  }
+
   // Draws all the atoms.
   drawAtoms2D(context2d) {
     var atoms = this.props.getAtoms();
     for (let atom of atoms) {
-
-        if (atom.equals(this.curSelected) ||
-           (atom.equals(this.curMouseOver) && this.curMoving == null && this.props.getCurAction() == "select") ||
-           (atom.equals(this.curMouseOver) && this.props.getCurAction() == "bond")) {
-          context2d.fillStyle = "lightgreen";
-        } else if (this.props.getCurAction() == "atom" && atom.equals(this.curMouseOver)) {
-          context2d.fillStyle = "#ff9933";
-        } else if (atom.equals(this.curMouseOver)) {
-          context2d.fillStyle = "#c82124"; //red
-        } else {
-          context2d.fillStyle = "lightgrey";
-        }
-        context2d.beginPath();
-        context2d.arc(atom.location.x,atom.location.y,30/2,0,Math.PI*2,true);
-        context2d.closePath();
-        context2d.fill();
-        context2d.fillStyle = "black";
-        context2d.font = 'normal bold 20px sans-serif';
-        context2d.textAlign = 'center';
-        context2d.textBaseline = 'middle';
-        context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);
+      this.actuallyDrawAtom2D(context2d, atom);
     }
   }
 
@@ -131,16 +156,16 @@ class CanvasComponent2D extends Component {
     return null;
   }
 
-  handleLeftOnMouseDown2D(x, y) {
+  handleLeftOnMouseDown(x, y) {
     switch (this.props.getCurAction()) {
       case "atom":
-        this.handleLeftOnMouseDown2DAtom(x,y);
+        this.handleLeftOnMouseDownAtom(x,y);
         break;
       case "bond":
-        this.handleLeftOnMouseDown2dBond(x,y);
+        this.handleLeftOnMouseDownBond(x,y);
         break;
       case "select":
-        this.handleLeftOnMouseDown2DSelect(x,y);
+        this.handleLeftOnMouseDownSelect(x,y);
         break;
       default:
         console.log("Unsupported Action: " + this.props.getCurAction());
@@ -148,6 +173,17 @@ class CanvasComponent2D extends Component {
     if(this.props.getCurAction() != "select") {
       this.curMoving = null;
     }
+  }
+
+  isCurBondOverriding(bond) {
+      var atom1 = bond.atom1;
+      var atom2 = bond.atom2;
+      var curAtom1 = this.curBond.atom1;
+      var curAtom2 = this.curBond.atom2;
+      return ( atom1.equals(curAtom1) &&
+               atom2.equals(curAtom2)) ||
+             ( atom2.equals(curAtom1) &&
+               atom1.equals(curAtom2));
   }
 
   addNewBond(atom) {
@@ -159,34 +195,25 @@ class CanvasComponent2D extends Component {
     this.tmpBond = null;
     this.curBond.atom2 = atom;
     for ( let bond of bonds ) {
-      var atom1 = bond.atom1;
-      var atom2 = bond.atom2;
-      var curAtom1 = this.curBond.atom1;
-      var curAtom2 = this.curBond.atom2;
-      if ( (atom1.equals(curAtom1) &&
-            atom2.equals(curAtom2)) ||
-           (atom2.equals(curAtom1) &&
-            atom1.equals(curAtom2)) ) {
+      if (this.isCurBondOverriding(bond)) {
         changes.push({type:"bond", payLoad:bond, action:"added", overwritten:bond.bondType});
         bond.bondType = curBond.bondType;
         notAdded = false;
         break;
       }
     }
-
-    if(notAdded){
+    if (notAdded) {
       bonds.add(curBond);
       curBond.atom1.bonds.add(curBond);
       curBond.atom2.bonds.add(curBond);
       changes.push({type:"bond", payLoad:curBond, action:"added", overwritten:null});
     }
-
     this.curBond = null;
     this.drawCanvas2D();
   }
 
   // Handles left click for bonds
-  handleLeftOnMouseDown2dBond(x, y) {
+  handleLeftOnMouseDownBond(x, y) {
     var atom = this.getAtomAtLocation(x, y);
     // If atom exists at this location
     if(atom != null ) {
@@ -202,7 +229,7 @@ class CanvasComponent2D extends Component {
   }
 
   // Handles left click for selections
-  handleLeftOnMouseDown2DSelect(x, y) {
+  handleLeftOnMouseDownSelect(x, y) {
     var atom = this.getAtomAtLocation(x, y);
     // If atom exists at this location
     if (atom != null) {
@@ -210,41 +237,52 @@ class CanvasComponent2D extends Component {
       this.curMoving = atom;
     } else {
       this.curSelected = null;
+      this.panning = true;
+      this.prevPanningX = x - this.lastEndPanningX;
+      this.prevPanningY = x - this.lastEndPanningY;
     }
   }
 
+  // Override an atom with a new atom, maintaining the bonds
+  overrideAtom(atom, curAtom, atoms, changes) {
+    var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
+       curAtom.atom.elementName, curAtom.atom.atomicRadius, 
+       curAtom.atom.atomColor, null, atom.bonds);
+    changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
+
+    // Change the overwritten atoms bonds to be to the new atom instead
+    for( let bond of atom.bonds ){
+      if(bond.atom1.equals(atom)){
+        bond.atom1 = newAtom;
+      }
+      else if(bond.atom2.equals(atom)){
+        bond.atom2 = newAtom;
+      }
+    }
+    atoms.delete(atom);
+    atoms.add(newAtom);    
+  }
+
+  // Adds a new atom
+  addNewAtom(curAtom, atoms, changes, x, y) {
+    var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
+      curAtom.atom.elementName, curAtom.atom.atomicRadius,
+      curAtom.atom.atomColor, null, new Set());
+    atoms.add(newAtom);
+    changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
+  }
+
   // Handles left click for atoms
-  handleLeftOnMouseDown2DAtom(x, y) {
+  handleLeftOnMouseDownAtom(x, y) {
     var atoms = this.props.getAtoms();
     var curAtom = this.props.getCurAtom();
     var atom = this.getAtomAtLocation(x, y);
     var changes = this.props.getChanges();
-    // if atom already exists in this spot then overwrite it (and maintain bonds)
-        if (atom != null) {
-          var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
-             curAtom.atom.elementName, curAtom.atom.atomicRadius, 
-             curAtom.atom.atomColor, null, atom.bonds);
-          changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
-
-          // Change the overwritten atoms bonds to be to the new atom instead
-          for( let bond of atom.bonds ){
-            if(bond.atom1.equals(atom)){
-              bond.atom1 = newAtom;
-            }
-            else if(bond.atom2.equals(atom)){
-              bond.atom2 = newAtom;
-            }
-          }
-          atoms.delete(atom);
-          atoms.add(newAtom);
+    if (atom != null) {
+      this.overrideAtom(atom, curAtom, atoms, changes);
     }
-    // If atom does not exist in this spot then create a new one
     else {
-      var newAtom = new Atom(new Coord(x, y, 0), curAtom.atom.atomicSymbol,
-        curAtom.atom.elementName, curAtom.atom.atomicRadius,
-        curAtom.atom.atomColor, null, new Set());
-      atoms.add(newAtom);
-      changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:null});
+      this.addNewAtom(curAtom, atoms, changes, x, y)
     }
 
     this.drawCanvas2D();
@@ -263,6 +301,12 @@ class CanvasComponent2D extends Component {
         this.curMoving.location.x = x;
         this.curMoving.location.y = y;
       }
+    } else if (this.panning) {
+      const canvas2d = this.refs.canvas2d;
+      const context2d = canvas2d.getContext('2d');
+      context2d.setTransform(1, 0, 0, 1,
+                       x - this.prevPanningX,
+                       y - this.prevPanningY);
     }
   }
 
@@ -289,6 +333,9 @@ class CanvasComponent2D extends Component {
 
   handleOnMouseUpSelect(x, y) {
     this.curMoving = null;
+    this.panning = false;
+    this.lastEndPanningX = x - this.prevPanningX;
+    this.lastEndPanningY = x - this.prevPanningY;
   }
 
   handleOnMouseUpBond(x, y) {
@@ -318,7 +365,7 @@ class CanvasComponent2D extends Component {
   }
 
   // On click handler
-  handleOnMouseDown2D(ev) {
+  handleOnMouseDown(ev) {
     let boundingRect = ev.target.getBoundingClientRect();
     var x = ev.clientX - boundingRect.left; // x coordinate of a mouse pointer
     var y = ev.clientY - boundingRect.top; // y coordinate of a mouse pointer
@@ -326,7 +373,7 @@ class CanvasComponent2D extends Component {
       // Right Click
     } else if(ev.button === 0) {
       // Left Click
-      this.handleLeftOnMouseDown2D(x,y);
+      this.handleLeftOnMouseDown(x,y);
     } else if (ev.button === 1){
       ev.preventDefault();
       // Middle Click
@@ -334,12 +381,14 @@ class CanvasComponent2D extends Component {
   }
 
   render() {
+    console.log("canvas2d render")
+    console.log(this.props.canvasWidth)
     return (
       <canvas ref="canvas2d"
                   width={this.props.canvasWidth}
                   height={this.props.canvasHeight}
                   style={{border: '1px solid black', marginLeft: '10px'}}
-                  onMouseDown={this.handleOnMouseDown2D.bind(this)}
+                  onMouseDown={this.handleOnMouseDown.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>
     );
