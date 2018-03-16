@@ -45,7 +45,6 @@ class CanvasComponent extends Component {
       settingLabel: 0
     }
 
-    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.clearAll = this.clearAll.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
     this.export3dCanvasImage = this.export3dCanvasImage.bind(this);
@@ -60,7 +59,6 @@ class CanvasComponent extends Component {
   }
 
   loadAtomsAndBondsForUser = (key) => {
-    console.log(key);
     loadAtomsAndBonds(key, this.atoms, this.bonds);
     this.drawCanvas2D();
   }
@@ -238,7 +236,7 @@ class CanvasComponent extends Component {
       return(
         <span style={{paddingLeft: '6px'}}>
           <input type="text" ref={input => this._label = input} placeholder="Set Label" />
-          
+
           <button onClick={this.updateLabel}> Save</button>
         </span>);
     }
@@ -252,41 +250,6 @@ class CanvasComponent extends Component {
     return(<h1 style={{fontFamily: 'Garamond'}}>&nbsp;Molecule: {this.state.label}</h1>)
   }
 
-  handleKeyDown(event) {
-    switch(event.key){
-      // Log info
-      case 'l':
-        console.log(this.atoms)
-        console.log(this.bonds)
-        break;
-      // Pull up element table
-      case 'e':
-        //console.log(event.key);
-        break;
-      // Enter bond mode / iterate bond type
-      case 'b':
-        //console.log(event.key);
-        break;
-      // Enter atom Selection mode
-      case 's':
-        //console.log(event.key);
-        break;
-      // Enter delete mode
-      case 'd':
-        // TypeError: this.deleteHandler is not a function
-        // this.deleteHandler();
-        break;
-      // Render 3d model
-      case 'r':
-        this.refs.canvas3d.draw3D();
-        break;
-      // Revert change
-      case 'z':
-        this.reversionHandler();
-        break;
-    }
-  }
-
   draw = () => {
     this.refs.canvas3d.draw3D()
   }
@@ -297,7 +260,7 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}

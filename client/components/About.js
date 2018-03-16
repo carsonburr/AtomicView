@@ -18,11 +18,11 @@ class About extends React.Component {
   // Should have a way of not offering to save for users in this page
   saveAtomsAndBondsForUser = (key) => {
     //saveAtomsAndBonds(key, this.atoms, this.bonds);
-    console.log("Can't save Atoms in about page you fool");
+    console.log("Can't save Atoms in about page");
   }
 
   loadAtomsAndBondsForUser = (key) => {
-    console.log("Can't save Atoms in about page you fool");
+    console.log("Can't save Atoms in about page");
   }
 
   setUserId = (userId) => {
@@ -47,7 +47,7 @@ class About extends React.Component {
         <h2 align="center">About Us</h2>
         <hr />
         <p align="center">We are a team of Computer Scientists with an interest in making Chemistry easier
-        and more accessible to all. Our web app serves to allow users to visualize the 
+        and more accessible to all. Our web app serves to allow users to visualize the
         molecules that they so often read about. Though are audience is primarily Chemistry
         students who wish to see what is in their textbooks, we believe people from any
         academic background, and of any age, will enjoy using our web app.</p> <br />
@@ -59,12 +59,12 @@ class About extends React.Component {
         grows we will be able to verify users molecules as they create them, provide info about common
         molecules, show attributes like atom size, bond length, electron cloud density, etc.,
         all of which are impossible with a physical kit. In this way our web app will
-        actively provide the user with important data about a molecule; facilitating those who use it, 
+        actively provide the user with important data about a molecule; facilitating those who use it,
         in their quest for a deeper understanding. As anyone who knows chem will tell you, understanding
-        the actual, physicl shape of molecules is vital in hypothesizing about their interactions. 
+        the actual, physicl shape of molecules is vital in hypothesizing about their interactions.
         We aim to help with that.</p> <br />
         <p align="center">You need not look any farther than our logo to understand our mission. Based off
-         the chemical formula of silicon dioxide, the main ingredient in computer chips, it 
+         the chemical formula of silicon dioxide, the main ingredient in computer chips, it
          embodies our dedication to bringing the power of 21st century computing, to the visualization,
          and understanding, of the chemical world. </p> <br />
          <hr />

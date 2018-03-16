@@ -118,7 +118,7 @@ class CanvasComponent2D extends Component {
     context2d.beginPath();
     context2d.arc(atom.location.x,atom.location.y,30/2,0,Math.PI*2,true);
     context2d.closePath();
-    context2d.fill();    
+    context2d.fill();
   }
 
   drawTextForAtom2D(context2d, atom) {
@@ -126,7 +126,7 @@ class CanvasComponent2D extends Component {
     context2d.font = 'normal bold 20px sans-serif';
     context2d.textAlign = 'center';
     context2d.textBaseline = 'middle';
-    context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);    
+    context2d.fillText(atom.atomicSymbol, atom.location.x, atom.location.y);
   }
 
   actuallyDrawAtom2D(context2d, atom) {
@@ -246,7 +246,7 @@ class CanvasComponent2D extends Component {
   // Override an atom with a new atom, maintaining the bonds
   overrideAtom(atom, curAtom, atoms, changes) {
     var newAtom = new Atom(atom.location, curAtom.atom.atomicSymbol,
-       curAtom.atom.elementName, curAtom.atom.atomicRadius, 
+       curAtom.atom.elementName, curAtom.atom.atomicRadius,
        curAtom.atom.atomColor, null, atom.bonds);
     changes.push({type:"atom", payLoad:newAtom, action:"added", overwritten:atom});
 
@@ -260,7 +260,7 @@ class CanvasComponent2D extends Component {
       }
     }
     atoms.delete(atom);
-    atoms.add(newAtom);    
+    atoms.add(newAtom);
   }
 
   // Adds a new atom
@@ -381,8 +381,6 @@ class CanvasComponent2D extends Component {
   }
 
   render() {
-    console.log("canvas2d render")
-    console.log(this.props.canvasWidth)
     return (
       <canvas ref="canvas2d"
                   width={this.props.canvasWidth}
