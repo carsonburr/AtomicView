@@ -93,25 +93,43 @@ class LoginPage extends React.Component {
         </div>
       )
     }
-
+    const backdropStyle = {
+      position: 'fixed',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      padding: 50
+    };
     const modalStyle = {
-      position: 'absolute',
       backgroundColor: '#fff',
       borderRadius: 5,
       border: '1px solid #ccc',
       maxWidth: 700,
       minHeight: 400,
-      padding: 30
+      padding: 30,
+      position: 'absolute',
+      top: '280%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     };
     return (
-      <div className="Login"
+      <div>
+        <div className="LoginPageButton">
+          <button onClick = {this.toggleModal}>
+            Login
+          </button>
+        </div>
+      <div stye={backdropStyle}>
+        <div className="Login"
            ref={this.setWrapperRef}
            style={modalStyle}>
-        <form onSubmit={this.handleSubmit}>
-          <FormGroup
-            controlId="email"
-            bsSize="large"
-          >
+          <form onSubmit={this.handleSubmit}>
+            <FormGroup
+              controlId="email"
+              bsSize="large"
+            >
             <label>Email</label>
             <FormControl
               autoFocus
@@ -120,41 +138,43 @@ class LoginPage extends React.Component {
               value={this.state.email}
               onChange={this.handleChange}
             />
-          </FormGroup>
+            </FormGroup>
 
-          <FormGroup controlId="password" bsSize="large">
-            <label>Password</label>
-            <FormControl
-              value={this.state.password}
-              onChange={this.handleChange}
-              type="password"
-              name="password"
-            />
-          </FormGroup>
+            <FormGroup controlId="password" bsSize="large">
+              <label>Password</label>
+              <FormControl
+                value={this.state.password}
+                onChange={this.handleChange}
+                type="password"
+                name="password"
+              />
+            </FormGroup>
 
-          <Button
-            block
-            bsSize="large"
-            disabled={!this.validateForm()}
-            type="submit"
-            >
-            Login
-          </Button>
-
-          <p className="centered-text">
-            or
-          </p>
-
-          <Button
-            block
-            bsSize="large"
-            type="submit"
-            >
-            Continue without logging in
+            <Button
+              block
+              bsSize="large"
+              disabled={!this.validateForm()}
+              type="submit"
+              >
+              Login
             </Button>
-        </form>
 
-        <p className="centered-text">Dont have an accout? <Link to="/signup">Create one!</Link></p>
+            <p className="centered-text">
+              or
+            </p>
+
+            <Button
+              block
+              bsSize="large"
+              type="submit"
+              >
+              Continue without logging in
+              </Button>
+          </form>
+
+          <p className="centered-text">Dont have an accout? <Link to="/signup">Create one!</Link></p>
+        </div>
+      </div>
       </div>
     );
   }

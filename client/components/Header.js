@@ -53,7 +53,7 @@ class Header extends React.Component {
     const headerStyle = {
       backgroundColor:'#d4d4dcaa',
       width: '100%',
-      paddingBottom: '20px',
+      paddingBottom: '0px',
       marginBottom: '20px',
       position: 'fixed',
       //position: 'relative',
@@ -63,18 +63,18 @@ class Header extends React.Component {
     };
     const flexStyle = {
       //bottom: '10px',
-      color: '#d4d4dc',
-      backgroundColor: "#1d1e22"
+      color: '#393f4d;',
+      backgroundColor: "#1d1e2200"
     }
     if(this.state.userId!=null) {
       return (
         <div>
         <div className="flex-container">
           <header style = {headerStyle}>
-            <h3 style={{float: 'left', paddingLeft: 10}}>
+            <h3 style={{float: 'left', paddingLeft: '15px'}}>
               <LoadMolList style={{float: 'right'}} loadAtomsAndBonds={this.loadAtomsAndBondsForUser} saveAtomsAndBonds={this.saveAtomsAndBondsForUser}/>
             </h3>
-            <h3 style={{float: 'right'}}>
+            <h3 style={{float: 'right', paddingRight: '15px'}}>
               <button onClick={this.logout}><i class="fa fa-sign-out"></i></button>
             </h3>
             <div style={{clear: "both"}}></div>
@@ -82,11 +82,10 @@ class Header extends React.Component {
         </div>
         <br />
         <div align="center" style={flexStyle} overflow="hidden"  >
-        <hr/>
-        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
-        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
-        <hr/>
-      </div>
+          <br />
+          <br />
+          <br />
+        </div>
         </div>
 
       );
@@ -96,19 +95,21 @@ class Header extends React.Component {
       <div>
       <div className="flex-container" style={flexStyle}>
         <header style = {headerStyle}>
-          <h3 style={{float: 'left', paddingLeft: 10}}>
+          <h3 style={{float: 'right', paddingRight: 15}}>
             <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
+          </h3>
+          <h3 style={{float: 'left', paddingLeft: 15}}>
+            <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
+            &nbsp;AtomicView</h2>
           </h3>
           <div style={{clear: "both"}}></div>
         </header>
       </div>
-      <br />
-      <div align="center" style={flexStyle} overflow="hidden"  >
-        <hr/>
-        <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
-        <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
-        <hr/>
-      </div>
+        <div align="center" style={flexStyle} overflow="hidden"  >
+          <br />
+          <br />
+          <br />
+        </div>
       </div>
     );
   }

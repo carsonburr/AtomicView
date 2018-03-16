@@ -73,10 +73,14 @@ class PeriodicTablePopup extends React.Component {
     const modalStyle = {
       backgroundColor: '#fff',
       borderRadius: 5,
+      border: '1px solid #ccc',
       maxWidth: 700,
       minHeight: 400,
-      margin: '0 auto',
-      padding: 30
+      padding: 30,
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     };
 
     let table = getTable();

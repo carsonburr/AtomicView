@@ -303,7 +303,7 @@ class CanvasComponent extends Component {
                 />
         <div>
            <img height="400" src="../logoTransparent.jpg" alt="" />
-          <Toolbox setCurAtom={this.setCurAtom} 
+                  <Toolbox setCurAtom={this.setCurAtom} 
                   switchCurAction={this.switchCurAction}
                   clearAll={this.clearAll}
                   setCurBondType={this.setCurBondType} 

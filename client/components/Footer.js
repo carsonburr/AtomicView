@@ -6,7 +6,7 @@ import LoginPage from './LoginPage'
 class Footer extends React.Component {
   render() {
     const footerStyle = {
-      backgroundColor:'#433',
+      backgroundColor: "#1d1e22",      
       width: '100%',
       //marginTop: '10px',
       // position: 'absolute',
@@ -18,20 +18,27 @@ class Footer extends React.Component {
       position: 'relative', //Positions footer relative to other elements on hte page
       //zIndex: '1', //z-index positions elements in front or behind eachother, most have a //natual z-index of -1
       //height: '3em', //exactly what it says...
-      marginTop: '20em' //moves footer to bottom of all elements
+      marginTop: '10em' //moves footer to bottom of all elements
     };
     const flexStyle = {
-      backgroundColor:'#433',
       top: '10px',
-      color: 'white'
+      color: '#d4d4dc',
+      backgroundColor: "#1d1e22"
     };
 
     return (
       <div className="flex-container" style={flexStyle}>
         <footer style = {footerStyle}>
-          <h4 style={{float: 'left', paddingLeft: '5px'}}>About Us</h4>
-          <h4 style={{float: 'right', paddingRight: '5px'}}>Extra Resources</h4>
+           <div align="center" style={flexStyle} overflow="hidden"  >
+            <hr/>
+            <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+            <text style={{color: '#feda6a'}}>A</text>tomic<text style={{color: '#feda6a'}}>V</text>iew</h2>
+            <hr/>
+          </div>
+          <h4 style={{float: 'left', paddingLeft: '50px'}}>About Us</h4>
+          <h4 style={{float: 'right', paddingRight: '50px'}}>Extra Resources</h4>
           <div style={{clear: "both"}}></div>
+          <br />
         </footer>
       </div>
     );
