@@ -39,8 +39,8 @@ class CanvasComponent extends Component {
 
     //initial/default state of canvas size and label info
     this.state = {
-      canvasWidth:640,
-      canvasHeight: 425,
+      canvasWidth:screen.width/2,
+      canvasHeight: screen.height/2,
       label: '',
       settingLabel: 0
     }
@@ -83,6 +83,7 @@ class CanvasComponent extends Component {
     this.curAction.action = action;
     this.refs.canvas2d.curSelected = null;
     this.refs.canvas2d.curMoving = null;
+    this.refs.canvas2d.panning = null;
     // this.refs.canvas2d.drawCanvas();
   }
 
@@ -166,6 +167,7 @@ class CanvasComponent extends Component {
         canvasHeight: update_height
       });
     }
+    this.refs.canvas3d.updateCanvas();
     if(redraw) {
       this.drawCanvas2D();
       this.refs.canvas3d.draw3D();

@@ -59,6 +59,7 @@ class CanvasComponent3D extends Component {
   // Sets up webgl right now.
   updateCanvas() {
     this.canvas3d = this.refs.canvas3d;
+    var tmp = this.gl
     this.gl = WebGLUtils.setupWebGL(this.canvas3d,{preserveDrawingBuffer: true});
     // Initialize shaders
     if (!CuonUtils.initShaders(this.gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
@@ -153,8 +154,6 @@ class CanvasComponent3D extends Component {
     	// Set initial orthographic view
     	projMatrix = new CuonMatrix.Matrix4();
       projMatrix.setOrtho(0+g_eyeX, 640+g_eyeX, 425-g_eyeY, 0-g_eyeY, -100, 100);
-      // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-      // projMatrix.lookAt(g_eyeX+100, g_eyeY+100, 1700, g_eyeX, g_eyeY, 0, 0, 1, 0);
     	gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     	Ntransform.setIdentity();
     	gl.uniformMatrix4fv(u_NormalMatrix, false, Ntransform.elements);
@@ -369,8 +368,6 @@ class CanvasComponent3D extends Component {
         projMatrix.setOrtho(0+scale*g_eyeX, 640+scale*g_eyeX, 
                             425+scale*g_eyeY, 0+scale*g_eyeY, 
                             -100, 100);
-        // projMatrix.setPerspective(30, canvas.width/canvas.height, 400, 3000);
-        // projMatrix.lookAt((-g_eyeX+365), -(g_eyeY+100), 2000, -g_eyeX, g_eyeY, 0, 0, 1, 0);
         gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
         window.requestAnimationFrame(actuallyDraw);
     }
@@ -419,6 +416,8 @@ class CanvasComponent3D extends Component {
   }
 
   render() {
+    console.log("canvas3d render")
+    console.log(this.props.canvasWidth)
     return (
       <canvas ref="canvas3d"
               width={this.props.canvasWidth} height={this.props.canvasHeight}
