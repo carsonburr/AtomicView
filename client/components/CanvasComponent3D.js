@@ -137,7 +137,7 @@ class CanvasComponent3D extends Component {
       u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
       u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
       u_N = gl.getUniformLocation(gl.program, 'u_N');
-  	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection || 
+  	  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightDirection ||
           !u_AmbientLight || !u_ViewVector || !u_SpecularLight || !u_N) {
   		console.log('Failed to get the storage location');
   		return;
@@ -187,7 +187,7 @@ class CanvasComponent3D extends Component {
       setupAtoms();
       //Draw Bonds
       for( let bond of bonds ){
-        setupBond(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x, 
+        setupBond(bond.atom1.location.x, bond.atom1.location.y, bond.atom2.location.x,
                      bond.atom2.location.y, bond.bondType);
       }
       actuallyDraw();
@@ -198,7 +198,7 @@ class CanvasComponent3D extends Component {
       projMatrix.setOrtho(g_eyeX - g_orthoZoomX,
                           screen.width + g_eyeX + g_orthoZoomX,
                           screen.height/2 + g_eyeY+g_orthoZoomY,
-                          -screen.height/2 + g_eyeY-g_orthoZoomY, 
+                          -screen.height/2 + g_eyeY-g_orthoZoomY,
                           -100, 100);
       gl.uniformMatrix4fv(u_MvpMatrix, false, projMatrix.elements);
     }
@@ -398,7 +398,7 @@ class CanvasComponent3D extends Component {
         document.onmouseup = function(ev){ doconmouseup(ev, gl, canvas); };
         // Register function (event handler) to be called on a mouse move
         document.onmousemove = function(ev){ doconmousemove(ev, gl, canvas); };
-      } 
+      }
     }
 
     function doconmousemove(ev, gl, canvas){
@@ -435,14 +435,36 @@ class CanvasComponent3D extends Component {
     }
   }
 
+
+  export3dCanvasImage(){
+    alert("Hello export3dCanvasImage");
+    var mycanvas = this.refs.canvas3d;
+    if(mycanvas.getContext) {
+      var img = mycanvas.toDataURL("image/png;base64;");
+      var anchor = document.getElementById("download");
+      anchor.href = img;
+      anchor.click();
+    }
+    else {
+      alert("Can not export");
+    }
+  }
+
+
   render() {
-    console.log("canvas3d render")
-    console.log(this.props.canvasWidth)
+    var label = this.props.label;
+    if(label == ''){
+      label = "unlabeled_molecule.png"
+    }
+
     return (
-      <canvas ref="canvas3d"
-              width={this.props.canvasWidth} height={this.props.canvasHeight}
-              style={{border: '1px solid black', marginLeft: '10px'}}
-              />
+      <span>
+        <a href="" id="download" download={label} display="none"></a>
+        <canvas ref="canvas3d"
+                width={this.props.canvasWidth} height={this.props.canvasHeight}
+                style={{border: '1px solid black', marginLeft: '10px'}}
+                />
+      </span>
     );
   }
 }

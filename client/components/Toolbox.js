@@ -7,6 +7,7 @@ import RevertButton from  './RevertButton'
 import DrawButton from  './DrawButton'
 import DeleteButton from  './DeleteButton'
 import LabelButton from  './LabelButton'
+import ExportButton from './ExportButton'
 import {Atom, Coord, RGBA} from '../../models/Atom.js';
 //TODO: figure out how to display button meaning on mouse hover
 class Toolbox extends React.Component {
@@ -39,6 +40,9 @@ class Toolbox extends React.Component {
   		this.props.reversionHandler();
   	}
 
+    export3dCanvasImage = () => {
+      this.props.export3dCanvasImage();
+    }
 
   	//can add styling to table if wanted
     render() {
@@ -48,13 +52,14 @@ class Toolbox extends React.Component {
     			<tbody>
     			<tr>
       				<td><SelectButton switchCurAction={this.switchAction}/></td>
-      				<td><PeriodicTablePopup setCurAtom={this.selectAtom} 
+      				<td><PeriodicTablePopup setCurAtom={this.selectAtom}
       					switchCurAction={this.switchAction}/></td>
       				<td><BondButton setCurBondType={this.selectBond}
       					switchCurAction={this.switchAction}/></td>
       				<td><RevertButton reversionHandler={this.reversionHandler}/></td>
       				<td><DrawButton draw={this.draw}/></td>
       				<td><DeleteButton clearAll={this.clearAll} /></td>
+              <td><ExportButton export3dCanvasImage={this.export3dCanvasImage} /></td>
       			</tr>
       			</tbody>
       		</table>
@@ -71,6 +76,7 @@ SelectButton.propTypes = {
   clearAll: PropTypes.func.isRequired,
   draw: PropTypes.func.isRequired,
   reversionHandler: PropTypes.func.isRequired,
+  export3dCanvasImage: PropTypes.func.isRequired,
 };
 
 export default Toolbox;

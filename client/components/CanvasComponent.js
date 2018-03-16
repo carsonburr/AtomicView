@@ -48,6 +48,7 @@ class CanvasComponent extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.clearAll = this.clearAll.bind(this);
     this.reversionHandler = this.reversionHandler.bind(this);
+    this.export3dCanvasImage = this.export3dCanvasImage.bind(this);
     this.getLabel = this.getLabel.bind(this);
     this.setLabel = this.setLabel.bind(this);
     this.updateLabel = this.updateLabel.bind(this);
@@ -288,9 +289,13 @@ class CanvasComponent extends Component {
         break;
     }
   }
-  
+
   draw = () => {
     this.refs.canvas3d.draw3D()
+  }
+
+  export3dCanvasImage = () => {
+    this.refs.canvas3d.export3dCanvasImage();
   }
 
   render() {
@@ -303,12 +308,13 @@ class CanvasComponent extends Component {
                 />
         <div>
            <img height="400" src="../logoTransparent.jpg" alt="" />
-          <Toolbox setCurAtom={this.setCurAtom} 
+          <Toolbox setCurAtom={this.setCurAtom}
                   switchCurAction={this.switchCurAction}
                   clearAll={this.clearAll}
-                  setCurBondType={this.setCurBondType} 
-                  draw={this.draw} 
+                  setCurBondType={this.setCurBondType}
+                  draw={this.draw}
                   reversionHandler={this.reversionHandler}
+                  export3dCanvasImage={this.export3dCanvasImage}
                   />
           <span>{this.showLabel()}</span>
           <CanvasComponent2D ref="canvas2d"
@@ -326,6 +332,7 @@ class CanvasComponent extends Component {
                              getBonds={this.getBonds}
                              canvasWidth={this.state.canvasWidth}
                              canvasHeight={this.state.canvasHeight}
+                             label={this.state.label}
                              />
         </div>
           <div>{this.getLabel()}</div>
