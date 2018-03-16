@@ -16,6 +16,10 @@ User Scenarios: https://docs.google.com/document/d/1KO81prS9ssEJuZyO16dUbe9dmDDp
 
 Known Bugs: https://docs.google.com/document/d/1yyDmmfsP9JH19RpBacpAnjNrBdK4_7I2Ipu-OKOzCYg/edit?usp=sharing
 
+----Installation Guide--------------------------
+
+Instructions: https://docs.google.com/document/d/1hU22En_nobSBdE3J1JKyV4C-R6bGIU1JByin3dvD67o/edit?usp=sharing
+
 ----Sprint Plans--------------------------------
 
 Sprint 1: https://docs.google.com/document/d/1Kby_9Ws9J6qgc_yGzoHiuyfMN2FYE5jZRpc1Xd74G70/edit?usp=sharing
