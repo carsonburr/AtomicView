@@ -11,7 +11,7 @@ import Resources from '../components/Resources';
 
 export default () => (
   <BrowserRouter history={hashHistory}>
-    <div>
+    <div id="router">
       <Route path="/" exact component={CanvasComponent} />
       <Route path="/login" exact component={LoginPage} />
       <Route path="/signup" component={SignupPage} />

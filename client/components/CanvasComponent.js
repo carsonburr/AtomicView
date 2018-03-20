@@ -16,6 +16,7 @@ import saveAtomsAndBonds from '../utils/SaveAtomsAndBonds';
 import {loadAtomsAndBonds} from '../utils/LoadAtomsAndBonds';
 import '../css/buttons.css';
 import {Icon} from 'react-fa';
+import '../css/App.css';
 
 /**
 * Class with a 2d and a 3d canvas.
@@ -260,7 +261,7 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'45px', backgroundColor:'#333', margin:'0 auto -155px'  }} tabIndex="0">
+      <div className="CanvasComponent" style={{ paddingTop:'45px', backgroundColor:'#333', margin:'0 auto',  }} tabIndex="0">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}

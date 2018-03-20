@@ -8,6 +8,8 @@ class Footer extends React.Component {
     const footerStyle = {
       backgroundColor: "#1d1e22",
       width: '100%',
+      bottom: 0,
+      color: '#d4d4dc',
       //marginTop: '10px',
       // position: 'absolute',
        //right: '0',
@@ -18,7 +20,7 @@ class Footer extends React.Component {
       position: 'relative', //Positions footer relative to other elements on hte page
       //zIndex: '1', //z-index positions elements in front or behind eachother, most have a //natual z-index of -1
       //height: '3em', //exactly what it says...
-      marginTop: '10em' //moves footer to bottom of all elements
+      //marginTop: '10em' //moves footer to bottom of all elements
     };
     const flexStyle = {
       top: '10px',
@@ -27,23 +29,21 @@ class Footer extends React.Component {
     };
 
     return (
-      <div className="flex-container" style={flexStyle}>
-        <footer style = {footerStyle}>
+      <footer style = {footerStyle}>
 
-          <h4 style={{float: 'left', paddingLeft: '50px'}}>
-            <a href="/about">
-              About Us
-            </a>
-          </h4>
-          <h4 style={{float: 'right', paddingRight: '50px'}}>
-            <a href="/resources">
-              Extra Resources
-            </a>
-          </h4>
-          <div style={{clear: "both"}}></div>
-          <br />
-        </footer>
-      </div>
+        <h4 style={{float: 'left', paddingLeft: '50px'}}>
+          <a href="/about">
+            About Us
+          </a>
+        </h4>
+        <h4 style={{float: 'right', paddingRight: '50px'}}>
+          <a href="/resources">
+            Extra Resources
+          </a>
+        </h4>
+        <div style={{clear: "both"}}></div>
+        <br />
+      </footer>
     );
   }
 }

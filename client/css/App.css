@@ -16,3 +16,18 @@
 .App-intro {
   font-size: large;
 }
+
+html, body, #root, #router, .CanvasComponent {
+  height: 100%;
+  overflow: hidden;
+}
+
+.CanvasComponent {
+  overflow-y: scroll;
+  display: grid;
+  grid: column auto / auto auto auto;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
