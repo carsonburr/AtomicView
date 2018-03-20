@@ -33,8 +33,6 @@ class About extends React.Component {
     return this.userId;
   }
 
-
-
   render() {
     return (
       <div>

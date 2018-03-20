@@ -260,7 +260,7 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'25px', backgroundColor:'#333'  }} tabIndex="0">
+      <div className="CanvasComponent" style={{ paddingTop:'45px', backgroundColor:'#333', margin:'0 auto -155px'  }} tabIndex="0">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
