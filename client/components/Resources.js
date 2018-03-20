@@ -37,13 +37,13 @@ class About extends React.Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0" onKeyDown={this.handleKeyDown}>
+      <div className="applayout" tabIndex="0" onKeyDown={this.handleKeyDown}>
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
-        <div style={{paddingLeft: '8%', color: '#393f4d', width: '92%'}} >
+        <div style={{ flex: 1, paddingLeft: '8%', color: '#393f4d', width: '92%' }} >
         <h2 align="center">Extra Resources</h2>
         <hr />
         <p>For users who wish to learn more about the material presented, here is a

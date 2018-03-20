@@ -261,13 +261,13 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'45px', backgroundColor:'#333', margin:'0 auto',  }} tabIndex="0">
+      <div className="applayout" style={{ backgroundColor:'#333', margin:'0 auto',  }} tabIndex="0">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
-        <div>
+        <div style={{ flex: 1, }}>
 
           <Toolbox setCurAtom={this.setCurAtom}
                   switchCurAction={this.switchCurAction}

@@ -8,8 +8,8 @@ class Footer extends React.Component {
     const footerStyle = {
       backgroundColor: "#1d1e22",
       width: '100%',
-      bottom: 0,
       color: '#d4d4dc',
+      height: 50,
       //marginTop: '10px',
       // position: 'absolute',
        //right: '0',
@@ -42,7 +42,6 @@ class Footer extends React.Component {
           </a>
         </h4>
         <div style={{clear: "both"}}></div>
-        <br />
       </footer>
     );
   }

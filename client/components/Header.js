@@ -50,11 +50,13 @@ class Header extends React.Component {
   }
 
   render() {
+    const headerContainer = {
+      height: 0,
+      marginBottom: 95,
+    }
     const headerStyle = {
       backgroundColor:'#1d1e22',
       width: '100%',
-      paddingBottom: '0px',
-      marginBottom: '20px',
       position: 'fixed',
       //position: 'relative',
       top: '0',
@@ -64,12 +66,11 @@ class Header extends React.Component {
     const flexStyle = {
       //bottom: '10px',
       color: '#393f4d',
-      backgroundColor: "#1d1e2200"
+      backgroundColor: "#1d1e2200",
     }
     if(this.state.userId!=null) {
       return (
-        <div>
-        <div className="flex-container">
+        <div className="flex-container" style={headerContainer}>
           <header style = {headerStyle}>
             <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
               <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
@@ -88,20 +89,12 @@ class Header extends React.Component {
             <div style={{clear: "both"}}></div>
           </header>
         </div>
-        <br />
-        <div align="center" style={flexStyle} overflow="hidden"  >
-          <br />
-          <br />
-          <br />
-        </div>
-        </div>
 
       );
     }
 
     return (
-      <div>
-      <div className="flex-container" style={flexStyle}>
+      <div className="flex-container" style={headerContainer}>
         <header style = {headerStyle}>
           <h3 style={{float: 'right', paddingRight: 15, verticalAlign: 'middle'}}>
             <LoginPage style={{float: 'right'}} setUserId={this.setUserId}/>
@@ -116,12 +109,6 @@ class Header extends React.Component {
           </span>
           <div style={{clear: "both"}}></div>
         </header>
-      </div>
-        <div align="center" style={flexStyle} overflow="hidden"  >
-          <br />
-          <br />
-          <br />
-        </div>
       </div>
     );
   }

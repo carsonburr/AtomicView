@@ -35,13 +35,13 @@ class About extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="applayout">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}
                 loadAtomsAndBondsForUser={this.loadAtomsAndBondsForUser}
                 />
-        <div style={{paddingLeft: '8%', color: '#393f4d', width: '92%'}} >
+        <div style={{ flex: 1, paddingLeft: '8%', color: '#393f4d', width: '92%' }} >
           <h2 align="center">About Us</h2>
           <hr />
           <p align="center">We are a team of Computer Scientists with an interest in making Chemistry easier

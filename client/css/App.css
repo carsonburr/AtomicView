@@ -17,15 +17,16 @@
   font-size: large;
 }
 
-html, body, #root, #router, .CanvasComponent {
+html, body, #root, #router, .applayout {
   height: 100%;
   overflow: hidden;
 }
 
-.CanvasComponent {
+.applayout {
   overflow-y: scroll;
-  display: grid;
-  grid: column auto / auto auto auto;
+  display: flex;
+  flex-direction: column;
+  
 }
 
 ::-webkit-scrollbar {
