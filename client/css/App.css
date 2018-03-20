@@ -23,10 +23,10 @@ html, body, #root, #router, .applayout {
 }
 
 .applayout {
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  
+
 }
 
 ::-webkit-scrollbar {
