@@ -74,7 +74,7 @@ class Header extends React.Component {
             <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
               <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
               <div align="center" style={flexStyle} overflow="hidden"  >
-                <h2 style={{fontFamily: 'Garamond'}}><img height="50" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+                <h2 style={{fontFamily: 'Garamond'}}><img height="65" style={{transform: "rotate( .0001deg )"}} src="../images/logo.gif" alt="../images/logo.png" align="center"/>
                 <span style={{color: '#feda6a'}}>A</span>tomic<span style={{color: '#feda6a'}}>V</span>iew</h2>
               </div>
               </a>
