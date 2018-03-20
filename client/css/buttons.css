@@ -1,12 +1,11 @@
 @media all and (min-width: 280px) {
 
   button {
-  	background:    #ffffff;
-  	background-color: transparent;
-	border:        2px solid #393f4d;
+  	background-color: #393f4d;
+	border:        2px solid #feda6a;
 	border-radius: 8px;
 	padding:       8px 20px;
-	color:         #393f4d;
+	color:         #ffffff;
 	display:       inline-block;
 	font:          normal 700 20px/1 "Calibri", sans-serif;
 	text-align:    center;
@@ -16,8 +15,8 @@
 	margin-left: 6px;
   }
   button:hover {
-  	background: #393f4d;
-  	color: white;
+  	background: white;
+  	color: #393f4d;
   }
 
   /*Add button*/

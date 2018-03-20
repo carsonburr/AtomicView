@@ -29,12 +29,7 @@ class Footer extends React.Component {
     return (
       <div className="flex-container" style={flexStyle}>
         <footer style = {footerStyle}>
-           <div align="center" style={flexStyle} overflow="hidden"  >
-            <hr/>
-            <h2 style={{fontFamily: 'Garamond'}}><img height="200" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
-            <span style={{color: '#feda6a'}}>A</span>tomic<span style={{color: '#feda6a'}}>V</span>iew</h2>
-            <hr/>
-          </div>
+
           <h4 style={{float: 'left', paddingLeft: '50px'}}>
             <a href="/about">
               About Us

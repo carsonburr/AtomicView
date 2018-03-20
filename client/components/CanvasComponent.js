@@ -247,7 +247,7 @@ class CanvasComponent extends Component {
     if(!this.state.label) {
       return null;
     }
-    return(<h1 style={{fontFamily: 'Garamond'}}>&nbsp;Molecule: {this.state.label}</h1>)
+    return(<h1 style={{fontFamily: 'Garamond', color:'white', fontSize: '25px', paddingLeft: '15px'}}>&nbsp;Molecule: {this.state.label}</h1>)
   }
 
   draw = () => {
@@ -260,7 +260,7 @@ class CanvasComponent extends Component {
 
   render() {
     return (
-      <div className="CanvasComponent" style={{ paddingTop:'50px'  }} tabIndex="0">
+      <div className="CanvasComponent" style={{ paddingTop:'25px', backgroundColor:'#333'  }} tabIndex="0">
         <Header setUserId={this.setUserId}
                 getUserId={this.getUserId}
                 saveAtomsAndBondsForUser={this.saveAtomsAndBondsForUser}

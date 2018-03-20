@@ -51,7 +51,7 @@ class Header extends React.Component {
 
   render() {
     const headerStyle = {
-      backgroundColor:'#d4d4dcaa',
+      backgroundColor:'#1d1e22',
       width: '100%',
       paddingBottom: '0px',
       marginBottom: '20px',
@@ -73,8 +73,10 @@ class Header extends React.Component {
           <header style = {headerStyle}>
             <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
               <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
-                <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
-                &nbsp;AtomicView</h2>
+              <div align="center" style={flexStyle} overflow="hidden"  >
+                <h2 style={{fontFamily: 'Garamond'}}><img height="50" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+                <span style={{color: '#feda6a'}}>A</span>tomic<span style={{color: '#feda6a'}}>V</span>iew</h2>
+              </div>
               </a>
             </span>
             <h3 style={{float: 'right', paddingRight: '15px'}}>
@@ -106,8 +108,10 @@ class Header extends React.Component {
           </h3>
           <span style={{float: 'left', paddingLeft: 15, verticalAlign: 'middle'}}>
             <a href="/" style={{color: 'inherit', textDecoration: 'inherit'}}>
-              <h2 style={{fontFamily: 'Garamond'}}><img src="../images/icon36.png" alt="../images/logo.png" align="center"/>
-              &nbsp;AtomicView</h2>
+            <div align="center" style={flexStyle} overflow="hidden"  >
+              <h2 style={{fontFamily: 'Garamond'}}><img height="50" src="../images/logo.gif" alt="../images/logo.png" align="center"/>
+              <span style={{color: '#feda6a'}}>A</span>tomic<span style={{color: '#feda6a'}}>V</span>iew</h2>
+            </div>
             </a>
           </span>
           <div style={{clear: "both"}}></div>

@@ -8,7 +8,7 @@ class DeleteButton extends React.Component {
 
   render() {
     return (
-      <div className="SelectButtonContainer" background="#3d85c6">
+      <div className="SelectButtonContainer">
           <button className="ClearAllButton" onClick={this.clearAll}>
             <i className="fa fa-trash"></i>
             </button>

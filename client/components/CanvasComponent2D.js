@@ -386,7 +386,7 @@ class CanvasComponent2D extends Component {
       <canvas ref="canvas2d"
                   width={this.props.canvasWidth}
                   height={this.props.canvasHeight}
-                  style={{border: '1px solid black', marginLeft: '10px'}}
+                  style={{border: '2px solid #1d1e22', marginLeft: '10px', background:"#fff"}}
                   onMouseDown={this.handleOnMouseDown.bind(this)}
                   onMouseMove={this.handleOnMouseMove.bind(this)}
                   onMouseUp={this.handleOnMouseUp.bind(this)}/>

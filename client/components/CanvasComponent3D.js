@@ -462,7 +462,7 @@ class CanvasComponent3D extends Component {
         <a href="" id="download" download={label} display="none"></a>
         <canvas ref="canvas3d"
                 width={this.props.canvasWidth} height={this.props.canvasHeight}
-                style={{border: '1px solid black', marginLeft: '10px'}}
+                style={{border: '2px solid #1d1e22', marginLeft: '10px', background:"#fff"}}
                 />
       </span>
     );

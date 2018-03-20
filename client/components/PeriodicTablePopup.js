@@ -81,7 +81,7 @@ class PeriodicTablePopup extends React.Component {
       minHeight: 400,
       padding: 30,
       position: 'absolute',
-      top: '35%',
+      top: '45%',
       left: '50%',
       transform: 'translate(-50%, -50%)'
     };
@@ -94,13 +94,13 @@ class PeriodicTablePopup extends React.Component {
       for(var j=0; j<18; j++){
         let cellID = `cell${i}-${j}`;
         let atom = table[i][j];
-        cell.push(<td key={cellID} id={cellID} align="center" bgcolor={atom.color} 
+        cell.push(<td key={cellID} id={cellID} align="center" bgcolor={atom.color}
                   onClick={this.handleAtomClick.bind(this, atom)} width="100">
                   <sup>{atom.number}</sup><br />{atom.symbol}</td>);
-                  
+
       }
       rows.push(<tr key={i} id={rowID}>{cell}</tr>);
-    } 
+    }
 
     return (
 
